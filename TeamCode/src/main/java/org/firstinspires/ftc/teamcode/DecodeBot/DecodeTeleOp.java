@@ -111,7 +111,7 @@ public class DecodeTeleOp extends CommandOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
 
-    private RRSubsystem rrSubsystem;
+
 
     @Override
     //stuff that is ran when you click init at the start of teleop.
@@ -226,7 +226,7 @@ public class DecodeTeleOp extends CommandOpMode {
         double cXerror = (cx - 640);
 
 
-        //TODO Add CRServo Controller later
+        //TODO Add Motor PD Controller later
         if (Math.abs(cXerror) > 60) {
 
         } else if (Math.abs(cXerror) <= 60 || gamepad1.start) {
