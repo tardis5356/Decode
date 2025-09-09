@@ -6,5 +6,6 @@ public class GlobalVariables {
 
     public static String motif = new String();
 
+    public static String aColor = new String();
 
 }
