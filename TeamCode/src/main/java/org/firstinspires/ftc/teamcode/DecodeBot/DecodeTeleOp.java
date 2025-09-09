@@ -50,15 +50,12 @@ public class DecodeTeleOp extends CommandOpMode {
     //This is just a boolean used for telemetry to see if we took in the incorrect sample color
 
 
-
     //
     int desiredTagID;
 
     double cx;
 
     boolean PIDActive;
-
-
 
 
     double color = .5;
@@ -77,7 +74,6 @@ public class DecodeTeleOp extends CommandOpMode {
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
     private DcMotorEx mFL, mFR, mBL, mBR;
-
 
 
     //Forward and back power, Left and right power, rotation power.
@@ -112,11 +108,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int visionOutputPosition = 1;
 
 
-
-
     FtcDashboard dashboard = FtcDashboard.getInstance();
-
-
 
 
     private RRSubsystem rrSubsystem;
@@ -134,11 +126,9 @@ public class DecodeTeleOp extends CommandOpMode {
         //sets the digital position of the robot to intake for the deposit to state command
 
 
-
         //init controllers
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
-
 
 
         spindex = new Spindex(hardwareMap);
@@ -151,8 +141,6 @@ public class DecodeTeleOp extends CommandOpMode {
         mFR = hardwareMap.get(DcMotorEx.class, "mFR");
         mBL = hardwareMap.get(DcMotorEx.class, "mBL");
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
-
-
 
 
         //this motor physically runs opposite. For convenience, reverse direction.
@@ -169,23 +157,29 @@ public class DecodeTeleOp extends CommandOpMode {
 
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
 
-        VisionPortal portal = new VisionPortal.Builder()
-                .setCameraResolution(new Size(imgWidth, imgHeight))
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .build();
 
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
 
         AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
-        if(GlobalVariables.aColor == "red"){
-            desiredTagID == 2;
+
+        VisionPortal portal = new VisionPortal.Builder()
+                .addProcessors(aTagP)
+                .setCameraResolution(new Size(imgWidth, imgHeight))
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .build();
+
+
+        if (GlobalVariables.aColor == "red") {
+            desiredTagID = 24;
+        }
+        if (GlobalVariables.aColor == "blue") {
+            desiredTagID = 20;
         }
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
-                .toggleWhenActive(()-> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
-
+                .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
 
 
@@ -200,7 +194,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
-        List<AprilTagDetection>currentDetections = aTagP.getDetections();
+        List<AprilTagDetection> currentDetections = aTagP.getDetections();
 
         for (AprilTagDetection detection : currentDetections) {
 
@@ -215,30 +209,27 @@ public class DecodeTeleOp extends CommandOpMode {
             }
         }
 
-        if (detectedTag.id == desiredTagID ){
+        if (detectedTag.id == desiredTagID) {
 
 
             cx = detectedTag.center.x;
-            PIDActive = true;
 
-        }
-        else if(targetFound){
+
+        } else if (targetFound) {
             cx = detectedTag.center.x;
-            PIDActive = true;
-        }
-        else{
-            cx = 1280/2;
-            PIDActive = false;
+
+        } else {
+            cx = 1280 / 2;
+
         }
 
-        double cXerror = (cx-640);
+        double cXerror = (cx - 640);
 
 
         //TODO Add CRServo Controller later
         if (Math.abs(cXerror) > 60) {
 
-        }
-        else if (Math.abs(cXerror)<=60 || gamepad1.start){
+        } else if (Math.abs(cXerror) <= 60 || gamepad1.start) {
 
         }
 
@@ -259,6 +250,7 @@ public class DecodeTeleOp extends CommandOpMode {
         mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
         mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
     }
+
     private double cubicScaling(float joystickValue) {
         //store 5% of the joystick value + 95% of the joystick value to the 3rd power
         double v = 0.05 * joystickValue + 0.95 * Math.pow(joystickValue, 3);
@@ -280,7 +272,6 @@ public class DecodeTeleOp extends CommandOpMode {
             return 0;
         }
     }
-
 
 
 }
