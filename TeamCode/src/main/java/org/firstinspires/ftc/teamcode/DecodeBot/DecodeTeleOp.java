@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.DecodeBot;
 
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
+
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -22,10 +24,12 @@ import com.qualcomm.robotcore.util.SortOrder;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Spindex;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -59,6 +63,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
     double color = .5;
+
+    double turretError;
 
 
     PDController controller;
@@ -111,8 +117,6 @@ public class DecodeTeleOp extends CommandOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
 
-
-
     @Override
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
@@ -153,13 +157,12 @@ public class DecodeTeleOp extends CommandOpMode {
         mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        controller = new PDController(p, d);
 
         CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
 
 
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
-        telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+
 
         AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
@@ -180,8 +183,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
-
-
 
 
     }
@@ -213,6 +214,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             cx = detectedTag.center.x;
+            turretError = detectedTag.ftcPose.bearing;
 
 
         } else if (targetFound) {
@@ -226,11 +228,11 @@ public class DecodeTeleOp extends CommandOpMode {
         double cXerror = (cx - 640);
 
 
-        //TODO Add Motor PD Controller later
-        if (Math.abs(cXerror) > 60) {
+        //TODO Add AprilTag converter equation from bearing to encoder ticks
+        //
 
-        } else if (Math.abs(cXerror) <= 60 || gamepad1.start) {
-
+        if (tracking == "true") {
+            Turret.targetPosition = Turret.getCurrentPosition() + turretError * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
         }
 
 
@@ -249,6 +251,8 @@ public class DecodeTeleOp extends CommandOpMode {
         mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
         mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
         mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+
+
     }
 
     private double cubicScaling(float joystickValue) {

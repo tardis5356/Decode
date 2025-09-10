@@ -8,4 +8,6 @@ public class GlobalVariables {
 
     public static String aColor = new String();
 
+
+
 }
