@@ -10,6 +10,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -46,18 +47,12 @@ public class DecodeTeleOp extends CommandOpMode {
     //
     int desiredTagID;
 
-    double cx;
-
-    boolean PIDActive;
-
-
-    double color = .5;
 
     double turretBearing;
 
 
     PDController controller;
-    public double p = .001, d = .0005;
+
 
     boolean targetFound = false;
 
@@ -69,6 +64,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
     private DcMotorEx mFL, mFR, mBL, mBR;
+    private DcMotorEx mS;
 
 
     //Forward and back power, Left and right power, rotation power.
@@ -136,6 +132,9 @@ public class DecodeTeleOp extends CommandOpMode {
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
 
+        mS = hardwareMap.get(DcMotorEx.class, "mS");
+
+
         //this motor physically runs opposite. For convenience, reverse direction.
         mBR.setDirection(DcMotorSimple.Direction.REVERSE);
         mFR.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -173,6 +172,15 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "out")
+                .whenActive(new InstantCommand(intake::in));
+
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "in")
+                .whenActive(new InstantCommand(intake::out));
+
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" ||  Intake.intakeState == "in")
+                .whenActive(new InstantCommand(intake::stop));
+
 
     }
 
@@ -201,21 +209,13 @@ public class DecodeTeleOp extends CommandOpMode {
 
         if (detectedTag.id == desiredTagID) {
 
-
-            cx = detectedTag.center.x;
             turretBearing = detectedTag.ftcPose.bearing;
 
 
-        } else if (targetFound) {
-            cx = detectedTag.center.x;
-
-        } else {
-            cx = 1280 / 2;
-
         }
 
-        double cXerror = (cx - 640);
-
+        //Shooter Brrrrrrrrrrr
+        mS.setPower(9999999);
 
         //AprilTag converter equation from bearing to encoder ticks
         //

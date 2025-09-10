@@ -13,10 +13,9 @@ public class Intake extends SubsystemBase {
     DcMotorEx mI;
 
 
+    public static String intakeState = new String();
 
-
-
-    double power = 0;
+    double motorPower = 0;
 
     public Intake(HardwareMap hardwareMap){
 
@@ -28,19 +27,22 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic(){
-     mI.setPower(power);
+     mI.setPower(motorPower);
     }
 
     public void in(){
-       power = 1;
+       motorPower = 1;
+       intakeState = "in";
     }
 
     public void out(){
-        power = -1;
+        motorPower = -1;
+        intakeState = "out";
     }
 
     public void stop(){
-        power = 0;
+        motorPower = 0;
+        intakeState = "stop";
     }
 
 }
