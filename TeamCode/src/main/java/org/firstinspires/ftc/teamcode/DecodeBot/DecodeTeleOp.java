@@ -217,7 +217,7 @@ public class DecodeTeleOp extends CommandOpMode {
         double cXerror = (cx - 640);
 
 
-        //TODO Add AprilTag converter equation from bearing to encoder ticks
+        //AprilTag converter equation from bearing to encoder ticks
         //
 
         if (tracking == "true") {
