@@ -18,28 +18,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.SortOrder;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.VisionProcessor;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Config
@@ -64,7 +53,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
     double color = .5;
 
-    double turretError;
+    double turretBearing;
 
 
     PDController controller;
@@ -214,7 +203,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             cx = detectedTag.center.x;
-            turretError = detectedTag.ftcPose.bearing;
+            turretBearing = detectedTag.ftcPose.bearing;
 
 
         } else if (targetFound) {
@@ -232,7 +221,7 @@ public class DecodeTeleOp extends CommandOpMode {
         //
 
         if (tracking == "true") {
-            Turret.targetPosition = Turret.getCurrentPosition() + turretError * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
+            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
         }
 
 
