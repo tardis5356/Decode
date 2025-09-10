@@ -11,6 +11,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -24,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -48,7 +51,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int desiredTagID;
 
 
-    double turretBearing;
+   public double turretBearing;
 
 
     PDController controller;
@@ -88,6 +91,8 @@ public class DecodeTeleOp extends CommandOpMode {
     private Intake intake;
 
     private Spindex spindex;
+    private Lift lift;
+
 
     double LeftTrigger;
     double RightTrigger;
@@ -123,6 +128,8 @@ public class DecodeTeleOp extends CommandOpMode {
         spindex = new Spindex(hardwareMap);
 
         intake = new Intake(hardwareMap);
+
+        lift = new Lift(hardwareMap);
 
 
         //map motors
@@ -182,6 +189,14 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new InstantCommand(intake::stop));
 
 
+        new Trigger(()-> driver2.getButton(GamepadKeys.Button.START))
+                    .whenActive(new SequentialCommandGroup(
+                            new InstantCommand(lift::engagePTO),
+                            new WaitCommand(250),
+                            new InstantCommand(() -> Lift.PTO_State = "engaged")
+                    ));
+
+
     }
 
     //this is the main run loop
@@ -230,16 +245,33 @@ public class DecodeTeleOp extends CommandOpMode {
         LR = cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
+
+
         double mFLPower = FB + LR + Rotation;
         double mFRPower = FB - LR - Rotation;
         double mBLPower = FB - LR + Rotation;
         double mBRPower = FB + LR - Rotation;
-
         //actually sets the motor powers
-        mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-        mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-        mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-        mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+
+        if (Lift.PTO_State == "disengaged"){
+            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
+            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
+            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
+            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+        } else if (Lift.PTO_State == "engaged" && !Lift.limitLift.isPressed()){
+            mFL.setPower(1);
+            mFR.setPower(1);
+            mBL.setPower(1);
+            mBR.setPower(1);
+            Lift.mL.setPower(1);
+        }else if (Lift.limitLift.isPressed()){
+            mFL.setPower(0);
+            mFR.setPower(0);
+            mBL.setPower(0);
+            mBR.setPower(0);
+            Lift.mL.setPower(0);
+        }
+
 
 
     }

@@ -36,7 +36,7 @@ public class Turret extends SubsystemBase {
 
 
         //mLT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//at the start of teleop reset the encoder value to 0 (localize it)
-        mT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        mT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 //TODO We need to check motor encoder to see if right goes in positive direction.
         //IMPORTANT NOTES ON TUNING PID. The P value can be seen as how fast the lift moves to reach a position. Start very
