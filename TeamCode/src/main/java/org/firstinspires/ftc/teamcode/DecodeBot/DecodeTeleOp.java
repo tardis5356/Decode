@@ -178,7 +178,7 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "in")
                 .whenActive(new InstantCommand(intake::out));
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" ||  Intake.intakeState == "in")
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" ||  Intake.intakeState == "out")
                 .whenActive(new InstantCommand(intake::stop));
 
 
