@@ -4,7 +4,9 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 
-public class AutoTrajectories { public static final Pose2d startPos = new Pose2d(0, 0, Math.toRadians(90));
+public class AutoTrajectories {
+    public static final Pose2d bigStartPos = new Pose2d(-56, 47, Math.toRadians(305));
+    public static final Pose2d smallStartPos = new Pose2d(61, 31, Math.toRadians(180));
 
 
     // positions for strafeTo commands

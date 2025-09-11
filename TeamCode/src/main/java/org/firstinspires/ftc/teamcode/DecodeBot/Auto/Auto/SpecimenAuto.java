@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startPos;
+
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
+import static org.firstinspires.ftc.teamcode.DecodeBot.DecodeTeleOp.mS;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -32,7 +33,6 @@ public class SpecimenAuto extends OpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    Pose2d initialPose = startPos;
 
     // vision here that outputs position
     int visionOutputPosition = 1;
@@ -63,6 +63,7 @@ public class SpecimenAuto extends OpMode {
     private MecanumDrive drive;
     static String botState;
 
+    Pose2d startPos;
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -71,6 +72,10 @@ public class SpecimenAuto extends OpMode {
         //Removes previous Commands from scheduler
         CommandScheduler.getInstance().reset();
 
+
+
+
+
         drive = new MecanumDrive(hardwareMap, startPos);
         telemetry.addData("Status", "Initialized");
         //add initial position
@@ -78,6 +83,8 @@ public class SpecimenAuto extends OpMode {
         generateTrajectories(new MecanumDrive(hardwareMap, startPos));
 
         rrSubsystem = new RRSubsystem(hardwareMap);
+
+
 
 //
 
@@ -109,7 +116,7 @@ public class SpecimenAuto extends OpMode {
 
         runtime.reset();
 
-        generateTrajectories(new MecanumDrive(hardwareMap, initialPose));
+        generateTrajectories(new MecanumDrive(hardwareMap, startPos));
 
         rrSubsystem = new RRSubsystem(hardwareMap);
 
@@ -117,10 +124,11 @@ public class SpecimenAuto extends OpMode {
 //
         time_since_start = new ElapsedTime();
 
+        //Shooter Brrrrrrrrrrr
+        mS.setPower(99999999);
+
 
         CommandScheduler.getInstance().schedule(
-//
-
                 new SequentialCommandGroup(
 
                 )

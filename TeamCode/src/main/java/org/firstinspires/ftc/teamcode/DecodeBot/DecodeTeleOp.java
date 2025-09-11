@@ -67,7 +67,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
     private DcMotorEx mFL, mFR, mBL, mBR;
-    private DcMotorEx mS;
+    public static DcMotorEx mS;
 
 
     //Forward and back power, Left and right power, rotation power.
@@ -215,6 +215,7 @@ public class DecodeTeleOp extends CommandOpMode {
             if ((detection.id == desiredTagID)) {
                 // Yes, we want to use this tag.
                 targetFound = true;
+
                 detectedTag = detection;
                 break;  // don't look any further.
             } else {

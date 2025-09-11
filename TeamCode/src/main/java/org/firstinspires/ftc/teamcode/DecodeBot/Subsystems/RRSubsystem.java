@@ -17,7 +17,7 @@ public class RRSubsystem extends SubsystemBase {
     private DcMotorEx mBR;
 
     //    BNO055IMU imu;
-    private IMU imu;
+    public static IMU imu;
 
     double startingErrorRads = 0;
     double startingOffsetRads = 0;
@@ -40,8 +40,8 @@ public class RRSubsystem extends SubsystemBase {
         imu.initialize(
                 new IMU.Parameters(
                         new RevHubOrientationOnRobot(
-                                RevHubOrientationOnRobot.LogoFacingDirection.   ,
-                                RevHubOrientationOnRobot.UsbFacingDirection.
+                                RevHubOrientationOnRobot.LogoFacingDirection.UP   ,
+                                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
                         )
                 )
         );

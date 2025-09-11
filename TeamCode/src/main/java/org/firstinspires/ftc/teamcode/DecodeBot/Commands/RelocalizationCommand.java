@@ -1,8 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
-
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,6 +16,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.openftc.apriltag.AprilTagPose;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,10 @@ public class RelocalizationCommand extends CommandBase {
     AprilTagProcessor aprilTagProcessor;
     Telemetry telemetry;
 
-    private static Pose2d vectorFToPose2d(VectorF vector) {
 
-        return new Pose2d(vector.get(0), vector.get(1));
+    private static Pose2d vectorFToVector2d(VectorF vector) {
+
+        return new Pose2d(new Vector2d(vector.get(0), vector.get(1)), Math.toRadians(RRSubsystem.imu.getRobotYawPitchRollAngles().getYaw()));
     }
 
     public static double quaternionToHeading(Quaternion q) {
@@ -39,10 +40,10 @@ public class RelocalizationCommand extends CommandBase {
     public static AprilTagLibrary aprilTagLibrary()
     {
         return new AprilTagLibrary.Builder()
-                .addTag(20, "RedAlliance",
+                .addTag(24, "RedAlliance",
                         8, new VectorF(62.75f, 41.41f, 4f), DistanceUnit.INCH,
                         new Quaternion(0.3536f, -0.6124f, 0.6124f, -0.3536f, 0))
-                .addTag(24, "BlueAlliance",
+                .addTag(20, "BlueAlliance",
                         8, new VectorF(62.75f, 35.41f, 4f), DistanceUnit.INCH,
                         new Quaternion(0.3536f, -0.6124f, 0.6124f, -0.3536f, 0))
 
@@ -77,8 +78,8 @@ public class RelocalizationCommand extends CommandBase {
 //            if(detection.metadata.fieldOrientation.x == 0){} // if tag is on wall
 
 
-//            Pose2d tagPose = vectorFToPose2d(detection.metadata.fieldPosition);
-            Pose2d tagPose = vectorFToPose2d(aprilTagLibrary().lookupTag(detection.metadata.id).fieldPosition);
+            Pose2d tagPose = vectorFToVector2d(detection.metadata.fieldPosition);
+          //  Pose2d tagPose = vectorFToVector2d(aprilTagLibrary().lookupTag(detection.metadata.id).fieldPosition);
             AprilTagPoseFtc ftcPose = detection.ftcPose;
 
             telemetry.addData("tag name", detection.metadata.name);
@@ -87,8 +88,8 @@ public class RelocalizationCommand extends CommandBase {
             double x_camera = ftcPose.x;
             double y_camera = ftcPose.y;
 
-            double x_botToTag = (y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.cos(headingRad + Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.sin(headingRad + Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
-            double y_botToTag = -(y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.sin(headingRad+ Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.cos(headingRad+ Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
+            double x_botToTag = (y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.cos(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.sin(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
+            double y_botToTag = -(y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.sin(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.cos(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
 
             telemetry.addData("x_botToTag", numFormat, x_botToTag);
             telemetry.addData("y_botToTag", numFormat, y_botToTag);
@@ -129,6 +130,7 @@ public class RelocalizationCommand extends CommandBase {
     public void initialize() {
 
 
+        return null;
     }
 
     @Override
