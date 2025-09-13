@@ -35,7 +35,7 @@ public class TurretToStateCommand extends CommandBase {
             targetPosition = getCurrentPosition() + BotPositions.TURRET_TURN_TICKS;
         }
 //        lift.setTargetPosition(targetPosition);
-        return null;
+
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.openftc.apriltag.AprilTagPose;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,68 +54,67 @@ public class RelocalizationCommand extends CommandBase {
 
         String numFormat = "%.2f";
 
-        /*
-        This method assumes we are using the camera in the back of the robot
-
-        **ALL POSITIONS ARE TO CENTERS OF ELEMENTS**
-
-        1. Bot location vs Tag
-        2. Tag vs Field
-        3. Bot vs Field
-
-        TODO: make case to flip x axis when quaternion x is 0 (for audience wall tags)
-
-         */
-
-        // flip heading because this is an inverse transformation (coordinate system isn't rotating, bot is rotating)
-        double Heading = headingRad;
+        // Negative because the robot is rotating, not the field
+        double flippedHeading = -headingRad;
 
         double finalX = 0;
         double finalY = 0;
 
         for (AprilTagDetection detection : detections) {
-//            if(detection.metadata.fieldOrientation.x == 0){} // if tag is on wall
-
-
             Pose2d tagPose = vectorFToVector2d(detection.metadata.fieldPosition);
-          //  Pose2d tagPose = vectorFToVector2d(aprilTagLibrary().lookupTag(detection.metadata.id).fieldPosition);
             AprilTagPoseFtc ftcPose = detection.ftcPose;
 
             telemetry.addData("tag name", detection.metadata.name);
 
-            // 1. Bot location vs Tag
-            double x_camera = ftcPose.x;
-            double y_camera = ftcPose.y;
+            // Tag position in camera frame
+            double x_cameraToTag = ftcPose.x;  // inches (FTC uses x right, y down, z forward)
+            double y_cameraToTag = ftcPose.y;
 
-            double x_botToTag = (y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.cos(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.sin(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
-            double y_botToTag = -(y_camera + /*Turret_WEBCAM_X_OFFSET equation*/) * Math.sin(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER) - x_camera * Math.cos(headingRad - Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_DEGREE_MULTIPLIER);
+            // --- CONFIGURABLE CONSTANTS ---
+            final double CAMERA_RADIUS = 2.5;  // Inches
+            final double TURRET_OFFSET_X = 0.0; // Inches from robot center to turret pivot
+            final double TURRET_OFFSET_Y = 0.0;
+
+            // Turret angle (in radians)
+            double theta_turret = Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+
+            // 1. Calculate camera position in robot frame (robot → camera)
+            double x_robotToCamera = TURRET_OFFSET_X + CAMERA_RADIUS * Math.cos(theta_turret);
+            double y_robotToCamera = TURRET_OFFSET_Y + CAMERA_RADIUS * Math.sin(theta_turret);
+
+            // 2. Compute tag position in robot frame (robot → tag)
+            // Apply turret + camera transform + rotate into robot frame
+            double x_botToTag = x_robotToCamera + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
+            double y_botToTag = y_robotToCamera + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
 
             telemetry.addData("x_botToTag", numFormat, x_botToTag);
             telemetry.addData("y_botToTag", numFormat, y_botToTag);
 
-            // 2. Tag vs Field
-            double x_tagInRR = tagPose.position.x;
-            double y_tagInRR = tagPose.position.y;
+            // 3. Get tag position on field
+            double x_tagOnField = tagPose.position.x;  // in inches
+            double y_tagOnField = tagPose.position.y;
 
-            telemetry.addData("x_tagInRR", numFormat, x_tagInRR);
-            telemetry.addData("y_tagInRR", numFormat, y_tagInRR);
+            telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
+            telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
 
-            // 3. Bot vs Field
-            double x_botToField = x_botToTag + x_tagInRR;
-            double y_botToField = y_botToTag + y_tagInRR;
+            // 4. Robot position on field = Tag on field - Bot-to-Tag vector
+            double x_botOnField = x_tagOnField - x_botToTag;
+            double y_botOnField = y_tagOnField - y_botToTag;
 
-            telemetry.addData("x_botToField", numFormat, x_botToField);
-            telemetry.addData("y_botToField", numFormat, y_botToField);
+            telemetry.addData("x_botOnField", numFormat, x_botOnField);
+            telemetry.addData("y_botOnField", numFormat, y_botOnField);
 
-            finalX += x_botToField;
-            finalY += y_botToField;
+            finalX += x_botOnField;
+            finalY += y_botOnField;
 
             telemetry.addLine();
         }
+
         if (finalX == 0)
             return null;
-        else
-            return new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad);
+
+        // Return average pose from all visible tags
+        return new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad);
     }
 
     public RelocalizationCommand(MecanumDrive drive,  RRSubsystem rrSubsystem, AprilTagProcessor aprilTagProcessor, Telemetry telemetry) {
@@ -130,7 +128,7 @@ public class RelocalizationCommand extends CommandBase {
     public void initialize() {
 
 
-        return null;
+        //return null;
     }
 
     @Override
