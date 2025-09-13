@@ -108,8 +108,7 @@ private MecanumDrive drive;
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-
-
+        tracking = "red";
 
 
 
