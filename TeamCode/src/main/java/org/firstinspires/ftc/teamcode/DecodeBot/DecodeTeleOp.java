@@ -51,7 +51,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int desiredTagID;
 
 
-   public double turretBearing;
+    public double turretBearing;
 
 
     PDController controller;
@@ -182,22 +182,22 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "out")
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && Intake.intakeState == "stop" || Intake.intakeState == "out")
                 .whenActive(new InstantCommand(intake::in));
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "in")
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" || Intake.intakeState == "in")
                 .whenActive(new InstantCommand(intake::out));
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" ||  Intake.intakeState == "out")
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" || Intake.intakeState == "out")
                 .whenActive(new InstantCommand(intake::stop));
 
 
-        new Trigger(()-> driver2.getButton(GamepadKeys.Button.START))
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(lift::engagePTO),
-                            new WaitCommand(250),
-                            new InstantCommand(() -> Lift.PTO_State = "engaged")
-                    ));
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.START))
+                .whenActive(new SequentialCommandGroup(
+                        new InstantCommand(lift::engagePTO),
+                        new WaitCommand(250),
+                        new InstantCommand(() -> Lift.PTO_State = "engaged")
+                ));
 
 
     }
@@ -239,7 +239,7 @@ public class DecodeTeleOp extends CommandOpMode {
         //AprilTag converter equation from bearing to encoder ticks
         //
 
-        if (tracking == "true") {
+        if (tracking == true) {
             Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
         }
 
@@ -257,25 +257,24 @@ public class DecodeTeleOp extends CommandOpMode {
         double mBRPower = FB + LR - Rotation;
         //actually sets the motor powers
 
-        if (Lift.PTO_State == "disengaged"){
+        if (Lift.PTO_State == "disengaged") {
             mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
             mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
             mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
             mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
-        } else if (Lift.PTO_State == "engaged" && !Lift.limitLift.isPressed()){
+        } else if (Lift.PTO_State == "engaged" && !Lift.limitLift.isPressed()) {
             mFL.setPower(1);
             mFR.setPower(1);
             mBL.setPower(1);
             mBR.setPower(1);
             Lift.mL.setPower(1);
-        }else if (Lift.limitLift.isPressed()){
+        } else if (Lift.limitLift.isPressed()) {
             mFL.setPower(0);
             mFR.setPower(0);
             mBL.setPower(0);
             mBR.setPower(0);
             Lift.mL.setPower(0);
         }
-
 
 
     }

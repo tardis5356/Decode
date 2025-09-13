@@ -37,7 +37,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 public class TurretRelocalizationTest extends CommandOpMode {
-   private GamepadEx driver1, driver2;
+    private GamepadEx driver1, driver2;
 
     int desiredTagID;
 
@@ -50,7 +50,6 @@ public class TurretRelocalizationTest extends CommandOpMode {
     //drivetrain motors and variables
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
-
 
 
     //Forward and back power, Left and right power, rotation power.
@@ -74,7 +73,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
     private DcMotorEx mFL, mFR, mBL, mBR;
     double FB, LR, Rotation;
-private MecanumDrive drive;
+    private MecanumDrive drive;
     private IMU imu;
 
     private DcMotor leftDrive = null;
@@ -109,10 +108,7 @@ private MecanumDrive drive;
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
-        tracking = "red";
-
-
-
+        GlobalVariables.aColor = "red";
 
 
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -127,15 +123,11 @@ private MecanumDrive drive;
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.B))
-                .whenActive(new InstantCommand(() -> tracking = "red"));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
+                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "red"));
 
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.A))
-                .whenActive(new InstantCommand(() -> tracking = "blue"));
-
-
-
-
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
+                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "blue"));
 
 
     }
@@ -176,11 +168,7 @@ private MecanumDrive drive;
         }
 
 
-
-
-
-            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
-
+        Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
@@ -197,15 +185,15 @@ private MecanumDrive drive;
         //actually sets the motor powers
 
 
-            mFL.setPower(mFLPower);
-            mFR.setPower(mFRPower);
-            mBL.setPower(mBLPower);
-            mBR.setPower(mBRPower);
+        mFL.setPower(mFLPower);
+        mFR.setPower(mFRPower);
+        mBL.setPower(mBLPower);
+        mBR.setPower(mBRPower);
 
         telemetry.addData("# of detections: ", currentDetections.size());
 
-        telemetry.addData("localize6", RelocalizationCommand.relocalize( currentDetections,imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
-telemetry.update();
+        telemetry.addData("localize6", RelocalizationCommand.relocalize(currentDetections, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
+        telemetry.update();
     }
 
     private double cubicScaling(float joystickValue) {

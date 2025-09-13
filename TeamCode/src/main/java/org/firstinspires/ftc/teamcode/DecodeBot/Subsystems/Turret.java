@@ -15,7 +15,7 @@ public class Turret extends SubsystemBase {
     public static DcMotorEx mT;
     //touch sensor near the bottom of the lift slides used to localize the lift encoder
 //and prevent the lift from driving into the deck plate
-    public static String tracking = new String();
+    public static Boolean tracking = true;
     public PIDController controller;
     //PID explanation. The PIDController is a neat thing that drives a motor to a position and holds it there
     //You will use PIDObject.calculate, which takes the encoder value of the motor and the desired value (position)
