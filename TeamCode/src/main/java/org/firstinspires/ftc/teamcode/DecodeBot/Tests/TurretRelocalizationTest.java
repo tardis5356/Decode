@@ -127,7 +127,11 @@ private MecanumDrive drive;
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
 
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.B))
+                .whenActive(new InstantCommand(() -> tracking = "red"));
 
+        new Trigger (() -> driver1.getButton(GamepadKeys.Button.A))
+                .whenActive(new InstantCommand(() -> tracking = "blue"));
 
 
 
