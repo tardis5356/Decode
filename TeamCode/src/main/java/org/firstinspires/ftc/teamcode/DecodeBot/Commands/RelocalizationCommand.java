@@ -78,11 +78,11 @@ public class RelocalizationCommand extends CommandBase {
             // Turret angle (in radians)
             double theta_turret = Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 
-            // 1. Calculate camera position in robot frame (robot → camera)
+            // Calculate camera position in robot frame (robot → camera)
             double x_robotToCamera = TURRET_OFFSET_X + CAMERA_RADIUS * Math.cos(theta_turret);
             double y_robotToCamera = TURRET_OFFSET_Y + CAMERA_RADIUS * Math.sin(theta_turret);
 
-            // 2. Compute tag position in robot frame (robot → tag)
+            // Compute tag position in robot frame (robot → tag)
             // Apply turret + camera transform + rotate into robot frame
             double x_botToTag = x_robotToCamera + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
             double y_botToTag = y_robotToCamera + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
@@ -90,14 +90,14 @@ public class RelocalizationCommand extends CommandBase {
             telemetry.addData("x_botToTag", numFormat, x_botToTag);
             telemetry.addData("y_botToTag", numFormat, y_botToTag);
 
-            // 3. Get tag position on field
+            // Get tag position on field
             double x_tagOnField = tagPose.position.x;  // in inches
             double y_tagOnField = tagPose.position.y;
 
             telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
 
-            // 4. Robot position on field = Tag on field - Bot-to-Tag vector
+            // Robot position on field = Tag on field - Bot-to-Tag vector
             double x_botOnField = x_tagOnField - x_botToTag;
             double y_botOnField = y_tagOnField - y_botToTag;
 
