@@ -174,9 +174,9 @@ private MecanumDrive drive;
 
 
 
-        if (tracking == "true") {
+
             Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
-        }
+
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
