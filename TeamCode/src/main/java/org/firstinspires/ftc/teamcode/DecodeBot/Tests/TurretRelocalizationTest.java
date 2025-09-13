@@ -1,12 +1,10 @@
-package org.firstinspires.ftc.teamcode.DecodeBot;
-
+package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -17,12 +15,14 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.DecodeBot.Commands.RelocalizationCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
@@ -35,30 +35,13 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@Config
-@TeleOp(name = "MVCC_TeleOp", group = "AGen1")
+public class TurretRelocalizationTest extends CommandOpMode {
+   private GamepadEx driver1, driver2;
 
-public class DecodeTeleOp extends CommandOpMode {
-    //gamepads
-    //GamepadEx is an extended object version of gamepads that has more organized input checks that we use in triggers.
-    private GamepadEx driver1, driver2;
-    //private DcMotorEx liftEncoder;
-
-    //This is just a boolean used for telemetry to see if we took in the incorrect sample color
-
-
-    //
     int desiredTagID;
 
 
-   public double turretBearing;
-
-
-    PDController controller;
-
-
-    boolean targetFound = false;
-
+    public double turretBearing;
     AprilTagDetection detectedTag;
 
     //private IntakeInCommand intakeInCommand;
@@ -66,20 +49,18 @@ public class DecodeTeleOp extends CommandOpMode {
     //drivetrain motors and variables
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
-    private DcMotorEx mFL, mFR, mBL, mBR;
-    public static DcMotorEx mS;
+
 
 
     //Forward and back power, Left and right power, rotation power.
     //All are then added and subtracted in different ways for each drive motor
-    double FB, LR, Rotation;
+
 
     //multipliers applied to the sum of the above variables to evenly change the speed of the drivetrain
-    static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.4;
+
 
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
-    double CURRENT_SPEED_MULTIPLIER;
+
 
     static int imgHeight = 896;
     static int imgWidth = 1600;
@@ -88,15 +69,12 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
     //wrist
-    private Intake intake;
-
-    private Spindex spindex;
-    private Lift lift;
-    private Turret turret;
 
 
-    double LeftTrigger;
-    double RightTrigger;
+    private DcMotorEx mFL, mFR, mBL, mBR;
+    double FB, LR, Rotation;
+private MecanumDrive drive;
+    private IMU imu;
 
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
@@ -119,44 +97,22 @@ public class DecodeTeleOp extends CommandOpMode {
         CommandScheduler.getInstance().reset();
 
         //sets the digital position of the robot to intake for the deposit to state command
+        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
+        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
+        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
+        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
+        imu = hardwareMap.get(IMU.class, "imu");
 
         //init controllers
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
 
-        spindex = new Spindex(hardwareMap);
-
-        intake = new Intake(hardwareMap);
-
-        lift = new Lift(hardwareMap);
-
-        turret = new Turret(hardwareMap);
 
 
-        //map motors
-        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
-        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
-        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
-        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
 
-        mS = hardwareMap.get(DcMotorEx.class, "mS");
-
-
-        //this motor physically runs opposite. For convenience, reverse direction.
-        mBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        mFR.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //makes the motors brake when power = zero. Is better for driver precision
-        mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-        CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
 
 
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -172,32 +128,10 @@ public class DecodeTeleOp extends CommandOpMode {
                 .build();
 
 
-        if (GlobalVariables.aColor == "red") {
-            desiredTagID = 24;
-        }
-        if (GlobalVariables.aColor == "blue") {
-            desiredTagID = 20;
-        }
-
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
-                .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
-
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "out")
-                .whenActive(new InstantCommand(intake::in));
-
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" ||  Intake.intakeState == "in")
-                .whenActive(new InstantCommand(intake::out));
-
-        new Trigger (() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" ||  Intake.intakeState == "out")
-                .whenActive(new InstantCommand(intake::stop));
 
 
-        new Trigger(()-> driver2.getButton(GamepadKeys.Button.START))
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(lift::engagePTO),
-                            new WaitCommand(250),
-                            new InstantCommand(() -> Lift.PTO_State = "engaged")
-                    ));
+
+
 
 
     }
@@ -208,6 +142,13 @@ public class DecodeTeleOp extends CommandOpMode {
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
 
+        if (GlobalVariables.aColor == "red") {
+            desiredTagID = 24;
+        }
+        if (GlobalVariables.aColor == "blue") {
+            desiredTagID = 20;
+        }
+
         AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
         List<AprilTagDetection> currentDetections = aTagP.getDetections();
@@ -216,13 +157,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //  Check to see if we want to track towards this tag.
             if ((detection.id == desiredTagID)) {
-                // Yes, we want to use this tag.
-                targetFound = true;
+
 
                 detectedTag = detection;
                 break;  // don't look any further.
-            } else {
-                targetFound = false;
             }
         }
 
@@ -233,11 +171,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
         }
 
-        //Shooter Brrrrrrrrrrr
-        mS.setPower(9999999);
 
-        //AprilTag converter equation from bearing to encoder ticks
-        //
+
 
         if (tracking == "true") {
             Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
@@ -257,26 +192,14 @@ public class DecodeTeleOp extends CommandOpMode {
         double mBRPower = FB + LR - Rotation;
         //actually sets the motor powers
 
-        if (Lift.PTO_State == "disengaged"){
-            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
-        } else if (Lift.PTO_State == "engaged" && !Lift.limitLift.isPressed()){
-            mFL.setPower(1);
-            mFR.setPower(1);
-            mBL.setPower(1);
-            mBR.setPower(1);
-            Lift.mL.setPower(1);
-        }else if (Lift.limitLift.isPressed()){
-            mFL.setPower(0);
-            mFR.setPower(0);
-            mBL.setPower(0);
-            mBR.setPower(0);
-            Lift.mL.setPower(0);
-        }
+
+            mFL.setPower(mFLPower);
+            mFR.setPower(mFRPower);
+            mBL.setPower(mBLPower);
+            mBR.setPower(mBRPower);
 
 
+        telemetry.addData("localize6", RelocalizationCommand.relocalize( currentDetections, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()), telemetry));
 
     }
 
@@ -304,4 +227,3 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 }
-

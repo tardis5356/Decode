@@ -48,7 +48,7 @@ public class RelocalizationCommand extends CommandBase {
 
                 .build();
     }
-    public static Pose2d relocalize6(List<AprilTagDetection> detections, double headingRad, Telemetry telemetry) {
+    public static Pose2d relocalize(List<AprilTagDetection> detections, double headingRad, Telemetry telemetry) {
         List<Double> x = new ArrayList<>();
         List<Double> y = new ArrayList<>();
 
@@ -133,7 +133,7 @@ public class RelocalizationCommand extends CommandBase {
 
     @Override
     public void execute() {
-        Pose2d newPose = relocalize6(aprilTagProcessor.getDetections(), rrSubsystem.getYawRadians(), telemetry);
+        Pose2d newPose = relocalize(aprilTagProcessor.getDetections(), rrSubsystem.getYawRadians(), telemetry);
         if (newPose != null) {
             drive.localizer.setPose(newPose);
             telemetry.addData("relocalized using apriltags ", newPose);
