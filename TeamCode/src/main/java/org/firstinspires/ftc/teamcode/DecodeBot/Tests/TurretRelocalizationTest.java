@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Commands.RelocalizationCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
@@ -201,9 +202,10 @@ private MecanumDrive drive;
             mBL.setPower(mBLPower);
             mBR.setPower(mBRPower);
 
+        telemetry.addData("# of detections: ", currentDetections.size());
 
-        telemetry.addData("localize6", RelocalizationCommand.relocalize( currentDetections, Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw()), telemetry));
-
+        telemetry.addData("localize6", RelocalizationCommand.relocalize( currentDetections,imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
+telemetry.update();
     }
 
     private double cubicScaling(float joystickValue) {
