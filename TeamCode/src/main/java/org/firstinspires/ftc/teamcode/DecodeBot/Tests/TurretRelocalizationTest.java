@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
@@ -168,7 +169,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
         }
 
 
-        Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
+        Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;

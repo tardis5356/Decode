@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -19,7 +25,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Config
 public class RelocalizationCommand extends CommandBase {
     MecanumDrive drive;
     RRSubsystem rrSubsystem;
@@ -70,13 +76,10 @@ public class RelocalizationCommand extends CommandBase {
             double x_cameraToTag = ftcPose.x;  // inches (FTC uses x right, y down, z forward)
             double y_cameraToTag = ftcPose.y;
 
-            // --- CONFIGURABLE CONSTANTS ---
-            final double CAMERA_RADIUS = 2.5;  // Inches
-            final double TURRET_OFFSET_X = 0.0; // Inches from robot center to turret pivot
-            final double TURRET_OFFSET_Y = 0.0;
+
 
             // Turret angle (in radians)
-            double theta_turret = Turret.getCurrentPosition() * BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+            double theta_turret = Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER;
 
             // Calculate camera position in robot frame (robot → camera)
             double x_robotToCamera = TURRET_OFFSET_X + CAMERA_RADIUS * Math.cos(theta_turret);

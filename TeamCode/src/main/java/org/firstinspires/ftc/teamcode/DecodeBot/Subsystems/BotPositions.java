@@ -3,13 +3,12 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-
+@Config
 public class BotPositions {
 
-    //For editing in Dashboard
-    MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-    FtcDashboard dashboard = FtcDashboard.getInstance();
+
 
 
 
@@ -21,6 +20,6 @@ public class BotPositions {
     public static double TURRET_360_TURN_TICKS = 0, TURRET_DEGREE_TO_TICK_MULTIPLIER = TURRET_360_TURN_TICKS/360, TURRET_TICK_TO_RADIAN_MULTIPLIER = TURRET_DEGREE_TO_TICK_MULTIPLIER * (Math.PI/180);
     public static double PTO_ENGAGED = 0, PTO_DISENGAGED = 0;
 
-
+    public static double CAMERA_RADIUS = 2.5, TURRET_OFFSET_X = 0.0 , TURRET_OFFSET_Y = 0.0;
 
 }

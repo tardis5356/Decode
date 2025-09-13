@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.PTO_DISENGAGED;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.PTO_ENGAGED;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -26,7 +29,7 @@ public class Lift extends SubsystemBase {
         limitLift = hardwareMap.get(TouchSensor.class, "lL");
         //mLT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//at the start of teleop reset the encoder value to 0 (localize it)
         mL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sP.setPosition(BotPositions.PTO_DISENGAGED);
+        sP.setPosition(PTO_DISENGAGED);
         mL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         PTO_State = "disengaged";
     }
@@ -45,7 +48,7 @@ public class Lift extends SubsystemBase {
     //these are a few telemetry methods for trouble shooting
 
     public void engagePTO() {
-        sP.setPosition(BotPositions.PTO_ENGAGED);
+        sP.setPosition(PTO_ENGAGED);
 
         PTO_State = "engaged";
     }

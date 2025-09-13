@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_D;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_I;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_P;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -46,7 +50,7 @@ public class Turret extends SubsystemBase {
         //Its tuned in the same way as the other two values and should be done last after D.
         //This video is a good explanation:
         //https://www.youtube.com/watch?time_continue=7&v=XfAt6hNV8XM&embeds_referring_euri=https%3A%2F%2Fcdn.iframe.ly%2F&source_ve_path=MTM5MTE3LDEzOTExNywyODY2Ng
-        controller = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+        controller = new PIDController(TURRET_P, TURRET_I, TURRET_D);
     }
 
 

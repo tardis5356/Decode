@@ -88,36 +88,5 @@ public class RRSubsystem extends SubsystemBase {
 
 
 
-    /*
-    public BNO055IMU getImu() {
-        return imu;
-    }
-
-    public Orientation getIMUOrientation(){
-        return imu.getAngularOrientation();
-    }
-
-    public void setStartingError(){
-        startingErrorRads = AngleUnit.normalizeDegrees(-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).thirdAngle);
-    }
-    public void setStartingOffsetDegs(int offsetDeg){
-        startingOffsetRads = Math.toRadians(offsetDeg);
-    }
-
-    public double getYawRadians(){
-        return AngleUnit.normalizeRadians(-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).thirdAngle-startingErrorRads+startingOffsetRads);
-    }
-
-    public double getYawDegrees(){
-        return AngleUnit.normalizeDegrees(-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle-Math.toDegrees(startingErrorRads)+Math.toDegrees(startingOffsetRads));
-    }
-
-    public double getRawYawDegrees(){
-        return AngleUnit.normalizeDegrees(-imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle);
-    }*/
-
-    // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
-    // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
-    // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
 
 }

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_360_TURN_TICKS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -26,10 +27,10 @@ public class TurretFlipCommand extends CommandBase {
 
 
         if (Turret.getCurrentPosition() > 0) {
-            targetPosition = getCurrentPosition() - BotPositions.TURRET_360_TURN_TICKS;
+            targetPosition = getCurrentPosition() - TURRET_360_TURN_TICKS;
 
         } else if (Turret.getCurrentPosition() < 0) {
-            targetPosition = getCurrentPosition() + BotPositions.TURRET_360_TURN_TICKS;
+            targetPosition = getCurrentPosition() + TURRET_360_TURN_TICKS;
         }
 //        lift.setTargetPosition(targetPosition);
 

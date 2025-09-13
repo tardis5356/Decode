@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot;
 
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
@@ -172,12 +173,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .build();
 
 
-        if (GlobalVariables.aColor == "red") {
-            desiredTagID = 24;
-        }
-        if (GlobalVariables.aColor == "blue") {
-            desiredTagID = 20;
-        }
+
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
@@ -205,6 +201,13 @@ public class DecodeTeleOp extends CommandOpMode {
     //this is the main run loop
     public void run() {
         super.run();
+
+        if (GlobalVariables.aColor == "red") {
+            desiredTagID = 24;
+        }
+        if (GlobalVariables.aColor == "blue") {
+            desiredTagID = 20;
+        }
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
 
@@ -240,7 +243,7 @@ public class DecodeTeleOp extends CommandOpMode {
         //
 
         if (tracking == true) {
-            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
+            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
         }
 
 
