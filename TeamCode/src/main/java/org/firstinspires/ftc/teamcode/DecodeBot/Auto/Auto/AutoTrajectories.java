@@ -1,48 +1,33 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
+
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 
 public class AutoTrajectories {
-    public static final Pose2d bigStartPos = new Pose2d(-56, 47, Math.toRadians(305));
-    public static final Pose2d smallStartPos = new Pose2d(61, 31, Math.toRadians(180));
 
+    static Pose2d mirroredCoordinate;
+    private static Pose2d allianceCoordinate(Pose2d coordinate) {
+        if(aColor == "blue"){
+            mirroredCoordinate =new Pose2d(new Vector2d(coordinate.position.x, coordinate.position.y * -1) , Math.toRadians((Math.toDegrees(coordinate.heading.toDouble()) - 180) * -1 + 180));
+            return mirroredCoordinate;
+        }else {
+            return coordinate;
+        }
 
-    // positions for strafeTo commands
+    }
+    public static final Pose2d bigStartPos = allianceCoordinate(new Pose2d(-56, 47, Math.toRadians(305)));
+    public static final Pose2d smallStartPos =allianceCoordinate( new Pose2d(61, 31, Math.toRadians(180)));
 
     //Actions
 
 
-    /*
-     This defined constraint could also be called slowConstraint or
-     something like that, describing it by speed like last year, but
-     I do think it could be named after when it gets used during the
-     program to better keep track of them (i.e. sweepingConstraint)
-
-     Side note, because I am sure it will come up: I did some digging
-     to find out why this is called MinVelConstraint. Essentially, it
-     is because it's taking the lower constraint of the two given. At
-     any given point, if the robot would be moving more slowly under
-     the angular constraint, it will choose that. If it'd be slower
-     under the translational constraint, it'd use that.
-     */
 
 
-    /*
-     You are also able to define just an accel constraint or just a
-     vel constraint, if you only want to constrain one.
-     */
 
-
-    /*
-    See directly applied constraints (I recommend against using them
-    though) on line 200.
-
-     Let me know if you need help with this at all, we used these (at
-     least their 0.5 equivalent) a bunch in Centerstage, so I'm pretty
-     familiar with them   -Graham :)
-     */
 
     public static void generateTrajectories(MecanumDrive drive) {
 
