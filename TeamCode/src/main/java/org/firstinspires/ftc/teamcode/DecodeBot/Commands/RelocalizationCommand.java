@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.allianceCoordinate;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
@@ -117,7 +118,7 @@ public class RelocalizationCommand extends CommandBase {
             return null;
 
         // Return average pose from all visible tags
-        return new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad);
+        return allianceCoordinate(new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad * (180/Math.PI)));
     }
 
     public RelocalizationCommand(MecanumDrive drive,  RRSubsystem rrSubsystem, AprilTagProcessor aprilTagProcessor, Telemetry telemetry) {

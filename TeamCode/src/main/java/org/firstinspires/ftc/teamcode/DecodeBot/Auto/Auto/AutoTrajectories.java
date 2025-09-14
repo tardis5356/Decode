@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 public class AutoTrajectories {
 
    //heading input is degrees
-    private static Pose2d allianceCoordinate(Pose2d coordinate) {
+    public static Pose2d allianceCoordinate(Pose2d coordinate) {
 
         Pose2d mirroredCoordinate;
 
