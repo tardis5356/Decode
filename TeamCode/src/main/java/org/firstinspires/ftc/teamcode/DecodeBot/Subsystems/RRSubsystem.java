@@ -35,7 +35,7 @@ public class RRSubsystem extends SubsystemBase {
 //        imu.initialize(new BNO055IMU.Parameters());
 
 
-        imu = hardwareMap.get(IMU.class, "pinpoint");
+        imu = hardwareMap.get(IMU.class, "imu");
 
         imu.initialize(
                 new IMU.Parameters(
