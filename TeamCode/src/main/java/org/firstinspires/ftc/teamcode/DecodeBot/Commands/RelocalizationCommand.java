@@ -23,6 +23,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.openftc.apriltag.AprilTagPose;
 
 import java.util.ArrayList;
 import java.util.List;
