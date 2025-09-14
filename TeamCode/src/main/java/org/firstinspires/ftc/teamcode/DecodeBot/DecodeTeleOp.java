@@ -37,7 +37,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
 @Config
-@TeleOp(name = "MVCC_TeleOp", group = "AGen1")
+@TeleOp(name = "DecodeTeleop", group = "AGen1")
 
 public class DecodeTeleOp extends CommandOpMode {
     //gamepads

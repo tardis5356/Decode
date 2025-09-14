@@ -5,6 +5,7 @@ import android.util.Size;
 
 import com.arcrobotics.ftclib.controller.PDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,12 +15,16 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+@TeleOp(name="Turret_POC_ONLY", group = "Testbed")
 public class TurretTeleOp extends LinearOpMode {
 
-    DcMotorEx yaw;
+    private static final Logger log = LoggerFactory.getLogger(TurretTeleOp.class);
+    DcMotor yaw;
 
     Servo LED;
 
@@ -27,26 +32,27 @@ public class TurretTeleOp extends LinearOpMode {
 
     boolean targetFound = false;
 
-    AprilTagDetection detectedTag;
+     AprilTagDetection detectedTag;
 
-    int desiredTagID;
+
+     int desiredTagID;
 
     static int imgHeight = 896;
     static int imgWidth = 1600;
 
     double FB, LR, Rotation;
 
-    PDController YawController;
+     PDController YawController;
     
-    boolean tooFarLeft, tooFarRight;
+     boolean tooFarLeft, tooFarRight;
 
 
     @Override
     public void runOpMode()
     {
-        YawController = new PDController(.1,.05);
+         YawController = new PDController(.00004,.0000);
 
-        yaw = hardwareMap.get(DcMotorEx.class, "yaw");
+        yaw = hardwareMap.get(DcMotor.class, "yaw");
 
         LED = hardwareMap.get(Servo.class,"LED");
 
@@ -64,6 +70,10 @@ public class TurretTeleOp extends LinearOpMode {
         mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         yaw.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        yaw.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        yaw.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
@@ -73,7 +83,11 @@ public class TurretTeleOp extends LinearOpMode {
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .build();
 
-        while(opModeIsActive()){
+
+        waitForStart();
+
+        while(opModeIsActive()||opModeInInit()){
+
             portal.setProcessorEnabled(aTagP, true);
 
 
@@ -84,8 +98,11 @@ public class TurretTeleOp extends LinearOpMode {
                 desiredTagID = 20;
             }
 
+            //AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
+
+
             //TODO: Swapped this from getDetections. Must be tested.
-            List<AprilTagDetection> currentDetections = aTagP.getFreshDetections();
+             List<AprilTagDetection> currentDetections = aTagP.getDetections();
 
             for (AprilTagDetection detection : currentDetections) {
                 // Look to see if we have size info on this tag.
@@ -109,39 +126,44 @@ public class TurretTeleOp extends LinearOpMode {
             }
 
             
-            if(yaw.getCurrentPosition()<=-800){
-                tooFarLeft = true;
-            }
-            else if(yaw.getCurrentPosition()>=800){
-                tooFarRight = true;
-            }
-            
-//            if(tooFarLeft){
-//                yaw.setPower(YawController.calculate(yaw.getCurrentPosition(),600));
-//                if(yaw.getCurrentPosition()>=600){
-//                    tooFarLeft = false;
-//                }
+//            if(yaw.getCurrentPosition()<=-200){
+//                tooFarLeft = true;
 //            }
-//            else if (tooFarRight) {
-//                yaw.setPower(YawController.calculate(yaw.getCurrentPosition(),-600));
-//                if(yaw.getCurrentPosition()<=-600){
-//                    tooFarRight = false;
-//                }
-//            }
-//            else{
-//                yaw.setPower(YawController.calculate(detectedTag.center.x,800));
+//            else if(yaw.getCurrentPosition()>=200){
+//                tooFarRight = true;
 //            }
 
-            yaw.setPower(gamepad2.left_stick_x);
+            if(targetFound) {
+                //based on turret motor ticks
+//                if (tooFarLeft) {
+//                    yaw.setPower(-YawController.calculate(yaw.getCurrentPosition(), 150));
+//                    if (yaw.getCurrentPosition() >= 150) {
+//                        tooFarLeft = false;
+//                    }
+//                } else if (tooFarRight) {
+//                    //based on turret motor ticks
+//                    yaw.setPower(-YawController.calculate(yaw.getCurrentPosition(), -150));
+//                    if (yaw.getCurrentPosition() <= -150) {
+//                        tooFarRight = false;
+//                    }
+//                } else {
+                    //based on camera pixels
+                    yaw.setPower(-YawController.calculate(detectedTag.center.x, 800));
+                    telemetry.addData("AprilTagCenter", detectedTag.center.x);
+//                }
+
+            }
+
+            //yaw.setPower(gamepad2.left_stick_x);
 
 
             Rotation = -gamepad1.right_stick_x * 0.5;
             FB = gamepad1.left_stick_y;
             LR = -gamepad1.left_stick_x * 1.2;
 
-            double mFLPower = FB + LR + Rotation;
+            double mFLPower = FB - LR + Rotation;
             double mFRPower = FB - LR - Rotation;
-            double mBLPower = FB - LR + Rotation;
+            double mBLPower = FB + LR + Rotation;
             double mBRPower = FB + LR - Rotation;
 
             mFL.setPower(mFLPower);
@@ -150,6 +172,10 @@ public class TurretTeleOp extends LinearOpMode {
             mBR.setPower(mBRPower);
 
             telemetry.addData("Yaw_Position", yaw.getCurrentPosition());
+            telemetry.addData("Yaw_Power", yaw.getPower());
+            telemetry.addData("Left Stick X", gamepad2.left_stick_x);
+         //
+            telemetry.update();
 
         }
     }

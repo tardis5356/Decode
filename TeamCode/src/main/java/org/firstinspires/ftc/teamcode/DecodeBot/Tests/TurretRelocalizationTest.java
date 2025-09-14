@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
+
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
@@ -16,6 +19,7 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -37,14 +41,20 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
+
+@Config
+@TeleOp(name = "TurretRelocalizationTest", group = "AGen1")
+
 public class TurretRelocalizationTest extends CommandOpMode {
     private GamepadEx driver1, driver2;
 
     int desiredTagID;
 
-
+    public static Boolean targetFound = false;
     public double turretBearing;
     AprilTagDetection detectedTag;
+
+    Turret turret;
 
     //private IntakeInCommand intakeInCommand;
 
@@ -79,6 +89,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
+    AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     int visionOutputPosition = 1;
@@ -87,9 +98,12 @@ public class TurretRelocalizationTest extends CommandOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
 
+
     @Override
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
+
+
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         //Removes previous Commands from scheduler
@@ -111,18 +125,27 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
         GlobalVariables.aColor = "red";
 
+        turret = new Turret(hardwareMap);
+
+
 
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
 
 
-        AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
+
 
 
         VisionPortal portal = new VisionPortal.Builder()
                 .addProcessors(aTagP)
                 .setCameraResolution(new Size(imgWidth, imgHeight))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
+
+        portal.setProcessorEnabled(aTagP, true);
+
+
+
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.B))
                 .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "red"));
@@ -137,7 +160,6 @@ public class TurretRelocalizationTest extends CommandOpMode {
     public void run() {
         super.run();
 
-        telemetry.addData("preview on/off", "... Camera Stream\n");
 
         if (GlobalVariables.aColor == "red") {
             desiredTagID = 24;
@@ -146,7 +168,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
             desiredTagID = 20;
         }
 
-        AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
+
 
         List<AprilTagDetection> currentDetections = aTagP.getDetections();
 
@@ -157,19 +179,21 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
 
                 detectedTag = detection;
+                targetFound = true;
                 break;  // don't look any further.
+            }else {
+                targetFound = false;
             }
         }
 
-        if (detectedTag.id == desiredTagID) {
-
+        if (targetFound && detectedTag != null) {
             turretBearing = detectedTag.ftcPose.bearing;
-
-
+            turret.targetPosition = turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
+            telemetry.addData("Bearing ", detectedTag.ftcPose.bearing);
         }
 
 
-        Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
+
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
@@ -191,9 +215,9 @@ public class TurretRelocalizationTest extends CommandOpMode {
         mBL.setPower(mBLPower);
         mBR.setPower(mBRPower);
 
-        telemetry.addData("# of detections: ", currentDetections.size());
 
-        telemetry.addData("localize6", RelocalizationCommand.relocalize(currentDetections, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
+//
+//        telemetry.addData("localize6", RelocalizationCommand.relocalize(currentDetections, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
         telemetry.update();
     }
 
