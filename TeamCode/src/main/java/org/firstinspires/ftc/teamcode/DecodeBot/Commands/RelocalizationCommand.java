@@ -119,7 +119,7 @@ public class RelocalizationCommand extends CommandBase {
             return null;
 
         // Return average pose from all visible tags
-        return allianceCoordinate(new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad * (180/Math.PI)));
+        return new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad);
     }
 
     public RelocalizationCommand(MecanumDrive drive,  RRSubsystem rrSubsystem, AprilTagProcessor aprilTagProcessor, Telemetry telemetry) {
