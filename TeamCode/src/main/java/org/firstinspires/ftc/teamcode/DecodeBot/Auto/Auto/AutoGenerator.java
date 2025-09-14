@@ -33,7 +33,7 @@ public class AutoGenerator {
     }
 
     private static SequentialCommandGroup branch1(int choice, Pose2d startPos, RRSubsystem rr) {
-        if (startPos == bigStartPos){
+
             switch (choice) {
                 case 0:
                     return new SequentialCommandGroup(
@@ -50,25 +50,7 @@ public class AutoGenerator {
                 default:
                     return new SequentialCommandGroup(); // empty
             }
-        }
-        if (startPos == smallStartPos){
-            switch (choice) {
-                case 0:
-                    return new SequentialCommandGroup(
-                            /*Commands*/
-                    );
-                case 1:
-                    return new SequentialCommandGroup(
-                            /*Commands*/
-                    );
-                case 2:
-                    return new SequentialCommandGroup(
-                            /*Commands*/
-                    );
-                default:
-                    return new SequentialCommandGroup(); // empty
-            }
-        } else return new SequentialCommandGroup();
+
     }
 
     private static SequentialCommandGroup branch2(int choice, RRSubsystem rr) {

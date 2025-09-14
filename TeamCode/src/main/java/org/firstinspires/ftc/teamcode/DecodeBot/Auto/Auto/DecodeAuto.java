@@ -34,7 +34,7 @@ public class DecodeAuto extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
     private RRSubsystem rrSubsystem;
-    Pose2d startPos;
+    public static Pose2d startPos;
 
     // Selection system
     private int currentSet = 0; // which set you’re editing (0–2)
@@ -43,7 +43,7 @@ public class DecodeAuto extends OpMode {
     private boolean dpadDownPressed = false;
 
     private final String[][] autoNames = {
-            {"Set1-A", "Set1-B", "Set1-C"},
+            {"Set1-Mark1", "Set1-Mark2", "Set1-Mark3"},
             {"Set2-A", "Set2-B", "Set2-C"},
             {"Set3-A", "Set3-B", "Set3-C"}
     };
@@ -68,7 +68,7 @@ public class DecodeAuto extends OpMode {
 
         if (gamepad2.dpad_up) {
            startPos = bigStartPos;
-        } else if (gamepad2.b) {
+        } else if (gamepad2.dpad_down) {
             startPos = smallStartPos;
         }
 
@@ -110,7 +110,8 @@ public class DecodeAuto extends OpMode {
     public void start() {
 
         drive = new MecanumDrive(hardwareMap, startPos);
-        generateTrajectories(drive);
+
+        generateTrajectories(drive, choices[0]);
 
         runtime.reset();
 
