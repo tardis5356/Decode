@@ -73,8 +73,8 @@ public class TurretRelocalizationTest extends CommandOpMode {
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
 
 
-    static int imgHeight = 896;
-    static int imgWidth = 1600;
+    static int imgHeight = 480;//480
+    static int imgWidth = 640;//640
     //below we create a new object instance of all the subsystem classes
     //gripper
 
@@ -91,7 +91,9 @@ public class TurretRelocalizationTest extends CommandOpMode {
     private DcMotor rightDrive = null;
     AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+    public static double fps;
 
+    public static VisionPortal portal;
     int visionOutputPosition = 1;
 
 
@@ -129,13 +131,13 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
 
 
-        telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
+        telemetry.setMsTransmissionInterval(1);   // Speed up telemetry updates, Just use for debugging.
 
 
 
 
 
-        VisionPortal portal = new VisionPortal.Builder()
+        portal = new VisionPortal.Builder()
                 .addProcessors(aTagP)
                 .setCameraResolution(new Size(imgWidth, imgHeight))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
@@ -172,24 +174,39 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
         List<AprilTagDetection> currentDetections = aTagP.getDetections();
 
-        for (AprilTagDetection detection : currentDetections) {
 
-            //  Check to see if we want to track towards this tag.
-            if ((detection.id == desiredTagID)) {
+    for (AprilTagDetection detection : currentDetections) {
+
+        //  Check to see if we want to track towards this tag.
+        if ((detection.id == desiredTagID)) {
 
 
-                detectedTag = detection;
-                targetFound = true;
-                break;  // don't look any further.
-            }else {
-                targetFound = false;
-            }
+            detectedTag = detection;
+            targetFound = true;
+            break;  // don't look any further.
+        }else {
+            targetFound = false;
         }
+    }
+
+
 
         if (targetFound && detectedTag != null) {
-            turretBearing = detectedTag.ftcPose.bearing;
-            turret.targetPosition = turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
-            telemetry.addData("Bearing ", detectedTag.ftcPose.bearing);
+            double bearingError = detectedTag.ftcPose.bearing;
+
+            // convert bearing error (degrees) to encoder ticks
+            double tickOffset = bearingError * TURRET_DEGREE_TO_TICK_MULTIPLIER;
+
+            // smoothly update target position so turret moves toward 0° bearing
+            turret.setTargetPosition(turret.getCurrentPosition() - tickOffset);
+
+            telemetry.addData("Bearing error", bearingError);
+            telemetry.addData("Target pos", turret.targetPosition);
+            telemetry.addData("Turret encoder", turret.getCurrentPosition());
+            telemetry.addData("PID output", turret.getCurrentMotorPower());
+        }else {
+            // If no tag, just hold current position
+            turret.setTargetPosition(turret.getCurrentPosition());
         }
 
 
@@ -215,7 +232,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
         mBL.setPower(mBLPower);
         mBR.setPower(mBRPower);
 
-
+        telemetry.addData("Camera FPS", portal.getFps());
 //
 //        telemetry.addData("localize6", RelocalizationCommand.relocalize(currentDetections, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
         telemetry.update();

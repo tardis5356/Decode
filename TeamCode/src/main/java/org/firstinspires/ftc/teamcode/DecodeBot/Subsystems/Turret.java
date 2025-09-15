@@ -62,7 +62,7 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         // runs every loop
 
-        motorPower = -getCurrentPID();
+        motorPower = getCurrentPID();
 
         mT.setPower(motorPower);
 
