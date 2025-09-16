@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.PIDDisabled;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
@@ -52,9 +53,11 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
     public static Boolean targetFound = false;
     public double turretBearing;
-    AprilTagDetection detectedTag;
+    AprilTagDetection detectedTag = null;
 
     Turret turret;
+
+    private long lastDetectionTime = 0; // nanoseconds
 
     //private IntakeInCommand intakeInCommand;
 
@@ -108,20 +111,16 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        //Removes previous Commands from scheduler
-        //We call it at the start of TeleOp as it clears lingering autocommands that make the intake freak out
-        //Make sure it is not called in a loop since it will clear all the triggers every frame. Be very careful. It is a kill switch.
-        CommandScheduler.getInstance().reset();
+               CommandScheduler.getInstance().reset();
 
-        //sets the digital position of the robot to intake for the deposit to state command
-        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
+               mFL = hardwareMap.get(DcMotorEx.class, "mFL");
         mFR = hardwareMap.get(DcMotorEx.class, "mFR");
         mBL = hardwareMap.get(DcMotorEx.class, "mBL");
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
         imu = hardwareMap.get(IMU.class, "imu");
 
-        //init controllers
+
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
@@ -131,8 +130,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
 
 
-        telemetry.setMsTransmissionInterval(1);   // Speed up telemetry updates, Just use for debugging.
-
+        telemetry.setMsTransmissionInterval(1);
 
 
 
@@ -158,10 +156,10 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
     }
 
-    //this is the main run loop
+
+    @Override
     public void run() {
         super.run();
-
 
         if (GlobalVariables.aColor == "red") {
             desiredTagID = 24;
@@ -170,71 +168,61 @@ public class TurretRelocalizationTest extends CommandOpMode {
             desiredTagID = 20;
         }
 
-
-
         List<AprilTagDetection> currentDetections = aTagP.getDetections();
+        boolean tagThisFrame = false;
 
-
-    for (AprilTagDetection detection : currentDetections) {
-
-        //  Check to see if we want to track towards this tag.
-        if ((detection.id == desiredTagID)) {
-
-
-            detectedTag = detection;
-            targetFound = true;
-            break;  // don't look any further.
-        }else {
-            targetFound = false;
+        for (AprilTagDetection detection : currentDetections) {
+            if (detection.id == desiredTagID) {
+                detectedTag = detection;
+                targetFound = true;
+                tagThisFrame = true;
+                lastDetectionTime = System.nanoTime();
+                break;
+            }
         }
-    }
 
 
+        if (!tagThisFrame) {
+            long timeSinceLast = System.nanoTime() - lastDetectionTime;
+            if (timeSinceLast > 200_000_000) { // 200ms timeout
+                targetFound = false;
+                detectedTag = null;
+            }
+        }
 
         if (targetFound && detectedTag != null) {
             double bearingError = detectedTag.ftcPose.bearing;
-
-            // convert bearing error (degrees) to encoder ticks
             double tickOffset = bearingError * TURRET_DEGREE_TO_TICK_MULTIPLIER;
-
-            // smoothly update target position so turret moves toward 0° bearing
             turret.setTargetPosition(turret.getCurrentPosition() - tickOffset);
 
             telemetry.addData("Bearing error", bearingError);
-            telemetry.addData("Target pos", turret.targetPosition);
+            telemetry.addData("Target pos", turret.getTargetPosition());
             telemetry.addData("Turret encoder", turret.getCurrentPosition());
             telemetry.addData("PID output", turret.getCurrentMotorPower());
-        }else {
-            // If no tag, just hold current position
+        } else {
+
             turret.setTargetPosition(turret.getCurrentPosition());
         }
-
-
-
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
         FB = cubicScaling(gamepad1.left_stick_y);
         LR = cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
-        //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
-
-
         double mFLPower = FB + LR + Rotation;
         double mFRPower = FB - LR - Rotation;
         double mBLPower = FB - LR + Rotation;
         double mBRPower = FB + LR - Rotation;
-        //actually sets the motor powers
-
 
         mFL.setPower(mFLPower);
         mFR.setPower(mFRPower);
         mBL.setPower(mBLPower);
         mBR.setPower(mBRPower);
 
-        telemetry.addData("Camera FPS", portal.getFps());
-//
-//        telemetry.addData("localize6", RelocalizationCommand.relocalize(currentDetections, imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS), telemetry));
+
+        telemetry.addData("Target Found", targetFound);
+        telemetry.addData("Time Since Last (ms)", (System.nanoTime() - lastDetectionTime) / 1e6);
+        telemetry.addData("FPS", portal.getFps());
         telemetry.update();
     }
 

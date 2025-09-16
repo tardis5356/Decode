@@ -30,7 +30,7 @@ public class Turret extends SubsystemBase {
     public double motorPower;//stores the final desired motor power, which is then fed into the motors
     boolean tooFar;
 
-    public boolean PIDEnabled;
+    public static boolean PIDDisabled = false;
 
 
     //hardwaremap virtual components to configuration
@@ -61,8 +61,12 @@ public class Turret extends SubsystemBase {
 
     public void periodic() {
         // runs every loop
+if (PIDDisabled == false){
+    motorPower = getCurrentPID();
+} else {
+    motorPower = 0;
+}
 
-        motorPower = getCurrentPID();
 
         mT.setPower(motorPower);
 
