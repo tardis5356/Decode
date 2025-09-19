@@ -76,8 +76,8 @@ public class TurretRelocalizationTest extends CommandOpMode {
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
 
 
-    static int imgHeight = 480;//480
-    static int imgWidth = 640;//640
+    static int imgHeight = 600;//480
+    static int imgWidth = 800;//640
     //below we create a new object instance of all the subsystem classes
     //gripper
 
@@ -120,6 +120,8 @@ public class TurretRelocalizationTest extends CommandOpMode {
 
         imu = hardwareMap.get(IMU.class, "imu");
 
+        mBL.setDirection(DcMotorSimple.Direction.REVERSE);
+        mFL.setDirection(DcMotorSimple.Direction.REVERSE);
 
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
@@ -138,6 +140,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
         portal = new VisionPortal.Builder()
                 .addProcessors(aTagP)
                 .setCameraResolution(new Size(imgWidth, imgHeight))
+
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
@@ -176,6 +179,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
                 detectedTag = detection;
                 targetFound = true;
                 tagThisFrame = true;
+                PIDDisabled = false;
                 lastDetectionTime = System.nanoTime();
                 break;
             }
@@ -201,7 +205,7 @@ public class TurretRelocalizationTest extends CommandOpMode {
             telemetry.addData("PID output", turret.getCurrentMotorPower());
         } else {
 
-            turret.setTargetPosition(turret.getCurrentPosition());
+            PIDDisabled = true;
         }
 
 
@@ -209,10 +213,11 @@ public class TurretRelocalizationTest extends CommandOpMode {
         FB = cubicScaling(gamepad1.left_stick_y);
         LR = cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
-        double mFLPower = FB + LR + Rotation;
+        double mFLPower = FB - LR + Rotation;
         double mFRPower = FB - LR - Rotation;
-        double mBLPower = FB - LR + Rotation;
+        double mBLPower = FB + LR + Rotation;
         double mBRPower = FB + LR - Rotation;
+
 
         mFL.setPower(mFLPower);
         mFR.setPower(mFRPower);
