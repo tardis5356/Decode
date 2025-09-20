@@ -22,7 +22,7 @@ public class TurretFlipCommand extends CommandBase {
 
     @Override
     public void initialize() { // runs once
-        turret.tracking = false;
+      //  turret.tracking = false;
 
 
 
@@ -53,7 +53,7 @@ public class TurretFlipCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        Turret.tracking = true;
+        //Turret.tracking = true;
     }
 
 }

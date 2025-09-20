@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot;
 
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
 
@@ -242,9 +242,9 @@ public class DecodeTeleOp extends CommandOpMode {
         //AprilTag converter equation from bearing to encoder ticks
         //
 
-        if (tracking == true) {
-            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
-        }
+//        if (tracking == true) {
+//            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
+//        }
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
