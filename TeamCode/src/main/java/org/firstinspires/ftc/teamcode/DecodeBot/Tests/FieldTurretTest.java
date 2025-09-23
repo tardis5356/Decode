@@ -251,10 +251,17 @@ public static int desiredTagID;
         String numFormat = "%.2f";
 
         // Negative because the robot is rotating, not the field
-        double flippedHeading = -headingRad;
+
 
         double finalX = 0;
         double finalY = 0;
+
+        double theta_turret = Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER;
+        double flippedHeading = -headingRad;
+
+
+        telemetry.addData("theta_turret", numFormat, Math.toDegrees(theta_turret));
+        telemetry.addData("flipped_heading", numFormat, Math.toDegrees(flippedHeading));
 
         for (AprilTagDetection detection : detections) {
             Pose2d tagPose = vectorFToVector2d(detection.metadata.fieldPosition);
@@ -269,23 +276,32 @@ public static int desiredTagID;
 
 
             // Turret angle (in radians)
-            double theta_turret = Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER;
+
+
 
             // Calculate camera position in robot frame (robot → camera)
             //TODO check signs
-            double x_robotToCamera = TURRET_OFFSET_X - CAMERA_RADIUS * Math.cos(theta_turret);
-            double y_robotToCamera = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret);
+//            double x_tagToTurret = TURRET_OFFSET_X - CAMERA_RADIUS * Math.cos(theta_turret);
+//            double y_tagToTurret = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret);
 
-            telemetry.addData("x_robotToCamera", numFormat, x_robotToCamera);
-            telemetry.addData("y_robotToCamera", numFormat, y_robotToCamera);
-            // Compute tag position in robot frame (robot → tag)
+            double x_tagToTurret = x_cameraToTag * Math.cos(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.sin(theta_turret);
+            double y_tagToTurret =  (-x_cameraToTag * Math.sin(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.cos(theta_turret)) ;
+
+
+            telemetry.addData("x_tagToTurret", numFormat, x_tagToTurret);
+            telemetry.addData("y_tagToTurret", numFormat, y_tagToTurret);
+//            // Compute tag position in robot frame (robot → tag)
             // Apply turret + camera transform + rotate into robot frame
             //TODO Check if equation is correct
-            double x_botToTag = x_robotToCamera + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
-            double y_botToTag = y_robotToCamera + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
+//            double x_turretToBot =/* x_tagToTurret*/ + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
+//            double y_turretToBot = /* y_tagToTurret*/ + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
 
-            telemetry.addData("x_botToTag", numFormat, x_botToTag);
-            telemetry.addData("y_botToTag", numFormat, y_botToTag);
+            double x_turretToBot = x_tagToTurret + TURRET_OFFSET_X;
+            double y_turretToBot = y_tagToTurret + TURRET_OFFSET_Y;
+
+
+            telemetry.addData("x_turretToBot", numFormat, x_turretToBot);
+            telemetry.addData("y_turretToBot", numFormat, y_turretToBot);
 
             // Get tag position on field
             double x_tagOnField = tagPose.position.x;  // in inches
@@ -295,8 +311,8 @@ public static int desiredTagID;
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
 
             // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = x_tagOnField - x_botToTag;
-            double y_botOnField = y_tagOnField - y_botToTag;
+            double x_botOnField = (x_turretToBot * Math.cos(flippedHeading) + y_turretToBot *Math.sin(flippedHeading)) + x_tagOnField;
+            double y_botOnField =  (-x_turretToBot * Math.sin(flippedHeading) + y_turretToBot *Math.cos(flippedHeading)) + y_tagOnField ;
 
             telemetry.addData("x_botOnField", numFormat, x_botOnField);
             telemetry.addData("y_botOnField", numFormat, y_botOnField);
