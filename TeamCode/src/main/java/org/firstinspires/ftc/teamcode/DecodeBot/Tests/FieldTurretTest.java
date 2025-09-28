@@ -61,8 +61,8 @@ public class FieldTurretTest extends CommandOpMode {
     private boolean targetFound = false;
     private long lastDetectionTime = 0; // nanoseconds
     private static final double TURRET_ZERO_OFFSET = Math.toRadians(90);
-    private static final int IMG_HEIGHT = 600;
-    private static final int IMG_WIDTH = 800;
+    private static final int IMG_HEIGHT = 720;
+    private static final int IMG_WIDTH = 1280;
     private static final long TAG_TIMEOUT_NS = 1_000_000_000; //  1 sec
 
     // Field constants
@@ -273,7 +273,8 @@ public static int desiredTagID;
             double x_cameraToTag = ftcPose.x;  // inches (FTC uses x right, y down, z forward)
             double y_cameraToTag = ftcPose.y;
 
-
+            telemetry.addData("x_cameraToTag", numFormat, x_cameraToTag);
+            telemetry.addData("y_cameraToTag", numFormat, y_cameraToTag);
 
             // Turret angle (in radians)
 
@@ -285,7 +286,7 @@ public static int desiredTagID;
 //            double y_tagToTurret = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret);
 
             double x_tagToTurret = x_cameraToTag * Math.cos(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.sin(theta_turret);
-            double y_tagToTurret =  (-x_cameraToTag * Math.sin(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.cos(theta_turret)) ;
+            double y_tagToTurret =  (-x_cameraToTag * Math.sin(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.cos(theta_turret));
 
 
             telemetry.addData("x_tagToTurret", numFormat, x_tagToTurret);
@@ -293,15 +294,15 @@ public static int desiredTagID;
 //            // Compute tag position in robot frame (robot → tag)
             // Apply turret + camera transform + rotate into robot frame
             //TODO Check if equation is correct
-//            double x_turretToBot =/* x_tagToTurret*/ + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
-//            double y_turretToBot = /* y_tagToTurret*/ + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
+//            double x_tagToBot =/* x_tagToTurret*/ + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
+//            double y_tagToBot = /* y_tagToTurret*/ + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
 
-            double x_turretToBot = x_tagToTurret + TURRET_OFFSET_X;
-            double y_turretToBot = y_tagToTurret + TURRET_OFFSET_Y;
+            double x_tagToBot = x_tagToTurret + TURRET_OFFSET_X;
+            double y_tagToBot = y_tagToTurret + TURRET_OFFSET_Y;
 
 
-            telemetry.addData("x_turretToBot", numFormat, x_turretToBot);
-            telemetry.addData("y_turretToBot", numFormat, y_turretToBot);
+            telemetry.addData("x_tagToBot", numFormat, x_tagToBot);
+            telemetry.addData("y_tagToBot", numFormat, y_tagToBot);
 
             // Get tag position on field
             double x_tagOnField = tagPose.position.x;  // in inches
@@ -311,8 +312,8 @@ public static int desiredTagID;
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
 
             // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = (x_turretToBot * Math.cos(flippedHeading) + y_turretToBot *Math.sin(flippedHeading)) + x_tagOnField;
-            double y_botOnField =  (-x_turretToBot * Math.sin(flippedHeading) + y_turretToBot *Math.cos(flippedHeading)) + y_tagOnField ;
+            double x_botOnField = (x_tagToBot * Math.cos(flippedHeading) + y_tagToBot *Math.sin(flippedHeading)) + x_tagOnField;
+            double y_botOnField =  (-x_tagToBot * Math.sin(flippedHeading) + y_tagToBot *Math.cos(flippedHeading)) + y_tagOnField ;
 
             telemetry.addData("x_botOnField", numFormat, x_botOnField);
             telemetry.addData("y_botOnField", numFormat, y_botOnField);

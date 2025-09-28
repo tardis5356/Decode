@@ -28,7 +28,9 @@ public class RelocalizeTest extends OpMode {
     private RRSubsystem rrSubsystem;
     private Turret turret ;
 
-    private AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
+    public double fx = 903.5, fy =903.5, cx =  640, cy = 360;
+
+    private AprilTagProcessor aTagP = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
     private VisionPortal portal;
 
     @Override
@@ -39,6 +41,7 @@ public class RelocalizeTest extends OpMode {
         mBL = hardwareMap.get(DcMotorEx.class, "mBL");
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
+
         // Reverse motors if needed
         mFL.setDirection(DcMotorSimple.Direction.REVERSE);
         mBL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -46,13 +49,16 @@ public class RelocalizeTest extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(0)));
 turret = new Turret(hardwareMap);
+
         // Vision
         portal = new VisionPortal.Builder()
                 .addProcessors(aTagP)
-                .setCameraResolution(new Size(800, 600))
+                .setCameraResolution(new Size(1280, 720))
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .build();
+
+
 
         portal.setProcessorEnabled(aTagP, true);
 
@@ -72,7 +78,7 @@ turret = new Turret(hardwareMap);
         mBL.setPower(FB - LR + rot);
         mBR.setPower(FB + LR - rot);
 
-        drive.updatePoseEstimate();
+     //   drive.updatePoseEstimate();
 
         // Get detections
         List<AprilTagDetection> detections = aTagP.getDetections();
