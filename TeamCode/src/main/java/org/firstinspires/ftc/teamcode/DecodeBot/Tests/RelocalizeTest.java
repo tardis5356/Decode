@@ -33,6 +33,9 @@ public class RelocalizeTest extends OpMode {
     private AprilTagProcessor aTagP = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
     private VisionPortal portal;
 
+    //TODO Virtual linkage with camera/turret and the drivetrain ---- LATE SEASON
+    //TODO Make boolean value that when robot stops/slows down, relocalize and stop adjusting the turret
+
     @Override
     public void init() {
         // Hardware

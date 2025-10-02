@@ -186,10 +186,8 @@ public static int desiredTagID;
 
     private double lastTurretAngle = 0.0; // radians
 
-    /** Unwrap angle so it’s continuous (no jumps at ±PI). */
     private double unwrapAngle(double currentAngle, double lastAngle) {
         double delta = currentAngle - lastAngle;
-        // bring delta into [-PI, PI]
         while (delta <= -Math.PI) delta += 2.0 * Math.PI;
         while (delta >  Math.PI) delta -= 2.0 * Math.PI;
         return lastAngle + delta;
@@ -211,7 +209,7 @@ public static int desiredTagID;
             // Convert to turret-relative robot frame + zero offset
             double rawTurretAngle = desiredFieldAngle - robotYaw + TURRET_ZERO_OFFSET;
 
-            // Unwrap so it stays continuous (0–360–720… instead of snapping)
+            // Unwrap so it stays continuous
             double desiredTurretAngleRobot = unwrapAngle(rawTurretAngle, lastTurretAngle);
             lastTurretAngle = desiredTurretAngleRobot;
 
