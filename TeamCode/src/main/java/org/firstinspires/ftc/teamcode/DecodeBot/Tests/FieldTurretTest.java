@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.T
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem.imu;
+import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
 import android.util.Size;
 
@@ -26,6 +27,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
@@ -94,6 +98,7 @@ public static int desiredTagID;
 
         rrSubsystem.setStartingOffsetDegs(270);
 
+
         // Vision init
         portal = new VisionPortal.Builder()
                 .addProcessors(aTagP)
@@ -142,6 +147,7 @@ public static int desiredTagID;
 
         if (detectedTag != null) {
             // Update goal position from tag metadata
+            //Fix later the tag id
             Pose2d tagPose = vectorFToPose2d(detectedTag.metadata.fieldPosition);
             GOAL_FIELD_X = tagPose.position.x;
             GOAL_FIELD_Y = tagPose.position.y;
@@ -229,9 +235,9 @@ public static int desiredTagID;
 
     private static Pose2d vectorFToPose2d(VectorF vector) {
         return new Pose2d(
-                new Vector2d(vector.get(0), vector.get(1)),
-                Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())
+                new Vector2d(vector.get(0), vector.get(1)), Double.NaN
         );
+
     }
 
     public static Pose2d relocalize(List<AprilTagDetection> detections,
@@ -249,12 +255,12 @@ public static int desiredTagID;
         double finalY = 0;
         double finalHeadingDeg = 0;
 
-        double theta_turret = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        double theta_turret_RAD = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
         double flippedHeading = -imuHeadingRad;
 
 
-        telemetry.addData("theta_turret", numFormat, Math.toDegrees(theta_turret));
-        telemetry.addData("flipped_heading", numFormat, Math.toDegrees(flippedHeading));
+        telemetry.addData("theta_turret_DEG", numFormat, Math.toDegrees(theta_turret_RAD));
+      //  telemetry.addData("flipped_heading", numFormat, Math.toDegrees(flippedHeading));
 
         for (AprilTagDetection detection : detections) {
             Pose2d tagPose = vectorFToPose2d(detection.metadata.fieldPosition);
@@ -265,11 +271,11 @@ public static int desiredTagID;
             // Tag position in camera frame
             double x_cameraToTag = ftcPose.x;  // inches (FTC uses x right, y down, z forward)
             double y_cameraToTag = ftcPose.y;
-            double yaw_cameraToTag = ftcPose.yaw;
+            double yaw_cameraToTag_DEG = ftcPose.yaw;
 
             telemetry.addData("x_cameraToTag", numFormat, x_cameraToTag);
             telemetry.addData("y_cameraToTag", numFormat, y_cameraToTag);
-            telemetry.addData("yaw_cameraToTag", numFormat, yaw_cameraToTag);
+            telemetry.addData("yaw_cameraToTag_DEG", numFormat, yaw_cameraToTag_DEG);
 
             // Turret angle (in radians)
 
@@ -277,14 +283,14 @@ public static int desiredTagID;
 
             // Calculate camera position in robot frame (robot → camera)
             //TODO check signs
-//            double x_tagToTurret = TURRET_OFFSET_X - CAMERA_RADIUS * Math.cos(theta_turret);
-//            double y_tagToTurret = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret);
+//            double x_tagToTurret = TURRET_OFFSET_X - CAMERA_RADIUS * Math.cos(theta_turret_RAD);
+//            double y_tagToTurret = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret_RAD);
 //First translate to turret center
            y_cameraToTag += CAMERA_RADIUS;
             //Next rotate to bot/turret coordinate system
             //TODO Tag to turret numbers aren't always working
-            double x_tagToTurret = x_cameraToTag * Math.cos(Math.PI/2 - theta_turret) + (y_cameraToTag) * Math.sin(Math.PI/2 - theta_turret);
-            double y_tagToTurret =  -x_cameraToTag * Math.sin(Math.PI/2 - theta_turret) + (y_cameraToTag) * Math.cos(Math.PI/2 - theta_turret);
+            double x_tagToTurret = x_cameraToTag * Math.cos(Math.PI/2 - theta_turret_RAD) + (y_cameraToTag) * Math.sin(Math.PI/2 - theta_turret_RAD);
+            double y_tagToTurret =  -x_cameraToTag * Math.sin(Math.PI/2 - theta_turret_RAD) + (y_cameraToTag) * Math.cos(Math.PI/2 - theta_turret_RAD);
 
 
 
@@ -294,7 +300,7 @@ public static int desiredTagID;
             //Shift from turret to robot frame
             double x_tagToBot = x_tagToTurret + TURRET_OFFSET_X;
             // changed symbol on the ytagtorobot
-            double y_tagToBot = y_tagToTurret - TURRET_OFFSET_Y;
+            double y_tagToBot = y_tagToTurret + TURRET_OFFSET_Y;
 
 
             telemetry.addData("x_tagToBot", numFormat, x_tagToBot);
@@ -303,28 +309,52 @@ public static int desiredTagID;
             // Get tag position on field
             double x_tagOnField = tagPose.position.x;  // in inches
             double y_tagOnField = tagPose.position.y;
+            double heading_tagOnField_RAD;
+
+            switch (detection.id){
+                // If red or blue set to designated apriltag angle if anything else don't relocalize
+
+                case 20://blue
+                    heading_tagOnField_RAD = Math.toRadians(35.950057);
+                    break;
+                case 24://red
+                    heading_tagOnField_RAD = Math.toRadians(-35.950057);
+                    break;
+
+                default:
+                   return null;
+
+            }
+
+
+
 
             telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
+            telemetry.addData("heading_tagOnField_RAD", numFormat, heading_tagOnField_RAD);
 
+//Calculates heading on field
+            double heading_botOnField_RAD = (heading_tagOnField_RAD + Math.PI) + Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
             // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = (x_tagToBot * Math.cos(flippedHeading) + y_tagToBot *Math.sin(flippedHeading)) + x_tagOnField;
-            double y_botOnField =  (-x_tagToBot * Math.sin(flippedHeading) + y_tagToBot *Math.cos(flippedHeading)) + y_tagOnField ;
+            double x_botOnField = (x_tagToBot * Math.cos(heading_botOnField_RAD) + y_tagToBot *Math.sin(heading_botOnField_RAD)) + x_tagOnField;
+            double y_botOnField =  (-x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot *Math.cos(heading_botOnField_RAD)) + y_tagOnField ;
 
             telemetry.addData("x_botOnField", numFormat, x_botOnField);
             telemetry.addData("y_botOnField", numFormat, y_botOnField);
+            telemetry.addData("heading_botOnField_DEG", numFormat, Math.toDegrees(heading_botOnField_RAD));
 
+            finalHeadingDeg += Math.toDegrees(heading_botOnField_RAD);
             finalX += x_botOnField;
             finalY += y_botOnField;
 
             telemetry.addLine();
         }
-
+//Remove???
         if (finalX == 0)
             return null;
 
         // Return average pose from all visible tags
-        return new Pose2d(finalX / detections.size(), finalY / detections.size(), imuHeadingRad);
+        return new Pose2d(finalX / detections.size(), finalY / detections.size(), finalHeadingDeg);
 
     }
 
