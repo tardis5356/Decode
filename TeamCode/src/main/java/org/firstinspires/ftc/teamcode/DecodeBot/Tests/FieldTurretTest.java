@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem.imu;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.PIDDisabled;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
 
 import android.util.Size;
 
@@ -23,15 +20,12 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
@@ -148,7 +142,7 @@ public static int desiredTagID;
 
         if (detectedTag != null) {
             // Update goal position from tag metadata
-            Pose2d tagPose = vectorFToVector2d(detectedTag.metadata.fieldPosition);
+            Pose2d tagPose = vectorFToPose2d(detectedTag.metadata.fieldPosition);
             GOAL_FIELD_X = tagPose.position.x;
             GOAL_FIELD_Y = tagPose.position.y;
             lastDetectionTime = System.nanoTime();
@@ -233,7 +227,7 @@ public static int desiredTagID;
 
 
 
-    private static Pose2d vectorFToVector2d(VectorF vector) {
+    private static Pose2d vectorFToPose2d(VectorF vector) {
         return new Pose2d(
                 new Vector2d(vector.get(0), vector.get(1)),
                 Math.toRadians(imu.getRobotYawPitchRollAngles().getYaw())
@@ -241,7 +235,7 @@ public static int desiredTagID;
     }
 
     public static Pose2d relocalize(List<AprilTagDetection> detections,
-                                    double headingRad,
+                                    double imuHeadingRad,
                                     Telemetry telemetry) {
         List<Double> x = new ArrayList<>();
         List<Double> y = new ArrayList<>();
@@ -253,16 +247,17 @@ public static int desiredTagID;
 
         double finalX = 0;
         double finalY = 0;
+        double finalHeadingDeg = 0;
 
-        double theta_turret = Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER;
-        double flippedHeading = -headingRad;
+        double theta_turret = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        double flippedHeading = -imuHeadingRad;
 
 
         telemetry.addData("theta_turret", numFormat, Math.toDegrees(theta_turret));
         telemetry.addData("flipped_heading", numFormat, Math.toDegrees(flippedHeading));
 
         for (AprilTagDetection detection : detections) {
-            Pose2d tagPose = vectorFToVector2d(detection.metadata.fieldPosition);
+            Pose2d tagPose = vectorFToPose2d(detection.metadata.fieldPosition);
             AprilTagPoseFtc ftcPose = detection.ftcPose;
 
             telemetry.addData("tag name", detection.metadata.name);
@@ -270,9 +265,11 @@ public static int desiredTagID;
             // Tag position in camera frame
             double x_cameraToTag = ftcPose.x;  // inches (FTC uses x right, y down, z forward)
             double y_cameraToTag = ftcPose.y;
+            double yaw_cameraToTag = ftcPose.yaw;
 
             telemetry.addData("x_cameraToTag", numFormat, x_cameraToTag);
             telemetry.addData("y_cameraToTag", numFormat, y_cameraToTag);
+            telemetry.addData("yaw_cameraToTag", numFormat, yaw_cameraToTag);
 
             // Turret angle (in radians)
 
@@ -282,21 +279,22 @@ public static int desiredTagID;
             //TODO check signs
 //            double x_tagToTurret = TURRET_OFFSET_X - CAMERA_RADIUS * Math.cos(theta_turret);
 //            double y_tagToTurret = TURRET_OFFSET_Y - CAMERA_RADIUS * Math.sin(theta_turret);
+//First translate to turret center
+           y_cameraToTag += CAMERA_RADIUS;
+            //Next rotate to bot/turret coordinate system
+            //TODO Tag to turret numbers aren't always working
+            double x_tagToTurret = x_cameraToTag * Math.cos(Math.PI/2 - theta_turret) + (y_cameraToTag) * Math.sin(Math.PI/2 - theta_turret);
+            double y_tagToTurret =  -x_cameraToTag * Math.sin(Math.PI/2 - theta_turret) + (y_cameraToTag) * Math.cos(Math.PI/2 - theta_turret);
 
-            double x_tagToTurret = x_cameraToTag * Math.cos(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.sin(theta_turret);
-            double y_tagToTurret =  (-x_cameraToTag * Math.sin(theta_turret) - (y_cameraToTag - CAMERA_RADIUS) * Math.cos(theta_turret));
 
 
             telemetry.addData("x_tagToTurret", numFormat, x_tagToTurret);
             telemetry.addData("y_tagToTurret", numFormat, y_tagToTurret);
-//            // Compute tag position in robot frame (robot → tag)
-            // Apply turret + camera transform + rotate into robot frame
-            //TODO Check if equation is correct
-//            double x_tagToBot =/* x_tagToTurret*/ + (x_cameraToTag * Math.cos(flippedHeading) - y_cameraToTag * Math.sin(flippedHeading));
-//            double y_tagToBot = /* y_tagToTurret*/ + (x_cameraToTag * Math.sin(flippedHeading) + y_cameraToTag * Math.cos(flippedHeading));
 
+            //Shift from turret to robot frame
             double x_tagToBot = x_tagToTurret + TURRET_OFFSET_X;
-            double y_tagToBot = y_tagToTurret + TURRET_OFFSET_Y;
+            // changed symbol on the ytagtorobot
+            double y_tagToBot = y_tagToTurret - TURRET_OFFSET_Y;
 
 
             telemetry.addData("x_tagToBot", numFormat, x_tagToBot);
@@ -326,7 +324,7 @@ public static int desiredTagID;
             return null;
 
         // Return average pose from all visible tags
-        return new Pose2d(finalX / detections.size(), finalY / detections.size(), headingRad);
+        return new Pose2d(finalX / detections.size(), finalY / detections.size(), imuHeadingRad);
 
     }
 
