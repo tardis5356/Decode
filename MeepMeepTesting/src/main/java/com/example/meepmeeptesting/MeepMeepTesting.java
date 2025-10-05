@@ -50,7 +50,7 @@ static String aColor = "blue";
 
 
         Image img = null;
-        try { img = ImageIO.read(new File("C:\\Users\\trant\\Downloads\\field-2025-official-fixed.png")); }
+        try { img = ImageIO.read(new File("C:\\Users\\trant\\Downloads\\field-2025-official.png")); }
         catch(IOException e) {}
 
         meepMeep.setBackground(img)

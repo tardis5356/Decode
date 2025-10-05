@@ -40,8 +40,8 @@ public class RRSubsystem extends SubsystemBase {
         imu.initialize(
                 new IMU.Parameters(
                         new RevHubOrientationOnRobot(
-                                RevHubOrientationOnRobot.LogoFacingDirection.UP   ,
-                                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD
+                                RevHubOrientationOnRobot.LogoFacingDirection.DOWN   ,
+                                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                         )
                 )
         );
