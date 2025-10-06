@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
+package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.UnUsed;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PDController;
@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 
 public class Spindex extends SubsystemBase {
 

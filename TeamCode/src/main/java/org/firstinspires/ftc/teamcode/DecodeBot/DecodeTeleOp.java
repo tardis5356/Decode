@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
@@ -24,11 +23,10 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
+        import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Lift;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Spindex;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.UnUsed.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -182,7 +180,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new InstantCommand(intake::in));
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" || Intake.intakeState == "in")
-                .whenActive(new InstantCommand(intake::out));
+                .whenActive(new InstantCommand(intake::oneOut));
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" || Intake.intakeState == "out")
                 .whenActive(new InstantCommand(intake::stop));

@@ -1,48 +1,76 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import android.graphics.Color;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake extends SubsystemBase {
 
+    DcMotorEx mI, mP;
 
-
-
-
-    DcMotorEx mI;
-
+    ColorSensor cSI, cSM, cSS;
 
     public static String intakeState = new String();
 
-    double motorPower = 0;
+    double intakePower = 0, pathPower = 0;
 
     public Intake(HardwareMap hardwareMap){
 
         mI = hardwareMap.get(DcMotorEx.class, "mI");
+        mP = hardwareMap.get(DcMotorEx.class, "mP");
 
+        cSI = hardwareMap.get(ColorSensor.class, "cSI");
+        cSM = hardwareMap.get(ColorSensor.class, "cSM");
+        cSS = hardwareMap.get(ColorSensor.class, "cSS");
 
 
     }
 
     @Override
     public void periodic(){
-     mI.setPower(motorPower);
+     mI.setPower(intakePower);
+     mP.setPower(pathPower);
     }
 
     public void in(){
-       motorPower = 1;
+       intakePower = 1;
+       pathPower = 1;
        intakeState = "in";
     }
 
-    public void out(){
-        motorPower = -1;
+    public void oneOut(){
+        intakePower = -1;
         intakeState = "out";
     }
 
+    public void allOut(){
+        intakePower = -1;
+        pathPower = -1;
+        intakeState = "out";
+    }
     public void stop(){
-        motorPower = 0;
+        intakePower = 0;
+        pathPower = 0;
         intakeState = "stop";
+    }
+
+    public String greenOrPurple(ColorSensor cs){
+        if (cs.red()>10){
+            return "P";
+        }
+        else if(cs.red()<=10){
+            return "G";
+        }
+        else{
+            return "V";
+        }
+    }
+
+    public void setCurrentArtifacts(){
+        GlobalVariables.currentArtifacts = greenOrPurple(cSS) + greenOrPurple(cSM) + greenOrPurple(cSI);
     }
 
 }

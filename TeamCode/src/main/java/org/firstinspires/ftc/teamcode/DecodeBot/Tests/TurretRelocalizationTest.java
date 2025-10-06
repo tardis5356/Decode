@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_DEGREE_TO_TICK_MULTIPLIER;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.PIDDisabled;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import android.util.Size;
@@ -14,10 +13,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -27,14 +23,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.DecodeBot.Commands.RelocalizationCommand;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Lift;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
