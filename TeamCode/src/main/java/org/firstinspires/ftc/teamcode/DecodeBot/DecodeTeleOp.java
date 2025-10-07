@@ -190,7 +190,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new SequentialCommandGroup(
                         new InstantCommand(lift::engagePTO),
                         new WaitCommand(250),
-                        new InstantCommand(() -> Lift.PTO_State = "engaged")
+                        new InstantCommand(() -> Lift.PTO_Engaged = "engaged")
                 ));
 
 
@@ -258,12 +258,12 @@ public class DecodeTeleOp extends CommandOpMode {
         double mBRPower = FB + LR - Rotation;
         //actually sets the motor powers
 
-        if (Lift.PTO_State == "disengaged") {
+        if (Lift.PTO_Engaged == "disengaged") {
             mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
             mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
             mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
             mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
-        } else if (Lift.PTO_State == "engaged" && !Lift.limitLift.isPressed()) {
+        } else if (Lift.PTO_Engaged == "engaged" && !Lift.limitLift.isPressed()) {
             mFL.setPower(1);
             mFR.setPower(1);
             mBL.setPower(1);
