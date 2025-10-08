@@ -17,7 +17,7 @@ public class Lift extends SubsystemBase {
     public static Servo sP;
     //touch sensor near the bottom of the lift slides used to localize the lift encoder
 //and prevent the lift from driving into the deck plate
-    public static String PTO_State = new String();
+    public static boolean PTO_Engaged;
     public static TouchSensor limitLift;
     public double motorPower;
 
@@ -31,7 +31,7 @@ public class Lift extends SubsystemBase {
         mL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sP.setPosition(PTO_DISENGAGED);
         mL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        PTO_State = "disengaged";
+        PTO_Engaged = false;
     }
 
 
@@ -50,7 +50,7 @@ public class Lift extends SubsystemBase {
     public void engagePTO() {
         sP.setPosition(PTO_ENGAGED);
 
-        PTO_State = "engaged";
+        PTO_Engaged = true;
     }
 
 
