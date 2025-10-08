@@ -96,7 +96,7 @@ public static int desiredTagID;
 
         telemetry.setMsTransmissionInterval(1);
 
-        rrSubsystem.setStartingOffsetDegs(270);
+
 
 
         // Vision init
@@ -195,35 +195,45 @@ public static int desiredTagID;
 
 
 
-        private void updateTurretTracking() {
-            if (!targetFound) return;
+    private void updateTurretTracking() {
+        if (!targetFound) return;
 
-            // Robot pose
-            ROBOT_X = drive.localizer.getPose().position.x;
-            ROBOT_Y = drive.localizer.getPose().position.y;
-            double robotYaw = Math.toRadians(rrSubsystem.getYawDegrees()); // use radians
+        //  Robot pose in field frame 
+        double robotX = drive.localizer.getPose().position.x;
+        double robotY = drive.localizer.getPose().position.y;
+        double robotHeadingRad = drive.localizer.getPose().heading.toDouble(); // radians
 
-            // Desired field angle to goal (absolute, in field frame)
-            double desiredFieldAngle = Math.atan2(GOAL_FIELD_Y - ROBOT_Y, GOAL_FIELD_X - ROBOT_X);
+       
+        //  Turret base position in field frame 
+        double turretFieldX = robotX + (Math.cos(robotHeadingRad) * TURRET_OFFSET_X
+                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y);
+        double turretFieldY = robotY + (Math.sin(robotHeadingRad) * TURRET_OFFSET_X
+                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y);
 
-            // Convert to turret-relative robot frame + zero offset
-            double rawTurretAngle = desiredFieldAngle - robotYaw + TURRET_ZERO_OFFSET;
+        //  Desired field angle from turret to goal 
+        double desiredFieldAngle = Math.atan2(GOAL_FIELD_Y - turretFieldY, GOAL_FIELD_X - turretFieldX);
 
-            // Unwrap so it stays continuous
-            double desiredTurretAngleRobot = unwrapAngle(rawTurretAngle, lastTurretAngle);
-            lastTurretAngle = desiredTurretAngleRobot;
+        //  Convert to turret-relative angle (robot frame) 
+        double rawTurretAngle = desiredFieldAngle - robotHeadingRad;
 
-            // Convert to ticks
-            int desiredTicks = (int) Math.round(desiredTurretAngleRobot / TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        //  Unwrap angle for smooth control 
+        double desiredTurretAngleRobot = unwrapAngle(rawTurretAngle, lastTurretAngle);
+        lastTurretAngle = desiredTurretAngleRobot;
 
-            turret.setTargetPosition(desiredTicks);
+        //  Convert to encoder ticks 
+        int desiredTicks = (int) Math.round(desiredTurretAngleRobot / TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        turret.setTargetPosition(desiredTicks);
 
-            telemetry.addData("Robot Yaw (deg)", Math.toDegrees(robotYaw));
-            telemetry.addData("Desired Field Angle (deg)", Math.toDegrees(desiredFieldAngle));
-            telemetry.addData("Desired Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
-            telemetry.addData("Target pos (ticks)", turret.getTargetPosition());
-            telemetry.addData("Turret encoder", turret.getCurrentPosition());
-        }
+        //  Telemetry for debugging 
+        telemetry.addData("Robot Yaw (deg)", Math.toDegrees(robotHeadingRad));
+        telemetry.addData("Turret Field X", turretFieldX);
+        telemetry.addData("Turret Field Y", turretFieldY);
+        telemetry.addData("Desired Field Angle (deg)", Math.toDegrees(desiredFieldAngle));
+        telemetry.addData("Desired Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
+        telemetry.addData("Target pos (ticks)", turret.getTargetPosition());
+        telemetry.addData("Turret encoder", turret.getCurrentPosition());
+    }
+
 
 
 
@@ -254,6 +264,7 @@ public static int desiredTagID;
         double finalX = 0;
         double finalY = 0;
         double finalHeadingDeg = 0;
+        double bearing_headingRelocalizeThreshold = 5;//Don't relocalize if you're not within the threshold
 
         double theta_turret_RAD = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
         double flippedHeading = -imuHeadingRad;
@@ -310,15 +321,17 @@ public static int desiredTagID;
             double x_tagOnField = tagPose.position.x;  // in inches
             double y_tagOnField = tagPose.position.y;
             double heading_tagOnField_RAD;
-
+            double rotation_headingOffset;
             switch (detection.id){
                 // If red or blue set to designated apriltag angle if anything else don't relocalize
 
                 case 20://blue
                     heading_tagOnField_RAD = Math.toRadians(35.950057);
+                    rotation_headingOffset = Math.PI/2;
                     break;
                 case 24://red
                     heading_tagOnField_RAD = Math.toRadians(-35.950057);
+                    rotation_headingOffset = -Math.PI/2;
                     break;
 
                 default:
@@ -333,11 +346,23 @@ public static int desiredTagID;
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
             telemetry.addData("heading_tagOnField_RAD", numFormat, heading_tagOnField_RAD);
 
-//Calculates heading on field
-            double heading_botOnField_RAD = (heading_tagOnField_RAD + Math.PI) + Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
-            // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = (x_tagToBot * Math.cos(heading_botOnField_RAD) + y_tagToBot *Math.sin(heading_botOnField_RAD)) + x_tagOnField;
-            double y_botOnField =  (-x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot *Math.cos(heading_botOnField_RAD)) + y_tagOnField ;
+
+            double camOnTurretOffsetAngle_RAD = Math.atan2( TURRET_OFFSET_Y + CAMERA_RADIUS * Math.sin(theta_turret_RAD),
+                    TURRET_OFFSET_X + CAMERA_RADIUS * Math.cos(theta_turret_RAD) );
+
+            double turretPosOffsetAngle_RAD = Math.atan2(TURRET_OFFSET_Y, TURRET_OFFSET_X);
+
+            double turretAngleOffsetCorrection = camOnTurretOffsetAngle_RAD  - turretPosOffsetAngle_RAD;
+            double heading_turretOnField_RAD = heading_tagOnField_RAD - yaw_cameraToTag_DEG + turretPosOffsetAngle_RAD;
+            double heading_botOnField_RAD;
+            if (Math.abs(ftcPose.bearing) < bearing_headingRelocalizeThreshold) {
+                heading_botOnField_RAD  = heading_turretOnField_RAD - theta_turret_RAD;
+            } else {
+                heading_botOnField_RAD = imuHeadingRad;
+            }
+                // Robot position on field = Tag on field - Bot-to-Tag vector
+            double x_botOnField = (x_tagToBot * Math.cos(heading_botOnField_RAD) + y_tagToBot *Math.sin(heading_botOnField_RAD)) - x_tagOnField;
+            double y_botOnField =  (-x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot *Math.cos(heading_botOnField_RAD)) - y_tagOnField ;
 
             telemetry.addData("x_botOnField", numFormat, x_botOnField);
             telemetry.addData("y_botOnField", numFormat, y_botOnField);

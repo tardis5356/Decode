@@ -77,7 +77,7 @@ public class RRSubsystem extends SubsystemBase {
     }
 
     public double getPose2dYawRads(){
-        return Math.toRadians((getYawDegrees() + 360) % 360);
+        return Math.toRadians((getYawDegrees() + 360) % 360) + Math.toRadians(getStartingOffsetDegs());
     }
 
     public double getPose2dYawDegs(){
