@@ -189,8 +189,8 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.START))
                 .whenActive(new SequentialCommandGroup(
                         new InstantCommand(lift::engagePTO),
-                        new WaitCommand(250),
-                        new InstantCommand(() -> Lift.PTO_Engaged = true)
+                        new WaitCommand(250)//,
+                       // new InstantCommand(() -> Lift.PTO_Engaged = "engaged")
                 ));
 
 
@@ -258,24 +258,24 @@ public class DecodeTeleOp extends CommandOpMode {
         double mBRPower = FB + LR - Rotation;
         //actually sets the motor powers
 
-        if (Lift.PTO_Engaged == false) {
-            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
-        } else if (Lift.PTO_Engaged == true && !Lift.limitLift.isPressed()) {
-            mFL.setPower(1);
-            mFR.setPower(1);
-            mBL.setPower(1);
-            mBR.setPower(1);
-            Lift.mL.setPower(1);
-        } else if (Lift.limitLift.isPressed()) {
-            mFL.setPower(0);
-            mFR.setPower(0);
-            mBL.setPower(0);
-            mBR.setPower(0);
-            Lift.mL.setPower(0);
-        }
+//        if (Lift.PTO_Engaged == "disengaged") {
+//            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
+//            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
+//            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
+//            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+//        } else if (Lift.PTO_Engaged == "engaged" && !Lift.limitLift.isPressed()) {
+//            mFL.setPower(1);
+//            mFR.setPower(1);
+//            mBL.setPower(1);
+//            mBR.setPower(1);
+//            Lift.mL.setPower(1);
+//        } else if (Lift.limitLift.isPressed()) {
+//            mFL.setPower(0);
+//            mFR.setPower(0);
+//            mBL.setPower(0);
+//            mBR.setPower(0);
+//            Lift.mL.setPower(0);
+//        }
 
 
     }
