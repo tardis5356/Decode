@@ -264,7 +264,7 @@ public static int desiredTagID;
         double finalX = 0;
         double finalY = 0;
         double finalHeadingDeg = 0;
-        double bearing_headingRelocalizeThreshold = 5;//Don't relocalize if you're not within the threshold
+        double bearing_headingRelocalizeThreshold = 0;//Don't relocalize if you're not within the threshold
 
         double theta_turret_RAD = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
         double flippedHeading = -imuHeadingRad;
@@ -347,16 +347,10 @@ public static int desiredTagID;
             telemetry.addData("heading_tagOnField_RAD", numFormat, heading_tagOnField_RAD);
 
 
-            double camOnTurretOffsetAngle_RAD = Math.atan2( TURRET_OFFSET_Y + CAMERA_RADIUS * Math.sin(theta_turret_RAD),
-                    TURRET_OFFSET_X + CAMERA_RADIUS * Math.cos(theta_turret_RAD) );
 
-            double turretPosOffsetAngle_RAD = Math.atan2(TURRET_OFFSET_Y, TURRET_OFFSET_X);
-
-            double turretAngleOffsetCorrection = camOnTurretOffsetAngle_RAD  - turretPosOffsetAngle_RAD;
-            double heading_turretOnField_RAD = heading_tagOnField_RAD - yaw_cameraToTag_DEG + turretPosOffsetAngle_RAD;
             double heading_botOnField_RAD;
             if (Math.abs(ftcPose.bearing) < bearing_headingRelocalizeThreshold) {
-                heading_botOnField_RAD  = heading_turretOnField_RAD - theta_turret_RAD;
+                heading_botOnField_RAD = (heading_tagOnField_RAD + Math.PI) + Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
             } else {
                 heading_botOnField_RAD = imuHeadingRad;
             }
