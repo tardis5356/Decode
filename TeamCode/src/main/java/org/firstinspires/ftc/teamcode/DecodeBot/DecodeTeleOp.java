@@ -26,6 +26,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
         import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Lift;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.UnUsed.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -80,19 +82,27 @@ public class DecodeTeleOp extends CommandOpMode {
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
     double CURRENT_SPEED_MULTIPLIER;
 
+    //resolution of camera view
     static int imgHeight = 896;
     static int imgWidth = 1600;
+
+
     //below we create a new object instance of all the subsystem classes
-    //gripper
 
-
-    //wrist
+    //intake
     private Intake intake;
 
-    private Spindex spindex;
+    //lift
     private Lift lift;
+
+    //turret
     private Turret turret;
 
+    //storage
+    private Storage storage;
+
+    //shooter
+    private Shooter shooter;
 
     double LeftTrigger;
     double RightTrigger;
@@ -124,14 +134,17 @@ public class DecodeTeleOp extends CommandOpMode {
         driver1 = new GamepadEx(gamepad1);
         driver2 = new GamepadEx(gamepad2);
 
+        turret = new Turret(hardwareMap);
 
-        spindex = new Spindex(hardwareMap);
+        storage = new Storage(hardwareMap);
 
         intake = new Intake(hardwareMap);
 
         lift = new Lift(hardwareMap);
 
         turret = new Turret(hardwareMap);
+
+        shooter = new Shooter(hardwareMap);
 
 
         //map motors
