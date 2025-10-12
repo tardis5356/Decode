@@ -43,17 +43,22 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                                 new InstantCommand(()->launcOne(storage)),
                                 new WaitCommand(500),
                                 //pull in
+                                new WaitCommand(500),
                                 new InstantCommand(()->moveOne(intake)),
                                 new WaitCommand(500),
                                 //store second
+                                //new InstantCommand(storage::closeGate),
                                 new InstantCommand(storage::storeSlot),
                                 new WaitCommand(500),
                                 //pull in
+                                //new InstantCommand(storage::openGate),
+                                //new WaitCommand(500),
                                 new InstantCommand(()->moveOne(intake)),
                                 new WaitCommand(500),
                                 //launch third
                                 new InstantCommand(()->launcOne(storage)),
                                 new WaitCommand(500),
+                                //new InstantCommand(storage::closeGate),
                                 //return second
                                 new InstantCommand(storage::returnSlot),
                                 new WaitCommand(500),

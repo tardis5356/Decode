@@ -21,6 +21,8 @@ public class BotPositions {
     public static double TURRET_360_TURN_TICKS = 380 * 90/100 * 360/365, TURRET_DEGREE_TO_TICK_MULTIPLIER = TURRET_360_TURN_TICKS/360, TURRET_TICK_TO_RADIAN_MULTIPLIER = TURRET_DEGREE_TO_TICK_MULTIPLIER * (Math.PI/180);
     public static double PTO_ENGAGED = 0, PTO_DISENGAGED = 0;
 
+    public static double BREAKPAD_ACTIVE = 0, BREAKPAD_INACTIVE = 1;
+
     public static double CAMERA_RADIUS = 2.5, TURRET_OFFSET_X = -3, TURRET_OFFSET_Y = -3;
 
     //positions of servos in StorageSubsystem

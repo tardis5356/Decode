@@ -23,12 +23,13 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-        import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
+import org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BreakPad;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Lift;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.UnUsed.Spindex;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -59,6 +60,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
     boolean targetFound = false;
+    boolean flyMode = true;
+    boolean autoTarget = true;
 
     AprilTagDetection detectedTag;
 
@@ -68,8 +71,11 @@ public class DecodeTeleOp extends CommandOpMode {
     //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
     //For example, stop and reset encoder.
     private DcMotorEx mFL, mFR, mBL, mBR;
-    public static DcMotorEx mS;
 
+    double mFLPower;
+    double mFRPower;
+    double mBLPower;
+    double mBRPower;
 
     //Forward and back power, Left and right power, rotation power.
     //All are then added and subtracted in different ways for each drive motor
@@ -93,7 +99,7 @@ public class DecodeTeleOp extends CommandOpMode {
     private Intake intake;
 
     //lift
-    private Lift lift;
+    private BellyPan lift;
 
     //turret
     private Turret turret;
@@ -104,6 +110,9 @@ public class DecodeTeleOp extends CommandOpMode {
     //shooter
     private Shooter shooter;
 
+    //breakpad
+    private BreakPad breakPad;
+
     double LeftTrigger;
     double RightTrigger;
 
@@ -112,6 +121,9 @@ public class DecodeTeleOp extends CommandOpMode {
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     int visionOutputPosition = 1;
+
+
+    LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond;
 
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -140,11 +152,13 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake = new Intake(hardwareMap);
 
-        lift = new Lift(hardwareMap);
+        lift = new BellyPan(hardwareMap);
 
         turret = new Turret(hardwareMap);
 
         shooter = new Shooter(hardwareMap);
+
+        breakPad = new BreakPad(hardwareMap);
 
 
         //map motors
@@ -153,8 +167,6 @@ public class DecodeTeleOp extends CommandOpMode {
         mBL = hardwareMap.get(DcMotorEx.class, "mBL");
         mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
-
-        mS = hardwareMap.get(DcMotorEx.class, "mS");
 
 
         //this motor physically runs opposite. For convenience, reverse direction.
@@ -185,28 +197,79 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 
+        fly = new LaunchSequenceCommand(intake, storage, "Fly");
+        storeMiddle = new LaunchSequenceCommand(intake, storage, "StoreMiddle");
+        storeOneForLast = new LaunchSequenceCommand(intake, storage, "StoreOneForLast");
+        storeOneForSecond = new LaunchSequenceCommand(intake, storage, "StoreOneForSecond");
 
+
+
+        //Granny Mode
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER) && Intake.intakeState == "stop" || Intake.intakeState == "out")
+
+
+        //Intake
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(new InstantCommand(intake::in));
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "stop" || Intake.intakeState == "in")
-                .whenActive(new InstantCommand(intake::oneOut));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(new InstantCommand(intake::allOut));
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER) && Intake.intakeState == "in" || Intake.intakeState == "out")
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y))
                 .whenActive(new InstantCommand(intake::stop));
 
-
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.START))
+        //move all in by 1
+        new Trigger(()-> driver2.getButton(GamepadKeys.Button.A))
                 .whenActive(new SequentialCommandGroup(
-                        new InstantCommand(lift::engagePTO),
-                        new WaitCommand(250)//,
-                       // new InstantCommand(() -> Lift.PTO_Engaged = "engaged")
+                        new InstantCommand(intake::in),
+                        new WaitCommand(2000),
+                        new InstantCommand(intake::stop)
+                ));
+
+        //only spit out the one in the intake
+        new Trigger(()-> driver2.getButton(GamepadKeys.Button.X))
+                .whenActive(new SequentialCommandGroup(
+                        new InstantCommand(intake::oneOut),
+                        new WaitCommand(2000),
+                        new InstantCommand(intake::stop)
                 ));
 
 
+        //Engage PTO
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK) || driver1.getButton(GamepadKeys.Button.BACK))
+                .whenActive(new SequentialCommandGroup(
+                        new InstantCommand(lift::engagePTO)
+                        //new WaitCommand(250),
+                       // new InstantCommand(() -> Lift.PTO_Engaged = "engaged")
+                ));
+
+        //BreakPad
+        new Trigger(()->driver1.getButton(GamepadKeys.Button.A))
+                .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
+
+
+        //Shooter mode
+        new Trigger(()->driver2.getButton(GamepadKeys.Button.START))
+                .toggleWhenActive(new InstantCommand(()->flyMode = true), new InstantCommand(()->flyMode = false));
+
+
+        //automated targetting on/off
+        new Trigger(()->driver2.getButton(GamepadKeys.Button.B))
+                .whenActive(()-> autoTarget = true);
+
+            //if driver 2 stickY's or triggers are used the autotarget is turned off
+        new Trigger(()-> driftLock((float) driver2.getLeftY()) != 0 || driftLock((float) driver2.getRightY()) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0)
+                .whenActive(()-> autoTarget = false);
+
+
+        //shoot
+        new Trigger(()->flyMode == true && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) )
+                .whenActive(fly);
+
+       // new Trigger(()->flyMode == false && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) )
+       //         .whenActive(fly);
     }
 
     //this is the main run loop
@@ -219,6 +282,9 @@ public class DecodeTeleOp extends CommandOpMode {
         if (GlobalVariables.aColor == "blue") {
             desiredTagID = 20;
         }
+
+
+
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
 
@@ -247,8 +313,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         }
 
-        //Shooter Brrrrrrrrrrr
-        mS.setPower(9999999);
+
 
         //AprilTag converter equation from bearing to encoder ticks
         //
@@ -265,30 +330,26 @@ public class DecodeTeleOp extends CommandOpMode {
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
 
 
-        double mFLPower = FB + LR + Rotation;
-        double mFRPower = FB - LR - Rotation;
-        double mBLPower = FB - LR + Rotation;
-        double mBRPower = FB + LR - Rotation;
+        if(!BellyPan.PTO_Engaged){
+            mFLPower = FB + LR + Rotation;
+            mFRPower = FB - LR - Rotation;
+            mBLPower = FB - LR + Rotation;
+            mBRPower = FB + LR - Rotation;
+        }
+        else{
+            mFLPower = FB;
+            mFRPower = FB;
+            mBLPower = FB;
+            mBRPower = FB;
+        }
         //actually sets the motor powers
 
-//        if (Lift.PTO_Engaged == "disengaged") {
-//            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-//            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-//            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-//            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
-//        } else if (Lift.PTO_Engaged == "engaged" && !Lift.limitLift.isPressed()) {
-//            mFL.setPower(1);
-//            mFR.setPower(1);
-//            mBL.setPower(1);
-//            mBR.setPower(1);
-//            Lift.mL.setPower(1);
-//        } else if (Lift.limitLift.isPressed()) {
-//            mFL.setPower(0);
-//            mFR.setPower(0);
-//            mBL.setPower(0);
-//            mBR.setPower(0);
-//            Lift.mL.setPower(0);
-//        }
+
+            mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
+            mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
+            mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
+            mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+
 
 
     }
