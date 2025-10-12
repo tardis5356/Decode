@@ -4,17 +4,20 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.P
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.PTO_ENGAGED;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-public class Lift extends SubsystemBase {
+public class BellyPan extends SubsystemBase {
 
-    public static DcMotorEx mL;
+    //public static DcMotorEx mL;
 
-    public static Servo sP;
+    public Servo sP;
+
+    public Servo sRL;
+    public Servo sLL;
+
+
     //touch sensor near the bottom of the lift slides used to localize the lift encoder
 //and prevent the lift from driving into the deck plate
     public static boolean PTO_Engaged;
@@ -22,16 +25,14 @@ public class Lift extends SubsystemBase {
     public double motorPower;
 
     //hardwaremap virtual components to configuration
-    public Lift(HardwareMap hardwareMap) {
-
-        mL = hardwareMap.get(DcMotorEx.class, "mL");
+    public BellyPan(HardwareMap hardwareMap) {
         sP = hardwareMap.get(Servo.class, "sP");
+        sLL = hardwareMap.get(Servo.class, "sLL");
+        sRL = hardwareMap.get(Servo.class, "sRL");
         limitLift = hardwareMap.get(TouchSensor.class, "lL");
-        //mLT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//at the start of teleop reset the encoder value to 0 (localize it)
-        mL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         sP.setPosition(PTO_DISENGAGED);
-        mL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         PTO_Engaged = false;
+
     }
 
 

@@ -32,6 +32,7 @@
 
 package org.firstinspires.ftc.teamcode.DecodeBot;
 
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -57,9 +58,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @TeleOp(name = "StarterBotTeleop", group = "StarterBot")
 //@Disabled
 public class StarterBotTeleop extends OpMode {
-    final double FEED_TIME_SECONDS = 0.4; //The feeder servos run this long when a shot is requested.
+    final double FEED_TIME_SECONDS = 0.3; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
+    double LAUNCH_SPEED;
 
     /*
      * When we control our launcher motor, we are using encoders. These allow the control system
@@ -216,7 +218,7 @@ public class StarterBotTeleop extends OpMode {
         // Relating joystick movement to drivetrain.
         double leftStickY = - gamepad1.left_stick_y;
         double leftStickX = gamepad1.left_stick_x;
-        double rightStickX = gamepad1.right_stick_x;
+        double rightStickX = gamepad1.right_trigger - gamepad1.left_trigger;
 
         mFL.setPower((leftStickY + rightStickX + leftStickX) * .5);
         mFR.setPower((leftStickY - rightStickX - leftStickX) * .5);
@@ -231,29 +233,49 @@ public class StarterBotTeleop extends OpMode {
          */
 
 
-        if (gamepad1.a) {
-            // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-            launcher.setPower(0.5); // flywheel at 50%
+//        if (gamepad1.a) {
+//            // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+//            launcher.setPower(0.5); // flywheel at 50%
+//            isLauncherActive = true;
+//        } else if (gamepad1.x){
+//            launcher.setPower(0.625); // flywheel at 62.5%
+//            isLauncherActive = true;
+//        } else if (gamepad1.y){
+//            launcher.setPower(0.75); // flywheel at 75%
+//            isLauncherActive = true;
+//        } else if (gamepad1.b) {
+//            // launcher.setVelocity(STOP_SPEED);
+//            launcher.setPower(0); // flywheel at 0% (it stops moving)
+//            isLauncherActive = false;
+//        }
+
+
+        if(LAUNCH_SPEED >= 0 || LAUNCH_SPEED <= 1){
+            LAUNCH_SPEED += gamepad2.left_stick_y;
+        }
+        else if(LAUNCH_SPEED < 0 ){
+            LAUNCH_SPEED = 0;
+
+        }
+        else if(LAUNCH_SPEED >1){
+            LAUNCH_SPEED = 1;
+
+        }
+
+        if(LAUNCH_SPEED > 0){
             isLauncherActive = true;
-        } else if (gamepad1.x){
-            launcher.setPower(0.625); // flywheel at 62.5%
-            isLauncherActive = true;
-        } else if (gamepad1.y){
-            launcher.setPower(0.75); // flywheel at 75%
-            isLauncherActive = true;
-        } else if (gamepad1.b) {
-            // launcher.setVelocity(STOP_SPEED);
-            launcher.setPower(0); // flywheel at 0% (it stops moving)
+        }
+        else {
             isLauncherActive = false;
         }
 
-
+        launcher.setPower(LAUNCH_SPEED);
 
         /*
          * Now we call our "Launch" function.
          */
         if (isLauncherActive == true) {
-            launch(gamepad1.rightBumperWasPressed());
+            launch(gamepad1.rightBumperWasPressed()||gamepad2.rightBumperWasPressed());
         }
         /*
          * Show the state and motor powers
