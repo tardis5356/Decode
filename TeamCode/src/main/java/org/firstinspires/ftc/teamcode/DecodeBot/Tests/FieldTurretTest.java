@@ -300,8 +300,8 @@ public static int desiredTagID;
            y_cameraToTag += CAMERA_RADIUS;
             //Next rotate to bot/turret coordinate system
             //TODO Tag to turret numbers aren't always working
-            double x_tagToTurret = x_cameraToTag * Math.cos(-Math.PI/2 - theta_turret_RAD) + (y_cameraToTag) * Math.sin(-Math.PI/2 - theta_turret_RAD);
-            double y_tagToTurret =  -x_cameraToTag * Math.sin(-Math.PI/2 - theta_turret_RAD) + (y_cameraToTag) * Math.cos(-Math.PI/2 - theta_turret_RAD);
+            double x_tagToTurret = (x_cameraToTag * Math.cos( -Math.PI/2+ theta_turret_RAD) - (y_cameraToTag) * Math.sin( -Math.PI/2+ theta_turret_RAD));
+            double y_tagToTurret =  x_cameraToTag * Math.sin( -Math.PI/2+ theta_turret_RAD) + (y_cameraToTag) * Math.cos( -Math.PI/2+ theta_turret_RAD);
 
 
 
@@ -355,10 +355,11 @@ public static int desiredTagID;
                 heading_botOnField_RAD = imuHeadingRad;
             }
                 // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = -((x_tagToBot * Math.cos(heading_botOnField_RAD) + y_tagToBot *Math.sin(heading_botOnField_RAD)));
-            double y_botOnField = -((-x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot *Math.cos(heading_botOnField_RAD)));
+            double x_botOnField = -((x_tagToBot * Math.cos(heading_botOnField_RAD) - y_tagToBot *Math.sin(heading_botOnField_RAD)));
+            double y_botOnField = -((x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot *Math.cos(heading_botOnField_RAD)));
             x_botOnField += x_tagOnField;
             y_botOnField += y_tagOnField;
+
             telemetry.addData("x_botOnField", numFormat, x_botOnField);
             telemetry.addData("y_botOnField", numFormat, y_botOnField);
             telemetry.addData("heading_botOnField_DEG", numFormat, Math.toDegrees(heading_botOnField_RAD));
