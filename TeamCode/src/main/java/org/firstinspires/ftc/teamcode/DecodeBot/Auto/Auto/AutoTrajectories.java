@@ -40,7 +40,16 @@ public class AutoTrajectories {
 
     }
     public static final Pose2d bigStartPos = allianceCoordinate(new Pose2d(-56, 47, 305));
-    public static final Pose2d smallStartPos =allianceCoordinate( new Pose2d(61, 31, 180));
+    public static final Pose2d smallStartPos =allianceCoordinate( new Pose2d(61, 31, 180)); //tobe checked
+    public static final Pose2d red_BackStartPos = new Pose2d(63,33,Math.toRadians(90));
+    public static final Pose2d Blue_BackStartPos = new Pose2d(63,-33,Math.toRadians(90));
+
+    public static final Pose2d red_PPGGoalPos = new Pose2d(-12,31.5,Math.toRadians(90));
+    public static final Pose2d red_PGPPos = new Pose2d(12,31.5,Math.toRadians(90));
+    public static final Pose2d red_GGPBackPos = new Pose2d(36,31.5,Math.toRadians(90));
+    public static final Pose2d blue_PPGGoalPos = new Pose2d(-12,-31.5,Math.toRadians(-90));
+    public static final Pose2d blue_PGPPos = new Pose2d(12,-31.5,Math.toRadians(-90));
+    public static final Pose2d blue_GGPBackPos = new Pose2d(36,-31.5,Math.toRadians(-90));
 
     public static final Pose2d markPos =allianceCoordinate( new Pose2d(0, 0, 0));
 
