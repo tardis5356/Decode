@@ -28,7 +28,7 @@ public class RelocalizeTest extends OpMode {
     private RRSubsystem rrSubsystem;
     private Turret turret ;
 
-    public double fx = 903.5, fy =903.5, cx =  640, cy = 360;
+    public double fx = 911.942, fy =911.942, cx =  640, cy = 393.994;
 
     private AprilTagProcessor aTagP = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
     private VisionPortal portal;

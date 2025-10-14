@@ -344,13 +344,17 @@ public static int desiredTagID;
 
             telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
             telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
-            telemetry.addData("heading_tagOnField_RAD", numFormat, heading_tagOnField_RAD);
+            telemetry.addData("heading_tagOnField_DEG", numFormat, Math.toDegrees(heading_tagOnField_RAD));
 
 
 
             double heading_botOnField_RAD;
+            double heading_cameraOnField_RAD;
             if (Math.abs(ftcPose.bearing) < bearing_headingRelocalizeThreshold) {
-                heading_botOnField_RAD = (heading_tagOnField_RAD + Math.PI) + Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
+//                heading_botOnField_RAD = 9*Math.PI/4 - 2*theta_turret_RAD + Math.toRadians(yaw_cameraToTag_DEG) + heading_tagOnField_RAD ;
+                heading_cameraOnField_RAD = ( Math.PI + heading_tagOnField_RAD) - Math.toRadians(yaw_cameraToTag_DEG);
+                telemetry.addData("heading_cameraOnField_DEG", numFormat, Math.toDegrees(heading_cameraOnField_RAD));
+                heading_botOnField_RAD = heading_cameraOnField_RAD + theta_turret_RAD;
             } else {
                 heading_botOnField_RAD = imuHeadingRad;
             }
