@@ -3,7 +3,6 @@ package Testbed;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -12,16 +11,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.sun.tools.javac.tree.DCTree;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.sql.Time;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="10.2.25_Turret_Test")
-public class TurretTesting extends CommandOpMode {
+@TeleOp(name="10.2.25_Shooter_Test")
+public class ShooterTesting extends CommandOpMode {
 
     private ElapsedTime myTimer = new ElapsedTime();
 
@@ -115,6 +109,8 @@ public class TurretTesting extends CommandOpMode {
         telemetry.update();
         //telemetry.addData("Wheel_RPM",mW.getVelocity(AngleUnit.DEGREES));
         telemetry.addData("motorPos", mW.getCurrentPosition());
+
+        telemetry.addData("motorPower",mW.getPower());
 
         telemetry.addData("HoodPos", sH.getPosition());
 

@@ -4,7 +4,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.bigStartPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.smallStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.DecodeTeleOp.mS;
+
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.dashboard.FtcDashboard;

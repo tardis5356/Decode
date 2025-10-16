@@ -19,7 +19,7 @@ public class BotPositions {
     //public static int SLOT1_FIRE = 360, SLOT2_FIRE = 120, SLOT3_FIRE = 240, SLOT1_LOAD = 180, SLOT2_LOAD = 300, SLOT3_LOAD = 60;
     public static double TURRET_P = 0.0005, TURRET_I = 0.000, TURRET_D = 0.000;
     public static double TURRET_360_TURN_TICKS = 380 * 90/100 * 360/365, TURRET_DEGREE_TO_TICK_MULTIPLIER = TURRET_360_TURN_TICKS/360, TURRET_TICK_TO_RADIAN_MULTIPLIER = TURRET_DEGREE_TO_TICK_MULTIPLIER * (Math.PI/180);
-    public static double PTO_ENGAGED = 0, PTO_DISENGAGED = 0;
+    public static double PTO_ENGAGED = 0, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0, BELLYPAN_RIGHT_LATCHED = 0, BELLYPAN_LEFT_UNLATCHED = 0, BELLYPAN_RIGHT_UNLATCHED = 0;
 
     public static double BREAKPAD_ACTIVE = 0, BREAKPAD_INACTIVE = 1;
 
@@ -27,5 +27,7 @@ public class BotPositions {
 
     //positions of servos in StorageSubsystem
     public static double GATE_OPEN, GATE_CLOSED, KICKER_UP, KICKER_DOWN, SLOT_STORED, SLOT_FLY;
+
+    public static long KICKER_WAIT = 500, GATE_WAIT = 500, SWAP_WAIT = 500, INTAKE_WAIT = 1000;
 
 }
