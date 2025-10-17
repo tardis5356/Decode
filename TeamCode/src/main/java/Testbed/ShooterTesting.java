@@ -54,8 +54,8 @@ public class ShooterTesting extends CommandOpMode {
                 .whenActive(
                         new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .5),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())
+                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
@@ -63,8 +63,8 @@ public class ShooterTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.Y))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .65),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())
+                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
@@ -72,8 +72,8 @@ public class ShooterTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .75),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
 
                         )
                 );
@@ -81,10 +81,15 @@ public class ShooterTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .9),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
 
                         )
+                );
+
+        new Trigger(()->myTimer.time(TimeUnit.SECONDS)>3)
+                .whileActiveOnce(
+                        new InstantCommand(()-> e1 = mW.getCurrentPosition())
                 );
     }
 
@@ -98,7 +103,7 @@ public class ShooterTesting extends CommandOpMode {
 
         t = myTimer.time(TimeUnit.SECONDS);
 
-        if (myTimer.time(TimeUnit.SECONDS)>10){
+        if (myTimer.time(TimeUnit.SECONDS)>3){
             e2 = mW.getCurrentPosition();
             telemetry.addData("tics/second", (e2-e1)/t);
         }

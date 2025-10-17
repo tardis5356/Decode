@@ -69,6 +69,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
     boolean autoTarget = true;
 
+    boolean firing;
+
     AprilTagDetection detectedTag;
 
     //private IntakeInCommand intakeInCommand;
@@ -129,7 +131,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int visionOutputPosition = 1;
 
 
-    LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, launch, store, unStore;
+    LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, launch, store, unStore, scram;
 
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -212,6 +214,7 @@ public class DecodeTeleOp extends CommandOpMode {
             launch = new LaunchSequenceCommand(intake,storage, "Launch");
             store = new LaunchSequenceCommand(intake,storage,"Store");
             unStore = new LaunchSequenceCommand(intake,storage,"UnStore");
+            scram = new LaunchSequenceCommand(intake,storage,"Scram");
         }
 
         //Granny Mode

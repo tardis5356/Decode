@@ -24,10 +24,11 @@ public class Shooter extends SubsystemBase {
         mS = hardwareMap.get(DcMotorEx.class,"mS");
         sH = hardwareMap.get(Servo.class,"sH");
 
+        // TODO: Actually tune the velocity PID
         mS.setVelocityPIDFCoefficients(.02,.0001,.01,0);
 
         //prep regression data
-        //ex: regression.put(1.,1.);
+        regression.put(1.,1.);
     }
 
     @Override

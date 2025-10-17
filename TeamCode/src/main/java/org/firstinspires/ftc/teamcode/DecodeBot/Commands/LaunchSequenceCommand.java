@@ -173,6 +173,17 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                         )
                 );
             break;
+
+            case "Scram":
+                addCommands(
+                        new SequentialCommandGroup(
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(storage::lowerKicker),
+                                new InstantCommand(storage::openGate),
+                                new InstantCommand(storage::storeSlot)
+                        )
+                );
+            break;
         }
 
     }

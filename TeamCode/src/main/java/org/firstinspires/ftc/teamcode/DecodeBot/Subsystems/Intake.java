@@ -52,6 +52,8 @@ public class Intake extends SubsystemBase {
        intakeState = "in";
     }
 
+    
+
     public void oneOut(){
         intakePower = -1;
         intakeState = "out";
