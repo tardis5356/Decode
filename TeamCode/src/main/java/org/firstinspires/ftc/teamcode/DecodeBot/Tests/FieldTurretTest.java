@@ -147,7 +147,7 @@ GlobalVariables.aColor = "red";
                 telemetry
         );
 
-        // Show results
+        // Show the results
         telemetry.addData("Detections", detections.size());
         if (relocalizedPose != null) {
             telemetry.addData("Relocalized X", relocalizedPose.position.x);
