@@ -15,6 +15,8 @@ public class Intake extends SubsystemBase {
 
     public static String intakeState = new String();
 
+    boolean currentArtifactsEstablished;
+
     double intakePower = 0, pathPower = 0;
 
     public Intake(HardwareMap hardwareMap){
@@ -31,8 +33,17 @@ public class Intake extends SubsystemBase {
 
     @Override
     public void periodic(){
-     mI.setPower(intakePower);
-     mP.setPower(pathPower);
+        mI.setPower(intakePower);
+        mP.setPower(pathPower);
+
+        if(GlobalVariables.currentArtifacts == "PPG" || GlobalVariables.currentArtifacts == "PGP" || GlobalVariables.currentArtifacts == "GPP"){
+            currentArtifactsEstablished = true;
+        }
+
+        if(!currentArtifactsEstablished){
+            setCurrentArtifacts();
+        }
+
     }
 
     public void in(){
@@ -40,6 +51,8 @@ public class Intake extends SubsystemBase {
        pathPower = 1;
        intakeState = "in";
     }
+
+    
 
     public void oneOut(){
         intakePower = -1;

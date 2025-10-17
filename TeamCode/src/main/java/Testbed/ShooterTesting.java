@@ -3,7 +3,6 @@ package Testbed;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -12,16 +11,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.sun.tools.javac.tree.DCTree;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
-import java.sql.Time;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="10.2.25_Turret_Test")
-public class TurretTesting extends CommandOpMode {
+@TeleOp(name="10.2.25_Shooter_Test")
+public class ShooterTesting extends CommandOpMode {
 
     private ElapsedTime myTimer = new ElapsedTime();
 
@@ -60,8 +54,8 @@ public class TurretTesting extends CommandOpMode {
                 .whenActive(
                         new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .5),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())
+                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
@@ -69,8 +63,8 @@ public class TurretTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.Y))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .65),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())
+                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
@@ -78,8 +72,8 @@ public class TurretTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .75),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
 
                         )
                 );
@@ -87,10 +81,15 @@ public class TurretTesting extends CommandOpMode {
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
                 .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(()-> wheelSpeed = .9),
-                                new InstantCommand(()->myTimer.reset()),
-                                new InstantCommand(()->e1 = mW.getCurrentPosition())
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
 
                         )
+                );
+
+        new Trigger(()->myTimer.time(TimeUnit.SECONDS)>3)
+                .whileActiveOnce(
+                        new InstantCommand(()-> e1 = mW.getCurrentPosition())
                 );
     }
 
@@ -104,7 +103,7 @@ public class TurretTesting extends CommandOpMode {
 
         t = myTimer.time(TimeUnit.SECONDS);
 
-        if (myTimer.time(TimeUnit.SECONDS)>10){
+        if (myTimer.time(TimeUnit.SECONDS)>3){
             e2 = mW.getCurrentPosition();
             telemetry.addData("tics/second", (e2-e1)/t);
         }
@@ -115,6 +114,8 @@ public class TurretTesting extends CommandOpMode {
         telemetry.update();
         //telemetry.addData("Wheel_RPM",mW.getVelocity(AngleUnit.DEGREES));
         telemetry.addData("motorPos", mW.getCurrentPosition());
+
+        telemetry.addData("motorPower",mW.getPower());
 
         telemetry.addData("HoodPos", sH.getPosition());
 
