@@ -6,6 +6,8 @@ public class GlobalVariables {
 
     public static String motif = new String();
 
+    public static int ballsShot;
+
     public static String currentArtifacts = new String();
     public static String aColor = new String();
 

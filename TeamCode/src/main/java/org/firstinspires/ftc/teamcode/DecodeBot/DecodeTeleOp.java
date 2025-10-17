@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot;
 
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
+import android.service.autofill.LuhnChecksumValidator;
 import android.util.Size;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -11,6 +12,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -53,6 +55,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int desiredTagID;
 
 
+
     public double turretBearing;
 
 
@@ -61,7 +64,12 @@ public class DecodeTeleOp extends CommandOpMode {
 
     boolean targetFound = false;
     boolean flyMode = true;
+
+    String shootMode;
+
     boolean autoTarget = true;
+
+    boolean firing;
 
     AprilTagDetection detectedTag;
 
@@ -99,7 +107,7 @@ public class DecodeTeleOp extends CommandOpMode {
     private Intake intake;
 
     //lift
-    private BellyPan lift;
+    private BellyPan bellyPan;
 
     //turret
     private Turret turret;
@@ -123,7 +131,7 @@ public class DecodeTeleOp extends CommandOpMode {
     int visionOutputPosition = 1;
 
 
-    LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond;
+    LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, launch, store, unStore, scram;
 
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -133,76 +141,81 @@ public class DecodeTeleOp extends CommandOpMode {
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        //Removes previous Commands from scheduler
-        //We call it at the start of TeleOp as it clears lingering autocommands that make the intake freak out
-        //Make sure it is not called in a loop since it will clear all the triggers every frame. Be very careful. It is a kill switch.
-        CommandScheduler.getInstance().reset();
+        {
+            telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+            //Removes previous Commands from scheduler
+            //We call it at the start of TeleOp as it clears lingering autocommands that make the intake freak out
+            //Make sure it is not called in a loop since it will clear all the triggers every frame. Be very careful. It is a kill switch.
+            CommandScheduler.getInstance().reset();
 
-        //sets the digital position of the robot to intake for the deposit to state command
-
-
-        //init controllers
-        driver1 = new GamepadEx(gamepad1);
-        driver2 = new GamepadEx(gamepad2);
-
-        turret = new Turret(hardwareMap);
-
-        storage = new Storage(hardwareMap);
-
-        intake = new Intake(hardwareMap);
-
-        lift = new BellyPan(hardwareMap);
-
-        turret = new Turret(hardwareMap);
-
-        shooter = new Shooter(hardwareMap);
-
-        breakPad = new BreakPad(hardwareMap);
+            //sets the digital position of the robot to intake for the deposit to state command
 
 
-        //map motors
-        mFL = hardwareMap.get(DcMotorEx.class, "mFL");
-        mFR = hardwareMap.get(DcMotorEx.class, "mFR");
-        mBL = hardwareMap.get(DcMotorEx.class, "mBL");
-        mBR = hardwareMap.get(DcMotorEx.class, "mBR");
+            //init controllers
+            driver1 = new GamepadEx(gamepad1);
+            driver2 = new GamepadEx(gamepad2);
+
+            turret = new Turret(hardwareMap);
+
+            storage = new Storage(hardwareMap);
+
+            intake = new Intake(hardwareMap);
+
+            bellyPan = new BellyPan(hardwareMap);
+
+            turret = new Turret(hardwareMap);
+
+            shooter = new Shooter(hardwareMap);
+
+            breakPad = new BreakPad(hardwareMap);
 
 
-
-        //this motor physically runs opposite. For convenience, reverse direction.
-        mBR.setDirection(DcMotorSimple.Direction.REVERSE);
-        mFR.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //makes the motors brake when power = zero. Is better for driver precision
-        mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            //map motors
+            mFL = hardwareMap.get(DcMotorEx.class, "mFL");
+            mFR = hardwareMap.get(DcMotorEx.class, "mFR");
+            mBL = hardwareMap.get(DcMotorEx.class, "mBL");
+            mBR = hardwareMap.get(DcMotorEx.class, "mBR");
 
 
-        CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
+            //this motor physically runs opposite. For convenience, reverse direction.
+            mBR.setDirection(DcMotorSimple.Direction.REVERSE);
+            mFR.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            //makes the motors brake when power = zero. Is better for driver precision
+            mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            mBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
+            CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
 
 
-        AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
+            telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
 
 
-        VisionPortal portal = new VisionPortal.Builder()
-                .addProcessors(aTagP)
-                .setCameraResolution(new Size(imgWidth, imgHeight))
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .build();
+            AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
 
 
+            VisionPortal portal = new VisionPortal.Builder()
+                    .addProcessors(aTagP)
+                    .setCameraResolution(new Size(imgWidth, imgHeight))
+                    .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                    .build();
 
-        fly = new LaunchSequenceCommand(intake, storage, "Fly");
-        storeMiddle = new LaunchSequenceCommand(intake, storage, "StoreMiddle");
-        storeOneForLast = new LaunchSequenceCommand(intake, storage, "StoreOneForLast");
-        storeOneForSecond = new LaunchSequenceCommand(intake, storage, "StoreOneForSecond");
 
+            //LaunchSequences
 
+            fly = new LaunchSequenceCommand(intake, storage, "Fly");
+            storeMiddle = new LaunchSequenceCommand(intake, storage, "StoreMiddle");
+            storeOneForLast = new LaunchSequenceCommand(intake, storage, "StoreOneForLast");
+            storeOneForSecond = new LaunchSequenceCommand(intake, storage, "StoreOneForSecond");
+            pullIn = new LaunchSequenceCommand(intake,storage,"PullIn");
+            launch = new LaunchSequenceCommand(intake,storage, "Launch");
+            store = new LaunchSequenceCommand(intake,storage,"Store");
+            unStore = new LaunchSequenceCommand(intake,storage,"UnStore");
+            scram = new LaunchSequenceCommand(intake,storage,"Scram");
+        }
 
         //Granny Mode
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
@@ -238,11 +251,9 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         //Engage PTO
-        new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK) || driver1.getButton(GamepadKeys.Button.BACK))
-                .whenActive(new SequentialCommandGroup(
-                        new InstantCommand(lift::engagePTO)
-                        //new WaitCommand(250),
-                       // new InstantCommand(() -> Lift.PTO_Engaged = "engaged")
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.BACK))
+                .whenActive(new ParallelCommandGroup(
+                        new InstantCommand(bellyPan::engagePTO)
                 ));
 
         //BreakPad
@@ -265,11 +276,125 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         //shoot
-        new Trigger(()->flyMode == true && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) )
-                .whenActive(fly);
 
-       // new Trigger(()->flyMode == false && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) )
-       //         .whenActive(fly);
+        {
+            // Fly mode manual shots
+            {
+                new Trigger(() -> (shootMode == "Fly") && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(fly)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                pullIn,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+
+                new Trigger(() -> (shootMode == "Fly") && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(fly)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                pullIn,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+
+            }
+
+            // Store Middle manual shots
+            {
+                new Trigger(() -> shootMode == "StoreMiddle" && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeMiddle)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                pullIn,
+                                store,
+                                pullIn,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+
+                new Trigger(() -> shootMode == "StoreMiddle" && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeMiddle)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                unStore,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+            }
+
+            // Store One For Last manual shots
+            {
+                new Trigger(() -> shootMode == "StoreOneForLast" && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeOneForLast)
+                        .whenActive(new SequentialCommandGroup(
+                                store,
+                                pullIn,
+                                launch,
+                                pullIn,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+
+                new Trigger(() -> shootMode == "StoreOneForLast" && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeOneForLast)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                unStore,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+            }
+
+            // Store One For Second manual shots
+            {
+                new Trigger(() -> shootMode == "StoreOneForSecond" && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeOneForSecond)
+                        .whenActive(new SequentialCommandGroup(
+                                store,
+                                pullIn,
+                                launch,
+                                unStore,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+
+                new Trigger(() -> shootMode == "StoreOneForSecond" && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                        //.whileActiveOnce(storeOneForSecond)
+                        .whenActive(new SequentialCommandGroup(
+                                launch,
+                                pullIn,
+                                new InstantCommand(() -> GlobalVariables.ballsShot += 1)
+                        ))
+                ;
+            }
+
+            // All shoot modes end with just launching
+            new Trigger(() -> GlobalVariables.ballsShot == 2 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+                    //.whileActiveOnce(storeOneForSecond)
+                    .whenActive(new SequentialCommandGroup(
+                            launch,
+                            new InstantCommand(() -> GlobalVariables.ballsShot = 0)
+                    ))
+            ;
+
+            // Triple shot modes
+            // TODO: Check that these actually launch all 3 or if it just stops at one
+            {
+                new Trigger(() -> shootMode == "Fly" && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+                        .whenActive(fly);
+
+                new Trigger(() -> shootMode == "StoreMiddle" && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+                        .whenActive(storeMiddle);
+
+                new Trigger(() -> shootMode == "StoreOneForLast" && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+                        .whenActive(storeOneForLast);
+
+                new Trigger(() -> shootMode == "StoreOneForSecond" && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+                        .whenActive(storeOneForSecond);
+
+            }
+        }
     }
 
     //this is the main run loop
@@ -284,6 +409,18 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
 
+        if(flyMode  || GlobalVariables.currentArtifacts == GlobalVariables.motif){
+            shootMode = "Fly";
+        }
+        else if( (GlobalVariables.currentArtifacts == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts == "PGP" && GlobalVariables.motif == "PPG") ){
+            shootMode = "StoreMiddle";
+        }
+        else if( (GlobalVariables.currentArtifacts == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts == "GPP" && GlobalVariables.motif == "PPG") ){
+            shootMode = "StoreOneForLast";
+        }
+        else if( (GlobalVariables.currentArtifacts == "GPP" && GlobalVariables.motif == "PGP") ){
+            shootMode = "StoreOneForSecond";
+        }
 
 
         telemetry.addData("preview on/off", "... Camera Stream\n");

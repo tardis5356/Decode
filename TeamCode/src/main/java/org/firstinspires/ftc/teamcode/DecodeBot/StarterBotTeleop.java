@@ -233,41 +233,41 @@ public class StarterBotTeleop extends OpMode {
          */
 
 
-//        if (gamepad1.a) {
-//            // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-//            launcher.setPower(0.5); // flywheel at 50%
-//            isLauncherActive = true;
-//        } else if (gamepad1.x){
-//            launcher.setPower(0.625); // flywheel at 62.5%
-//            isLauncherActive = true;
-//        } else if (gamepad1.y){
-//            launcher.setPower(0.75); // flywheel at 75%
-//            isLauncherActive = true;
-//        } else if (gamepad1.b) {
-//            // launcher.setVelocity(STOP_SPEED);
-//            launcher.setPower(0); // flywheel at 0% (it stops moving)
-//            isLauncherActive = false;
-//        }
-
-
-        if(LAUNCH_SPEED >= 0 || LAUNCH_SPEED <= 1){
-            LAUNCH_SPEED += gamepad2.left_stick_y;
-        }
-        else if(LAUNCH_SPEED < 0 ){
-            LAUNCH_SPEED = 0;
-
-        }
-        else if(LAUNCH_SPEED >1){
-            LAUNCH_SPEED = 1;
-
-        }
-
-        if(LAUNCH_SPEED > 0){
+        if (gamepad1.a) {
+            // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
+            launcher.setPower(0.62); // flywheel at 50%
             isLauncherActive = true;
-        }
-        else {
+        } else if (gamepad1.x){
+            launcher.setPower(0.7); // flywheel at 62.5%
+            isLauncherActive = true;
+        } else if (gamepad1.y){
+            launcher.setPower(0.8); // flywheel at 75%
+            isLauncherActive = true;
+        } else if (gamepad1.b) {
+            // launcher.setVelocity(STOP_SPEED);
+            launcher.setPower(0); // flywheel at 0% (it stops moving)
             isLauncherActive = false;
         }
+
+
+//        if(LAUNCH_SPEED >= 0 || LAUNCH_SPEED <= 1){
+//            LAUNCH_SPEED += gamepad2.left_stick_y;
+//        }
+//        else if(LAUNCH_SPEED < 0 ){
+//            LAUNCH_SPEED = 0;
+//
+//        }
+//        else if(LAUNCH_SPEED >1){
+//            LAUNCH_SPEED = 1;
+//
+//        }
+//
+//        if(LAUNCH_SPEED > 0){
+//            isLauncherActive = true;
+//        }
+//        else {
+//            isLauncherActive = false;
+//        }
 
         launcher.setPower(LAUNCH_SPEED);
 
