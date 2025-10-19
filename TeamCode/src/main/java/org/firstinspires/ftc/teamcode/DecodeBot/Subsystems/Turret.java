@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_D;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_I;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_P;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -58,6 +59,9 @@ public class Turret extends SubsystemBase {
     public static void setTargetPosition(double newTargetPosition) {
         targetPosition = newTargetPosition;
     }
+     public double getTurretThetaRAD() {
+        return -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
+     }
 
     public double getCurrentMotorPower() {
         return motorPower;
