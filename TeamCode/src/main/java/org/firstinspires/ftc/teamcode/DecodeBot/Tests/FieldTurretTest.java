@@ -154,7 +154,7 @@ public class FieldTurretTest extends CommandOpMode {
             desiredTagID = 20;
         }
 
-        targetTagPose = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition);
+        targetTagPose = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
         GOAL_FIELD_X = targetTagPose.position.x;
         GOAL_FIELD_Y = targetTagPose.position.y;
 
@@ -211,6 +211,7 @@ public class FieldTurretTest extends CommandOpMode {
         telemetry.addData("Tracking Goal", targetFound);
         telemetry.addData("Time Since Last (ms)", (System.nanoTime() - lastDetectionTime) / 1e6);
         telemetry.addData("FPS", portal.getFps());
+        telemetry.addData("Alliance Color", GlobalVariables.aColor);
         telemetry.update();
     }
 
@@ -234,16 +235,16 @@ public class FieldTurretTest extends CommandOpMode {
 
 
         //  Turret base position in field frame 
-        double turretFieldX = robotX + (Math.cos(robotHeadingRad) * TURRET_OFFSET_X
-                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y);
-        double turretFieldY = robotY + (Math.sin(robotHeadingRad) * TURRET_OFFSET_X
-                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y);
+        double turretFieldX = robotX /*+ (Math.cos(robotHeadingRad) * TURRET_OFFSET_X
+                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y)*/;
+        double turretFieldY = robotY /*+ (Math.sin(robotHeadingRad) * TURRET_OFFSET_X
+                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y)*/;
 
         //  Desired field angle from turret to goal 
         double desiredFieldTurretAngle = Math.atan2(GOAL_FIELD_Y - turretFieldY, GOAL_FIELD_X - turretFieldX);
 
         //  Convert to turret-relative angle (robot frame) 
-        double desiredTurretOnBotAngle = desiredFieldTurretAngle - robotHeadingRad;
+        double desiredTurretOnBotAngle = (desiredFieldTurretAngle - robotHeadingRad) % (Math.PI * 2);
 
         double turretDistance = Math.sqrt(Math.pow(GOAL_FIELD_Y - turretFieldY, 2) + Math.pow(GOAL_FIELD_X - turretFieldX, 2));
 
@@ -271,9 +272,9 @@ public class FieldTurretTest extends CommandOpMode {
     }
 
 
-    private static Pose2d vectorFToPose2d(VectorF vector) {
+    private static Pose2d vectorFToPose2d(VectorF vector, float aTagPose) {
         return new Pose2d(
-                new Vector2d(vector.get(0), vector.get(1)), Double.NaN
+                new Vector2d(vector.get(0), vector.get(1)), aTagPose
         );
 
     }
@@ -336,7 +337,7 @@ public class FieldTurretTest extends CommandOpMode {
         for (AprilTagDetection detection : detections) {
 
 
-            Pose2d tagPose = vectorFToPose2d(detection.metadata.fieldPosition);
+            Pose2d tagPose = vectorFToPose2d(detection.metadata.fieldPosition, detection.metadata.fieldOrientation.toOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS).secondAngle);
             AprilTagPoseFtc ftcPose = detection.ftcPose;
 
             telemetry.addData("tag name", detection.metadata.name);
@@ -386,11 +387,11 @@ public class FieldTurretTest extends CommandOpMode {
                 // If red or blue set to designated apriltag angle if anything else don't relocalize
 
                 case 20://blue
-                    heading_tagOnField_RAD = Math.toRadians(35.950057);
+                     heading_tagOnField_RAD = Math.toRadians(90 - 35.950057 );
                     rotation_headingOffset = Math.PI / 2;
                     break;
                 case 24://red
-                    heading_tagOnField_RAD = Math.toRadians(-35.950057);
+                    heading_tagOnField_RAD = Math.toRadians(-90 + 35.950057);
                     rotation_headingOffset = -Math.PI / 2;
                     break;
 
@@ -399,6 +400,7 @@ public class FieldTurretTest extends CommandOpMode {
 
             }
 
+          //  heading_tagOnField_RAD = tagPose.heading.toDouble();
 
 //            telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
 //            telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
@@ -408,7 +410,7 @@ public class FieldTurretTest extends CommandOpMode {
             double heading_botOnField_RAD;
 
             if (Math.abs(ftcPose.bearing) < bearing_headingRelocalizeThreshold) {
-                heading_botOnField_RAD = -(Math.PI - heading_tagOnField_RAD) + Math.toRadians(yaw_cameraToTag_DEG) + theta_turret_RAD;
+                heading_botOnField_RAD = ( heading_tagOnField_RAD - Math.PI) - Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
 
             } else {
                 heading_botOnField_RAD = imuHeadingRad;
