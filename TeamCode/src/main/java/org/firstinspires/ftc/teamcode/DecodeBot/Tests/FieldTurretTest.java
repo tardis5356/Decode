@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -45,6 +46,17 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+
+//TODO AprilTag Acquisition Time optimizations
+//Run the AprilTag Optimize Exposure Teleop for more fps and preventing whitewashing for camera.
+//Lower Resolution
+//Add Decimation for shorter processing time (skip undistortion of image if needed)
+// Add portal.setCameraStreamFrameQueueDepth(1); for minimized buffering
+// close the camera stream
+// Make code To Manually Turn on the camera stream only when needed by disabling and enabling the RC preview (called LiveView)
+//https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
 
 @Config
 @TeleOp(name = "FieldTurretTest", group = "AGen1")
@@ -85,6 +97,7 @@ public class FieldTurretTest extends CommandOpMode {
     // Telemetry
     private final MultipleTelemetry telemetry2 =
             new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
 
 
 
@@ -257,6 +270,8 @@ public class FieldTurretTest extends CommandOpMode {
         //  Convert to encoder ticks 
         int desiredTicks = (int) Math.round(desiredTurretAngleRobot / TURRET_TICK_TO_RADIAN_MULTIPLIER);
         turret.setTargetPosition(desiredTicks);
+
+
 
         //  Telemetry for debugging
         telemetry.addData("Turret Azimuth", Math.toDegrees(turretAzimuth));
