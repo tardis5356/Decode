@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.bigStartPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.BackStartPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.FrontStartPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.smallStartPos;
-
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -43,8 +42,8 @@ public class DecodeAuto extends OpMode {
     private boolean dpadDownPressed = false;
 
     private final String[][] autoNames = {
-            {"Set1-Mark1", "Set1-Mark2", "Set1-Mark3"},
-            {"Set2-A", "Set2-B", "Set2-C"},
+            {"Set1-Mark1", "Set1-Mark2", "Set1-Mark3"}, //PPG, PGP, GPP
+            {"Set2-A", "Set2-B", "Set2-C"}, //different spike marks to go to
             {"Set3-A", "Set3-B", "Set3-C"}
     };
 
@@ -67,9 +66,9 @@ public class DecodeAuto extends OpMode {
         }
 
         if (gamepad2.dpad_up) {
-           startPos = bigStartPos;
+           startPos = FrontStartPos;
         } else if (gamepad2.dpad_down) {
-            startPos = smallStartPos;
+            startPos = BackStartPos;
         }
 
 

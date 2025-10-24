@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.bigStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.smallStartPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startToBackSpike;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
@@ -37,7 +36,7 @@ public class AutoGenerator {
             switch (choice) {
                 case 0:
                     return new SequentialCommandGroup(
-                            /*Commands*/
+
                     );
                 case 1:
                     return new SequentialCommandGroup(

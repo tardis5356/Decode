@@ -39,42 +39,70 @@ public class AutoTrajectories {
         }
 
     }
-    public static final Pose2d bigStartPos = allianceCoordinate(new Pose2d(-56, 47, 305));
-    public static final Pose2d smallStartPos =allianceCoordinate( new Pose2d(61, 31, 180)); //tobe checked
-    public static final Pose2d red_BackStartPos = new Pose2d(63,33,Math.toRadians(90));
-    public static final Pose2d Blue_BackStartPos = new Pose2d(63,-33,Math.toRadians(90));
-
-    public static final Pose2d red_PPGGoalPos = new Pose2d(-12,31.5,Math.toRadians(90));
-    public static final Pose2d red_PGPPos = new Pose2d(12,31.5,Math.toRadians(90));
-    public static final Pose2d red_GGPBackPos = new Pose2d(36,31.5,Math.toRadians(90));
-    public static final Pose2d blue_PPGGoalPos = new Pose2d(-12,-31.5,Math.toRadians(-90));
-    public static final Pose2d blue_PGPPos = new Pose2d(12,-31.5,Math.toRadians(-90));
-    public static final Pose2d blue_GGPBackPos = new Pose2d(36,-31.5,Math.toRadians(-90));
-
-    public static final Pose2d markPos =allianceCoordinate( new Pose2d(0, 0, 0));
+    public static final Pose2d BackStartPos = allianceCoordinate(new Pose2d(63,33,180));
+    public static final Pose2d FrontStartPos = allianceCoordinate(new Pose2d(-36,33,270));
+    public static final Pose2d FrontSpikePos = allianceCoordinate(new Pose2d(-12,31.5,90)); //PPG
+    public static final Pose2d MidSpikePos = allianceCoordinate(new Pose2d(12,31.5,90)); //PGP
+    public static final Pose2d BackSpikePos = allianceCoordinate(new Pose2d(36,31.5,90)); //GPP
+    public static final Pose2d CornerPickupPos = allianceCoordinate(new Pose2d(60,60,90)); //pick up corner PGP
+    public static final Pose2d GatePrepPos = allianceCoordinate(new Pose2d(0,48,180)); //go to gate position
+    public static final Pose2d GateReleasePos = allianceCoordinate(new Pose2d(0,56,180)); //open the gate
 
     //Actions
-public static Action startToMark;
+    public static Action startToBackSpike;
+    public static Action BackSpikeToCornerPickup;
+    public static Action CornerPickupToMidSpike;
+    public static Action MidSpikeToGate;
+    public static Action MidSpikeToFrontSpike;
+    public static Action FrontSpikeToGate;
 
-private static double startPosTangent;
+    private static double startPosTangent;
 
 
 
     public static void generateTrajectories(MecanumDrive drive, int choice1) {
-        if (startPos == bigStartPos){
+        if (startPos == FrontStartPos){
             startPosTangent = 305;
-        } else if (startPos == smallStartPos){
+        } else if (startPos == BackStartPos){
             startPosTangent = 0;
         }
 
 
 
-        startToMark =
+        startToBackSpike =
                 drive.actionBuilder(startPos)
-                        .setTangent(allianceTangent(startPosTangent))
-                        .splineToLinearHeading(markPos, allianceTangent(0))//fill in tangent
+                        .setTangent(allianceTangent(180))
+                        .splineToLinearHeading(BackSpikePos, allianceTangent(90))//fill in tangent
                         .build();
 
+        BackSpikeToCornerPickup =
+                drive.actionBuilder(BackSpikePos)
+                        .setTangent(allianceTangent(0))
+                        .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                        .build();
 
+        CornerPickupToMidSpike =
+                drive.actionBuilder(CornerPickupPos)
+                        .setTangent(allianceTangent(270))
+                        .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                        .build();
+
+        MidSpikeToGate =
+            drive.actionBuilder(MidSpikePos)
+                    .setTangent(allianceTangent(180))
+                    .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                    .build();
+
+//        MidSpikeToFrontSpike =
+//            drive.actionBuilder(MidSpikePos)
+//                    .setTangent(allianceTangent(180))
+//                    .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+//                    .build();
+//
+//        FrontSpikeToGate =
+//                drive.actionBuilder(FrontSpikePos)
+//                     .setTangent(allianceTangent(180))
+//                     .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+//                     .build(); //talk with drivers if this is needed
     }
 }

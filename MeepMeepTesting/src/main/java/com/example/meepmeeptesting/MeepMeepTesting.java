@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import static com.acmerobotics.roadrunner.geometry.Pose2dKt.times;
 
+import com.acmerobotics.roadrunner.drive.MecanumDrive;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
@@ -20,11 +21,15 @@ import javax.imageio.ImageIO;
 public class MeepMeepTesting {
 static String aColor = "blue";
 
+    public static final Pose2d BackStartPos = allianceCoordinate(new Pose2d(63,33,180));
+    public static final Pose2d FrontStartPos = allianceCoordinate(new Pose2d(-36,33,270));
+    public static final Pose2d FrontSpikePos = allianceCoordinate(new Pose2d(-12,31.5,90)); //PPG
+    public static final Pose2d MidSpikePos = allianceCoordinate(new Pose2d(12,31.5,90)); //PGP
+    public static final Pose2d BackSpikePos = allianceCoordinate(new Pose2d(36,31.5,90)); //GPP
+    public static final Pose2d CornerPickupPos = allianceCoordinate(new Pose2d(60,60,90)); //pick up corner PGP
+    public static final Pose2d GatePrepPos = allianceCoordinate(new Pose2d(0,48,180)); //go to gate position
+    public static final Pose2d GateReleasePos = allianceCoordinate(new Pose2d(0,56,180)); //open the gate
 
-
-
-    public static final Pose2d bigStartPos = new Pose2d(56, -47, Math.toRadians(125));
-    public static final Pose2d smallStartPos = new Pose2d(-62, -29, Math.toRadians(0));
     static Pose2d mirroredCoordinate;
     private static Pose2d allianceCoordinate(Pose2d coordinate) {
         if(aColor == "blue"){
@@ -44,9 +49,19 @@ static String aColor = "blue";
                 .setDimensions(14, 17) // width, height in inches (or your field unit)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(allianceCoordinate(bigStartPos))
-                        .waitSeconds(100000)
-                        .build());
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(allianceCoordinate(BackStartPos)).build());
+
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -29, Math. toRadians(90))))
+//                .setTangent(Math.toRadians(180))
+//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))//fill in tangent
+//                .setTangent(Math.toRadians(0))
+//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
+//                .setTangent(Math.toRadians(270))
+//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
+//                .setTangent(Math.toRadians(180))
+//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
+//                .waitSeconds(100000)
+//                .build();
 
 
         Image img = null;
