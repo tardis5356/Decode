@@ -78,19 +78,19 @@ public class AutoTrajectories {
         BackSpikeToCornerPickup =
                 drive.actionBuilder(BackSpikePos)
                         .setTangent(allianceTangent(0))
-                        .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                        .splineToLinearHeading(CornerPickupPos, allianceTangent(90))
                         .build();
 
         CornerPickupToMidSpike =
                 drive.actionBuilder(CornerPickupPos)
                         .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                        .splineToLinearHeading(MidSpikePos, allianceTangent(90))
                         .build();
 
         MidSpikeToGate =
             drive.actionBuilder(MidSpikePos)
                     .setTangent(allianceTangent(180))
-                    .splineToLinearHeading(BackSpikePos, allianceTangent(90))
+                    .splineToLinearHeading(GatePrepPos, allianceTangent(90))
                     .build();
 
 //        MidSpikeToFrontSpike =

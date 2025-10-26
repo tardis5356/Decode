@@ -49,23 +49,23 @@ static String aColor = "blue";
                 .setDimensions(14, 17) // width, height in inches (or your field unit)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(allianceCoordinate(BackStartPos)).build());
-
-//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -29, Math. toRadians(90))))
-//                .setTangent(Math.toRadians(180))
-//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))//fill in tangent
-//                .setTangent(Math.toRadians(0))
-//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
-//                .setTangent(Math.toRadians(270))
-//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
-//                .setTangent(Math.toRadians(180))
-//                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))
-//                .waitSeconds(100000)
-//                .build();
+               .followTrajectorySequence(driveShim ->
+                       driveShim.trajectorySequenceBuilder(allianceCoordinate(BackStartPos))
+                               .setTangent(Math.toRadians(180))
+                                .splineToLinearHeading(BackSpikePos, Math.toRadians(90))//fill in tangent
+                                .setTangent(Math.toRadians(0))
+                                .splineToLinearHeading(CornerPickupPos, Math.toRadians(90))
+                                .setTangent(Math.toRadians(270))
+                                .splineToLinearHeading(MidSpikePos, Math.toRadians(90))
+                                .setTangent(Math.toRadians(180))
+                                .splineToLinearHeading(GatePrepPos, Math.toRadians(90))
+                                .waitSeconds(100000)
+                               .build());
 
 
         Image img = null;
-        try { img = ImageIO.read(new File("C:\\Users\\trant\\Downloads\\field-2025-official.png")); }
+       // try { img = ImageIO.read(new File("C:\\Users\\trant\\Downloads\\field-2025-official.png")); }
+        try { img = ImageIO.read(new File("C:\\Users\\Icy\\Downloads\\field-2025-official.png")); }
         catch(IOException e) {}
 
         meepMeep.setBackground(img)
