@@ -23,6 +23,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -80,13 +81,15 @@ public class FieldTurretTest extends CommandOpMode {
     private static final long TAG_TIMEOUT_NS = 1_000_000_000; //  1 sec
 
     public double fx = 911.942, fy = 911.942, cx = 640, cy = 393.994;
-
+    ElapsedTime turretTimer = new ElapsedTime();
 
     // Field constants
     public static double GOAL_FIELD_X = 0.0;
     public static double GOAL_FIELD_Y = 0.0;
     public static double ROBOT_X = 0.0;
     public static double ROBOT_Y = 0.0;
+
+    double relocalizeTimeInterval = 3;
 
 
     public static int desiredTagID;
@@ -157,7 +160,7 @@ public class FieldTurretTest extends CommandOpMode {
         super.run();
 
         telemetry.setMsTransmissionInterval(1);
-
+drive.localizer.update();
 
 
         if (GlobalVariables.aColor == "red") {
@@ -199,7 +202,12 @@ public class FieldTurretTest extends CommandOpMode {
 
 
         // Always track turret toward last known field goal
-        updateTurretTracking();
+
+        if (turretTimer.seconds() >= relocalizeTimeInterval) {
+            updateTurretTracking();
+            turretTimer.reset(); // reset for next 3-second interval
+        }
+
 
         double Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
         double FB = cubicScaling(gamepad1.left_stick_y);
@@ -248,10 +256,10 @@ public class FieldTurretTest extends CommandOpMode {
 
 
         //  Turret base position in field frame 
-        double turretFieldX = robotX /*+ (Math.cos(robotHeadingRad) * TURRET_OFFSET_X
-                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y)*/;
-        double turretFieldY = robotY /*+ (Math.sin(robotHeadingRad) * TURRET_OFFSET_X
-                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y)*/;
+        double turretFieldX = robotX + Math.cos(robotHeadingRad) * TURRET_OFFSET_X
+                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y;
+        double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
+                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
         //  Desired field angle from turret to goal 
         double desiredFieldTurretAngle = Math.atan2(GOAL_FIELD_Y - turretFieldY, GOAL_FIELD_X - turretFieldX);
