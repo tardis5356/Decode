@@ -3,11 +3,21 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.BackStartPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.FrontStartPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backSpikeIntake;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backSpikeToCornerPickup;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.cornerIntake;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.cornerPickupToMidSpike;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontSpikeIntake;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontSpikeToGate;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeIntake;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeToFrontSpike;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startToBackSpike;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -41,6 +51,16 @@ public class DecodeAuto extends OpMode {
     private boolean dpadUpPressed = false;
     private boolean dpadDownPressed = false;
 
+    private static ActionCommand StartToBackSpike;
+    private static ActionCommand BackSpikeIntake;
+    private static ActionCommand BackSpikeToCornerPickup;
+    private static ActionCommand CornerIntake;
+    private static ActionCommand CornerPickupToMidSpike;
+    private static ActionCommand MidSpikeIntake;
+    private static ActionCommand FrontSpikeIntake;
+    private static ActionCommand MidSpikeToFrontSpike;
+    private static ActionCommand FrontSpikeToGate;
+
     private final String[][] autoNames = {
             {"Set1-Mark1", "Set1-Mark2", "Set1-Mark3"}, //PPG, PGP, GPP
             {"Set2-A", "Set2-B", "Set2-C"}, //different spike marks to go to
@@ -52,6 +72,19 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
 
         rrSubsystem = new RRSubsystem(hardwareMap);
+
+        telemetry.addData("Status", "Initialized");
+
+        Set<Subsystem> requirements = Set.of(rrSubsystem);
+        StartToBackSpike = new ActionCommand(startToBackSpike, requirements);
+        BackSpikeIntake = new ActionCommand(backSpikeIntake, requirements);
+        BackSpikeToCornerPickup = new ActionCommand(backSpikeToCornerPickup, requirements);
+        CornerIntake = new ActionCommand(cornerIntake, requirements);
+        CornerPickupToMidSpike = new ActionCommand(cornerPickupToMidSpike, requirements);
+        MidSpikeIntake = new ActionCommand(midSpikeIntake, requirements);
+        MidSpikeToFrontSpike = new ActionCommand(midSpikeToFrontSpike, requirements);
+        FrontSpikeIntake = new ActionCommand(frontSpikeIntake, requirements);
+        FrontSpikeToGate = new ActionCommand(frontSpikeToGate, requirements);
 
         telemetry.addData("Status", "Initialized");
     }
@@ -120,7 +153,19 @@ public class DecodeAuto extends OpMode {
                 rrSubsystem, startPos
         );
 
-        CommandScheduler.getInstance().schedule(auto);
+        CommandScheduler.getInstance().schedule(
+                StartToBackSpike,
+                BackSpikeIntake,
+                BackSpikeToCornerPickup,
+                CornerIntake,
+                CornerPickupToMidSpike,
+                MidSpikeIntake,
+                MidSpikeToFrontSpike,
+                FrontSpikeIntake,
+                FrontSpikeToGate
+                //auto
+
+        );
     }
 
     @Override
