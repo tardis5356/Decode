@@ -16,8 +16,12 @@ import java.util.Objects;
 @Config
 public final class PinpointLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 3946.3673650245687; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = -189.69082545930533; // x position of the perpendicular encoder (in tick units)
+        //Measure physically
+        //rotated bot by 180 which flips axes to see potential error
+        //If not zeroed then your error would be doubled at 180
+        //It uses the RR coordinate system where +x is forward and +y is left
+        public double parYTicks = -3570; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = -510 + 153; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -26,13 +30,13 @@ public final class PinpointLocalizer implements Localizer {
     public final GoBildaPinpointDriver.EncoderDirection initialParDirection, initialPerpDirection;
 
     private Pose2d txWorldPinpoint;
-    private Pose2d txPinpointRobot = new Pose2d(3.42, 5.25, 0);
+    private Pose2d txPinpointRobot = new Pose2d(0, 0, 0);
 
     public PinpointLocalizer(HardwareMap hardwareMap, double inPerTick, Pose2d initialPose) {
         // TODO: make sure your config has a Pinpoint device with this name
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-
+//driver.setOffsets(-3.34, -5.5, DistanceUnit.INCH);
         double mmPerTick = inPerTick * 25.4;
         driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
         driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
