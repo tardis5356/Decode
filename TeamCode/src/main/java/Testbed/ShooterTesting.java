@@ -23,7 +23,7 @@ public class ShooterTesting extends CommandOpMode {
     Servo sH;
     GamepadEx driver1;
 
-    double hoodPos = 0, wheelSpeed = 0;
+    double hoodPos = 0.95, wheelSpeed = 0;
 
     double e1, e2, t;
 
@@ -36,24 +36,25 @@ public class ShooterTesting extends CommandOpMode {
         mW.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //mW.setVelocityPIDFCoefficients(.01,0,.002);
 
+
         driver1 = new GamepadEx(gamepad1);
 
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenActive(()->
-                        hoodPos -= .05
+                .whenInactive(new InstantCommand(()->
+                        hoodPos -= .05)
                 );
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenActive(()->
-                        hoodPos += .05
+                .whenInactive(new InstantCommand(()->
+                        hoodPos += .05)
                 );
 
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.A))
                 .whenActive(
                         new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed = .5),
+                                new InstantCommand(()-> wheelSpeed -= .05),
                                 new InstantCommand(()->myTimer.reset())
                                 //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
@@ -62,30 +63,30 @@ public class ShooterTesting extends CommandOpMode {
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.Y))
                 .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed = .65),
+                                new InstantCommand(()-> wheelSpeed += .05),
                                 new InstantCommand(()->myTimer.reset())
                                 //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
 
-        new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
-                .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed = .75),
-                                new InstantCommand(()->myTimer.reset())//,
-                                //new InstantCommand()
+//        new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
+//                .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()-> wheelSpeed = .8),
+//                                new InstantCommand(()->myTimer.reset())//,
+//                                //new InstantCommand()
+//
+//                        )
+//                );
 
-                        )
-                );
-
-        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
-                .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed = .9),
-                                new InstantCommand(()->myTimer.reset())//,
-                                //new InstantCommand()
-
-                        )
-                );
+//        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
+//                .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()-> wheelSpeed = .9),
+//                                new InstantCommand(()->myTimer.reset())//,
+//                                //new InstantCommand()
+//
+//                        )
+//                );
 
         new Trigger(()->myTimer.time(TimeUnit.SECONDS)>3)
                 .whileActiveOnce(
@@ -97,8 +98,8 @@ public class ShooterTesting extends CommandOpMode {
         super.run();
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
-        mW.setPower(wheelSpeed);
-        sH.setPosition(hoodPos);
+        mW.setPower(Math.abs(wheelSpeed));
+        sH.setPosition(Math.abs(hoodPos));
 
 
         t = myTimer.time(TimeUnit.SECONDS);
@@ -116,6 +117,10 @@ public class ShooterTesting extends CommandOpMode {
         telemetry.addData("motorPos", mW.getCurrentPosition());
 
         telemetry.addData("motorPower",mW.getPower());
+
+        telemetry.addData("CommandedPower", wheelSpeed);
+
+        telemetry.addData("T/s_method",mW.getVelocity());
 
         telemetry.addData("HoodPos", sH.getPosition());
 

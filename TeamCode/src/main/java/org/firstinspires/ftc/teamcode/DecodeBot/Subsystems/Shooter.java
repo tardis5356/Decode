@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getFlyWheelSpeed(){
-        return mS.getVelocity(AngleUnit.RADIANS)/(2*3.14159265359)*60;
+        return mS.getVelocity()/24*60;
     }
 
     public double getTargetDistance(){
