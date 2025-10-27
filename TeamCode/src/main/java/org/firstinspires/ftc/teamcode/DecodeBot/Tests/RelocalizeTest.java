@@ -93,7 +93,7 @@ turret = new Turret(hardwareMap);
         Pose2d relocalizedPose = FieldTurretTest.relocalize(
                 detections,
                 Math.toRadians(rrSubsystem.getYawDegrees()),
-                telemetry
+                telemetry, drive
         );
 
         // Show results

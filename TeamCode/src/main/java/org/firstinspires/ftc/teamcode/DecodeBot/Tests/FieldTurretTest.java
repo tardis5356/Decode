@@ -182,7 +182,7 @@ drive.localizer.update();
         Pose2d relocalizedPose = FieldTurretTest.relocalize(
                 detections,
                 Math.toRadians(rrSubsystem.getYawDegrees()),
-                telemetry
+                telemetry, drive
         );
 
         // Show the results
@@ -336,7 +336,7 @@ drive.localizer.update();
 
     public static Pose2d relocalize(List<AprilTagDetection> detections,
                                     double imuHeadingRad,
-                                    Telemetry telemetry) {
+                                    Telemetry telemetry, MecanumDrive drive) {
         List<Double> x = new ArrayList<>();
         List<Double> y = new ArrayList<>();
 
@@ -349,7 +349,7 @@ drive.localizer.update();
         double finalY = 0;
         double finalHeadingDeg = 0;
         double bearing_headingRelocalizeThreshold = 100;//Don't relocalize if you're not within the threshold
-
+int aTagAmount = 0;
         double theta_turret_RAD = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
         double flippedHeading = -imuHeadingRad;
 
@@ -436,7 +436,7 @@ drive.localizer.update();
                 heading_botOnField_RAD = ( heading_tagOnField_RAD - Math.PI) - Math.toRadians(yaw_cameraToTag_DEG) - theta_turret_RAD;
 
             } else {
-                heading_botOnField_RAD = imuHeadingRad;
+                heading_botOnField_RAD = drive.localizer.getPose().heading.toDouble();
             }
 
             telemetry.addData("yaw_cameraToTag_DEG", numFormat, yaw_cameraToTag_DEG);
@@ -453,7 +453,7 @@ drive.localizer.update();
             telemetry.addData("heading_botOnField_DEG", numFormat, Math.toDegrees(heading_botOnField_RAD));
             telemetry.addData("imu_heading_DEG", numFormat, Math.toDegrees(imuHeadingRad));
 
-
+            aTagAmount += 1;
             finalHeadingDeg += Math.toDegrees(heading_botOnField_RAD);
             finalX += x_botOnField;
             finalY += y_botOnField;
@@ -465,7 +465,7 @@ drive.localizer.update();
             return null;
 
         // Return average pose from all visible tags
-        return new Pose2d(finalX / detections.size(), finalY / detections.size(), finalHeadingDeg);
+        return new Pose2d(finalX / aTagAmount, finalY / aTagAmount, drive.localizer.getPose().heading.toDouble());
 
 
     }
