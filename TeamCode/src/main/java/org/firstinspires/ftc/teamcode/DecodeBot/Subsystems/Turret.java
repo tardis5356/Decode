@@ -34,6 +34,7 @@ public class Turret extends SubsystemBase {
         mT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mT.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         mT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        mT.setDirection(DcMotorSimple.Direction.REVERSE);
 
         controller = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
     }
@@ -45,7 +46,7 @@ public class Turret extends SubsystemBase {
         } else {
             motorPower = 0;
         }
-        mT.setPower(motorPower);
+     //   mT.setPower(motorPower);
     }
 
     public static double getCurrentPosition() {

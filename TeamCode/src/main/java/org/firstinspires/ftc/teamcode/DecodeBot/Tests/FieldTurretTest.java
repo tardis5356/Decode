@@ -124,9 +124,7 @@ public class FieldTurretTest extends CommandOpMode {
 
         turret = new Turret(hardwareMap);
         rrSubsystem = new RRSubsystem(hardwareMap);
-        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(270)));
-
-
+        drive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(0)));
 
 
 
@@ -178,7 +176,7 @@ drive.localizer.update();
         List<AprilTagDetection> detections = aTagP.getDetections();
 
 
-        // Relocalize
+//         Relocalize
         Pose2d relocalizedPose = FieldTurretTest.relocalize(
                 detections,
                 Math.toRadians(rrSubsystem.getYawDegrees()),
@@ -194,7 +192,7 @@ drive.localizer.update();
         } else {
             telemetry.addLine("No tags detected");
         }
-
+//
         telemetry.addData("Raw IMU yaw", rrSubsystem.getYawDegrees());
         if (relocalizedPose != null) {
             drive.localizer.setPose(relocalizedPose);
@@ -202,9 +200,9 @@ drive.localizer.update();
 
 
         // Always track turret toward last known field goal
-
+     //   updateTurretTracking();
         if (turretTimer.seconds() >= relocalizeTimeInterval) {
-            updateTurretTracking();
+
             turretTimer.reset(); // reset for next 3-second interval
         }
 
@@ -348,9 +346,9 @@ drive.localizer.update();
         double finalX = 0;
         double finalY = 0;
         double finalHeadingDeg = 0;
-        double bearing_headingRelocalizeThreshold = 100;//Don't relocalize if you're not within the threshold
-int aTagAmount = 0;
-        double theta_turret_RAD = -(Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        double bearing_headingRelocalizeThreshold = 0;//Don't relocalize if you're not within the threshold
+        double aTagAmount = 0;
+        double theta_turret_RAD = (Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
         double flippedHeading = -imuHeadingRad;
 
 
@@ -370,9 +368,9 @@ int aTagAmount = 0;
             double y_cameraToTag = ftcPose.y;
             double yaw_cameraToTag_DEG = ftcPose.yaw;
 
-//            telemetry.addData("x_cameraToTag", numFormat, x_cameraToTag);
-//            telemetry.addData("y_cameraToTag", numFormat, y_cameraToTag);
-//            telemetry.addData("yaw_cameraToTag_DEG", numFormat, yaw_cameraToTag_DEG);
+            telemetry.addData("x_cameraToTag", numFormat, x_cameraToTag);
+            telemetry.addData("y_cameraToTag", numFormat, y_cameraToTag);
+            telemetry.addData("yaw_cameraToTag_DEG", numFormat, yaw_cameraToTag_DEG);
 
             // Turret angle (in radians)
 
@@ -385,12 +383,12 @@ int aTagAmount = 0;
             y_cameraToTag += CAMERA_RADIUS;
             //Next rotate to bot/turret coordinate system
             //TODO Tag to turret numbers aren't always working
-            double x_tagToTurret = (x_cameraToTag * Math.cos(-Math.PI / 2 + theta_turret_RAD) - (y_cameraToTag) * Math.sin(-Math.PI / 2 + theta_turret_RAD));
+            double x_tagToTurret = x_cameraToTag * Math.cos(-Math.PI / 2 + theta_turret_RAD) - (y_cameraToTag) * Math.sin(-Math.PI / 2 + theta_turret_RAD);
             double y_tagToTurret = x_cameraToTag * Math.sin(-Math.PI / 2 + theta_turret_RAD) + (y_cameraToTag) * Math.cos(-Math.PI / 2 + theta_turret_RAD);
 
 
-//            telemetry.addData("x_tagToTurret", numFormat, x_tagToTurret);
-//            telemetry.addData("y_tagToTurret", numFormat, y_tagToTurret);
+            telemetry.addData("x_tagToTurret", numFormat, x_tagToTurret);
+            telemetry.addData("y_tagToTurret", numFormat, y_tagToTurret);
 
             //Shift from turret to robot frame
             double x_tagToBot = x_tagToTurret + TURRET_OFFSET_X;
@@ -398,8 +396,8 @@ int aTagAmount = 0;
             double y_tagToBot = y_tagToTurret + TURRET_OFFSET_Y;
 
 
-//            telemetry.addData("x_tagToBot", numFormat, x_tagToBot);
-//            telemetry.addData("y_tagToBot", numFormat, y_tagToBot);
+            telemetry.addData("x_tagToBot", numFormat, x_tagToBot);
+            telemetry.addData("y_tagToBot", numFormat, y_tagToBot);
 
             // Get tag position on field
             double x_tagOnField = tagPose.position.x;  // in inches
@@ -425,8 +423,8 @@ int aTagAmount = 0;
 
           //  heading_tagOnField_RAD = tagPose.heading.toDouble();
 
-//            telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
-//            telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
+            telemetry.addData("x_tagOnField", numFormat, x_tagOnField);
+            telemetry.addData("y_tagOnField", numFormat, y_tagOnField);
 
 
 
@@ -443,8 +441,9 @@ int aTagAmount = 0;
             telemetry.addData("theta_turret_DEG", numFormat, Math.toDegrees(theta_turret_RAD));
             telemetry.addData("heading_tagOnField_DEG", numFormat, Math.toDegrees(heading_tagOnField_RAD));
             // Robot position on field = Tag on field - Bot-to-Tag vector
-            double x_botOnField = -((x_tagToBot * Math.cos(heading_botOnField_RAD) - y_tagToBot * Math.sin(heading_botOnField_RAD)));
-            double y_botOnField = -((x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot * Math.cos(heading_botOnField_RAD)));
+
+            double x_botOnField = -(x_tagToBot * Math.cos(heading_botOnField_RAD) - y_tagToBot * Math.sin(heading_botOnField_RAD));
+            double y_botOnField = -(x_tagToBot * Math.sin(heading_botOnField_RAD) + y_tagToBot * Math.cos(heading_botOnField_RAD));
             x_botOnField += x_tagOnField;
             y_botOnField += y_tagOnField;
 
@@ -453,7 +452,7 @@ int aTagAmount = 0;
             telemetry.addData("heading_botOnField_DEG", numFormat, Math.toDegrees(heading_botOnField_RAD));
             telemetry.addData("imu_heading_DEG", numFormat, Math.toDegrees(imuHeadingRad));
 
-            aTagAmount += 1;
+aTagAmount += 1;
             finalHeadingDeg += Math.toDegrees(heading_botOnField_RAD);
             finalX += x_botOnField;
             finalY += y_botOnField;

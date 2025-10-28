@@ -23,6 +23,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -155,13 +156,21 @@ public class DecodeAuto extends OpMode {
 
         CommandScheduler.getInstance().schedule(
                 StartToBackSpike,
+                new WaitCommand(250),
                 BackSpikeIntake,
+                new WaitCommand(250),
                 BackSpikeToCornerPickup,
+                new WaitCommand(250),
                 CornerIntake,
+                new WaitCommand(250),
                 CornerPickupToMidSpike,
+                new WaitCommand(250),
                 MidSpikeIntake,
+                new WaitCommand(250),
                 MidSpikeToFrontSpike,
+                new WaitCommand(250),
                 FrontSpikeIntake,
+                new WaitCommand(250),
                 FrontSpikeToGate
                 //auto
 

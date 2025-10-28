@@ -39,7 +39,7 @@ public class AutoTrajectories {
         }
 
     }
-    public static final Pose2d BackStartPos = allianceCoordinate(new Pose2d(63,33,Math.toRadians(180)));
+    public static final Pose2d BackStartPos = allianceCoordinate(new Pose2d(63,30.5,Math.toRadians(180)));
     public static final Pose2d FrontStartPos = allianceCoordinate(new Pose2d(-36,33,Math.toRadians(270)));
     public static final Pose2d FrontSpikePos = allianceCoordinate(new Pose2d(-12,29,Math.toRadians(90))); //PPG
     public static final Pose2d FrontSpikeIntakePos = allianceCoordinate(new Pose2d(-12,44,Math.toRadians(90))); //PPG
