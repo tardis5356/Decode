@@ -46,10 +46,10 @@ public class Shooter extends SubsystemBase {
     }
 
 
-    private void updateFlyWheelSpeed(double rpm){
+    private void updateFlyWheelSpeed(double tps){
         //rotations/minute / 60 seconds/minute * 2pi to get radians/second
 
-        mS.setVelocity(rpm/60*2*3.14159265359, AngleUnit.RADIANS);
+        mS.setVelocity(tps);
     }
 
     public void setFlyWheelSpeed(double rpm){
@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getFlyWheelSpeed(){
-        return mS.getVelocity()/24*60;
+        return mS.getVelocity();
     }
 
     public double getTargetDistance(){
