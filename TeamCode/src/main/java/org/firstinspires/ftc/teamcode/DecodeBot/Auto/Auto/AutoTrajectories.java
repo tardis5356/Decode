@@ -5,138 +5,186 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariable
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 
 public class AutoTrajectories {
 
-   //heading input is degrees
+    //heading input is degrees
+    static Pose2d mirroredCoordinate;
+
     public static Pose2d allianceCoordinate(Pose2d coordinate) {
-
-        Pose2d mirroredCoordinate;
-
-        if(aColor == "blue"){
-            mirroredCoordinate =new Pose2d(new Vector2d(coordinate.position.x, coordinate.position.y * -1) , Math.toRadians(-coordinate.heading.toDouble() ));
+        if ((aColor.equals("blue"))) {
+            mirroredCoordinate = new Pose2d(coordinate.position.x, coordinate.position.y * -1, Math.toRadians(-coordinate.heading.toDouble()));
             return mirroredCoordinate;
-        }else {
-            coordinate =new Pose2d(new Vector2d(coordinate.position.x, coordinate.position.y ), Math.toRadians(coordinate.heading.toDouble()));
-            return coordinate;
+        } else {
+
+            return new Pose2d(coordinate.position.x, coordinate.position.y, Math.toRadians(coordinate.heading.toDouble()));
         }
 
     }
 
-    //input is degrees
     private static double allianceTangent(double tangent) {
 
         double mirroredTangent;
 
-        if(aColor == "blue"){
+        if ((aColor.equals("blue"))) {
             mirroredTangent = Math.toRadians(-tangent);
             return mirroredTangent;
-        }else {
+        } else {
             return Math.toRadians(tangent);
         }
 
     }
-    public static final Pose2d BackStartPos = allianceCoordinate(new Pose2d(63,30.5,Math.toRadians(180)));
-    public static final Pose2d FrontStartPos = allianceCoordinate(new Pose2d(-36,33,Math.toRadians(270)));
-    public static final Pose2d FrontSpikePos = allianceCoordinate(new Pose2d(-12,29,Math.toRadians(90))); //PPG
-    public static final Pose2d FrontSpikeIntakePos = allianceCoordinate(new Pose2d(-12,44,Math.toRadians(90))); //PPG
-    public static final Pose2d MidSpikePos = allianceCoordinate(new Pose2d(12,29,Math.toRadians(90))); //PGP
-    public static final Pose2d MidSpikeIntakePos = allianceCoordinate(new Pose2d(12,44,Math.toRadians(90))); //PGP
-    public static final Pose2d BackSpikePos = allianceCoordinate(new Pose2d(35,29,Math.toRadians(90))); //GPP
-    public static final Pose2d BackSpikeIntakePos = allianceCoordinate(new Pose2d(35,44,Math.toRadians(90))); //PGP
-    public static final Pose2d CornerPos = allianceCoordinate(new Pose2d(61,54,Math.toRadians(90))); //pick up corner PGP
-    public static final Pose2d CornerIntakePos = allianceCoordinate(new Pose2d(61,61,Math.toRadians(90))); //pick up corner PGP
-    public static final Pose2d GatePrepPos = allianceCoordinate(new Pose2d(0,48,Math.toRadians(180))); //go to gate position
-    public static final Pose2d GateReleasePos = allianceCoordinate(new Pose2d(0,56,Math.toRadians(180))); //open the gate
 
+
+    public static Pose2d shootPos1;
+
+    public static double shootEndTangent1;
+    public static double shootStartTangent1;
+    public static double shootEndTangent2;
+    public static double shootStartTangent2;
+
+    public static double nextStartTangent1;
+
+    public static double nextStartTangent2;
+
+    public static double backShootStartTangent = 270;
+    public static double backShootEndTangent =270;
+    public static double nextBackStartTangent = 180;
+
+
+    public static double frontShootStartTangent = 270;
+    public static double frontShootEndTangent = 245;
+    public static double nextFrontStartTangent = 0;
+
+    public static Pose2d shootPos2;
+    public static Pose2d shootPos3;
     //Actions
-    public static Action startToBackSpike;
-    public static Action backSpikeIntake;
-    public static Action backSpikeToCornerPickup;
-    public static Action cornerIntake;
-    public static Action cornerPickupToMidSpike;
-    public static Action midSpikeIntake;
-//    public static Action MidSpikeToGate;
+    public static Action backStartToBackSpike;
+
+    public static Action backSpikeToShoot1;
+    public static Action shootPos1ToMidSpike;
+    public static Action midSpikeToShoot2;
+    //    public static Action MidSpikeToGate;
     public static Action frontSpikeIntake;
     public static Action midSpikeToFrontSpike;
     public static Action frontSpikeToGate;
-    public static Action shootPreload;
-    public static Action shootBackSpike;
+    public static Action shootPos2ToGate;
+    public static Action frontStartToFrontSpike;
     public static Action shootMidSpike;
     public static Action shootFrontSpike;
     private static double startPosTangent;
 
+    public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(62, 24, 90));
+    public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-54, 47, 305));
+    public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12, 43, 90)); //PPG
+    public static final Pose2d midSpikePos = allianceCoordinate(new Pose2d(12, 43, 90)); //PGP
+    public static final Pose2d backSpikePos = allianceCoordinate(new Pose2d(35, 43, 90)); //GPP
+    public static final Pose2d cornerPickupPos = allianceCoordinate(new Pose2d(48, 60, 90)); //pick up corner PGP
+    public static final Pose2d gateReleasePos = allianceCoordinate(new Pose2d(0, 52, 90)); //open the gate
+    public static final Pose2d backShootPos = allianceCoordinate(new Pose2d(48, 10, 90)); //PPG
+    public static final Pose2d frontShootPos = allianceCoordinate(new Pose2d(-12, 17, 90)); //PPG
 
+    public static void generateTrajectories(MecanumDrive drive, int shootChoice1, int shootChoice2) {
 
-    public static void generateTrajectories(MecanumDrive drive, int choice1) {
-        if (startPos == FrontStartPos){
-            startPosTangent = 0;
-        } else if (startPos == BackStartPos){
-            startPosTangent = 0;
+        switch (shootChoice1) {
+            case 0 :
+                shootPos1 = frontShootPos;
+                shootStartTangent1 = frontShootStartTangent;
+                shootEndTangent1 = frontShootEndTangent;
+                nextStartTangent1 = nextFrontStartTangent;
+                break;
+            case 1 :
+                shootPos1 = backShootPos;
+                shootStartTangent1 = backShootStartTangent;
+                shootEndTangent1 = backShootEndTangent;
+                nextStartTangent1 = nextBackStartTangent;
+                break;
         }
 
+        switch (shootChoice2) {
+            case 0 :
+                shootPos2 = frontShootPos;
+                shootStartTangent2 = frontShootStartTangent;
+                shootEndTangent2 = frontShootEndTangent;
+                nextStartTangent2 = nextFrontStartTangent;
+                break;
+            case 1 :
+                shootPos2 = backShootPos;
+                shootStartTangent2 = backShootStartTangent;
+                shootEndTangent2 = backShootEndTangent;
+                nextStartTangent2 = nextBackStartTangent;
+                break;
+        }
 
-
-        startToBackSpike =
-                drive.actionBuilder(startPos)
+        backStartToBackSpike =
+                drive.actionBuilder(backStartPos)
                         .setTangent(allianceTangent(180))
-                        .splineToLinearHeading(BackSpikePos, allianceTangent(270))//fill in tangent
+                        .splineToLinearHeading(backSpikePos, allianceTangent(90))
                         .build();
 
-        backSpikeIntake =
-                drive.actionBuilder(BackSpikePos)
-                        .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(BackSpikeIntakePos, allianceTangent(270))
+
+        backSpikeToShoot1 =
+                drive.actionBuilder(backSpikePos)
+                        .setTangent(allianceTangent(shootStartTangent1))
+                        .splineToLinearHeading(shootPos1, allianceTangent(shootEndTangent1))
                         .build();
 
-        backSpikeToCornerPickup =
-                drive.actionBuilder(BackSpikeIntakePos)
-                        .setTangent(allianceTangent(90))
-                        .splineToLinearHeading(CornerPos, allianceTangent(270))
+        shootPos1ToMidSpike =
+                drive.actionBuilder(shootPos1)
+                        .setTangent(allianceTangent(nextStartTangent1))
+                        .splineToLinearHeading(midSpikePos, allianceTangent(90))
                         .build();
 
-        cornerIntake =
-                drive.actionBuilder(CornerPos)
-                        .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(CornerIntakePos, allianceTangent(270))
+        midSpikeToShoot2 =
+                drive.actionBuilder(midSpikePos)
+                        .setTangent(allianceTangent(shootStartTangent2))
+                        .splineToLinearHeading(shootPos2, allianceTangent(shootEndTangent2))
                         .build();
 
-        cornerPickupToMidSpike =
-                drive.actionBuilder(CornerIntakePos)
-                        .setTangent(allianceTangent(90))
-                        .splineToLinearHeading(MidSpikePos, allianceTangent(270))
+        shootPos2ToGate =
+                drive.actionBuilder(shootPos2)
+                        .setTangent(allianceTangent(nextStartTangent2))
+                        .splineToLinearHeading(gateReleasePos, allianceTangent(90))
                         .build();
 
-        midSpikeIntake =
-                drive.actionBuilder(MidSpikePos)
-                        .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(MidSpikeIntakePos, allianceTangent(270))
-                        .build();
 
-//        MidSpikeToGate =
-//            drive.actionBuilder(MidSpikeIntakePos)
-//                    .setTangent(allianceTangent(90))
-//                    .splineToLinearHeading(GatePrepPos, allianceTangent(270))
-//                    .build();
 
-        midSpikeToFrontSpike =
-            drive.actionBuilder(MidSpikeIntakePos)
-                    .setTangent(allianceTangent(90))
-                    .splineToLinearHeading(FrontSpikePos, allianceTangent(270))
-                    .build();
 
-        frontSpikeIntake =
-                drive.actionBuilder(FrontSpikePos)
-                        .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(FrontSpikeIntakePos,allianceTangent(270))
-                        .build();
-        frontSpikeToGate =
-                drive.actionBuilder(FrontSpikePos)
-                     .setTangent(allianceTangent(90))
-                     .splineToLinearHeading(BackSpikePos, allianceTangent(270))
-                     .build();
+
+
+
+//        frontStartToFrontSpike =
+//                drive.actionBuilder(startPos)
+//                        .setTangent(allianceTangent(180))
+//                        .splineToLinearHeading(backSpikePos, allianceTangent(90))
+//                        .build();
+//
+//        backSpikeToShoot1 =
+//                drive.actionBuilder(backSpikePos)
+//                        .setTangent(allianceTangent(0))
+//                        .splineToLinearHeading(backShootPos, allianceTangent(270))
+//                        .build();
+//
+//        shootPos1ToMidSpike =
+//                drive.actionBuilder(backShootPos)
+//                        .setTangent(allianceTangent(180))
+//                        .splineToLinearHeading(midSpikePos, allianceTangent(90))
+//                        .build();
+//
+//        midSpikeToShoot2 =
+//                drive.actionBuilder(midSpikePos)
+//                        .setTangent(allianceTangent(225))
+//                        .splineToLinearHeading(frontShootPos, allianceTangent(245))
+//                        .build();
+//
+//        shootPos2ToGate =
+//                drive.actionBuilder(midSpikePos)
+//                        .setTangent(allianceTangent(0))
+//                        .splineToLinearHeading(gateReleasePos, allianceTangent(90))
+//                        .build();
+
+
     }
 }

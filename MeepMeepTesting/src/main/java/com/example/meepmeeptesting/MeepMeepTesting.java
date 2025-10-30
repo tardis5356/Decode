@@ -15,11 +15,11 @@ import javax.imageio.ImageIO;
 
 
 public class MeepMeepTesting {
-static String aColor = "blue";
+static String aColor = "red";
 
-    public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(63,33,180));
-    public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-36,33,270));
-    public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12,31.5,90)); //PPG
+    public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(63,26,90));
+    public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-54,47,305));
+    public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12,43,90)); //PPG
     public static final Pose2d midSpikePos = allianceCoordinate(new Pose2d(12,43,90)); //PGP
     public static final Pose2d backSpikePos = allianceCoordinate(new Pose2d(35,43,90)); //GPP
     public static final Pose2d cornerPickupPos = allianceCoordinate(new Pose2d(48,60,90)); //pick up corner PGP
@@ -60,17 +60,30 @@ static String aColor = "blue";
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
                .followTrajectorySequence(driveShim ->
+//                       driveShim.trajectorySequenceBuilder(frontStartPos)
+//                               .waitSeconds(1.5)
+//                               .setTangent(allianceTangent(305))
+//                               .splineToLinearHeading(frontSpikePos,allianceTangent(90))//fill in tangent
+//                               .setTangent(allianceTangent(270))
+//                               .splineToLinearHeading(frontShootPos, allianceTangent(270))
+//                               .waitSeconds(1.5)
+//
+//                               .setTangent(allianceTangent(0))
+//                               .splineToLinearHeading(midSpikePos, allianceTangent(90))
+//                               .setTangent(allianceTangent(225))
+//                               .splineToLinearHeading(frontShootPos, allianceTangent(245))
+//                               .waitSeconds(1.5)
+//                               .setTangent(allianceTangent(0))
+//                               .splineToLinearHeading(gateReleasePos, allianceTangent(90))
+
                        driveShim.trajectorySequenceBuilder(backStartPos)
+                               .waitSeconds(1.5)
                                .setTangent(allianceTangent(180))
                                 .splineToLinearHeading(backSpikePos,allianceTangent(90))//fill in tangent
-                                .setTangent(allianceTangent(0))
+                                .setTangent(allianceTangent(270))
                                 .splineToLinearHeading(backShootPos, allianceTangent(270))
                                .waitSeconds(1.5)
-                                .setTangent(allianceTangent(90))
-                                .splineToLinearHeading(cornerPickupPos, allianceTangent(90))
-                               .setTangent(allianceTangent(270))
-                               .splineToLinearHeading(backShootPos, allianceTangent(270))
-                               .waitSeconds(1.5)
+//
                                .setTangent(allianceTangent(180))
                                .splineToLinearHeading(midSpikePos, allianceTangent(90))
                                .setTangent(allianceTangent(225))
@@ -78,11 +91,8 @@ static String aColor = "blue";
                                .waitSeconds(1.5)
                                .setTangent(allianceTangent(0))
                                .splineToLinearHeading(gateReleasePos, allianceTangent(90))
-//                                .setTangent(allianceTangent(180))
 //
-                                //.waitSeconds(100000)
                                .build());
-
 
         Image img = null;
         try { img = ImageIO.read(new File("C:\\Users\\trant\\Downloads\\field-2025-official.png")); }
