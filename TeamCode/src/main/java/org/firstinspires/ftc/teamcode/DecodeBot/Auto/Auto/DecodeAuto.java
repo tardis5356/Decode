@@ -10,6 +10,8 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectorie
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeToFrontSpike;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backStartToBackSpike;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeToShoot2;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.originTestPoint;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.originTestToStartPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.shootPos1ToMidSpike;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.shootPos2ToGate;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
@@ -98,9 +100,10 @@ public class DecodeAuto extends OpMode {
 
         // ----- Starting position selection -----
         if (aColor != null){
-            if (gamepad2.dpad_up) startPos = frontStartPos;
-            else if (gamepad2.dpad_down) startPos = backStartPos;
-
+            AutoTrajectories.updateAlliancePoses();
+//            if (gamepad2.dpad_up) startPos = frontStartPos;
+//            else if (gamepad2.dpad_down) startPos = backStartPos;
+startPos = originTestPoint;
         }
 
         // ----- Scroll between sets -----
@@ -129,7 +132,10 @@ public class DecodeAuto extends OpMode {
 
         // ----- Generate trajectories dynamically -----
         if (drive != null && startPos != null && aColor != null) {
-            generateTrajectories(drive, choices[0], choices[1]);
+            if (gamepad1.x) { // say X confirms your selection
+
+                AutoTrajectories.generateTrajectories(drive, choices[0], choices[1]);
+            }
         }
 
         // ----- Telemetry -----
@@ -169,7 +175,8 @@ public class DecodeAuto extends OpMode {
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                        StartToBackSpike
+                        new ActionCommand(originTestToStartPos, requirements)
+                       // StartToBackSpike
 //                        BackSpikeToShoot1,
 //                        Shoot1ToMidSpike,
 //                        MidSpikeToShoot2,

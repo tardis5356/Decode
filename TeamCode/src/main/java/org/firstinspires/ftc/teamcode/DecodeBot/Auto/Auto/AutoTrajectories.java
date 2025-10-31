@@ -63,6 +63,8 @@ public class AutoTrajectories {
     //Actions
     public static Action backStartToBackSpike;
 
+    public static Action originTestToStartPos;
+
     public static Action backSpikeToShoot1;
     public static Action shootPos1ToMidSpike;
     public static Action midSpikeToShoot2;
@@ -75,17 +77,31 @@ public class AutoTrajectories {
     public static Action shootMidSpike;
     public static Action shootFrontSpike;
     private static double startPosTangent;
+    public static  Pose2d backStartPos;
+    public static  Pose2d frontStartPos;
+    public static Pose2d frontSpikePos;
+    public static  Pose2d midSpikePos;
 
-    public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(62, 24, 90));
-    public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-54, 47, 305));
-    public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12, 43, 90)); //PPG
-    public static final Pose2d midSpikePos = allianceCoordinate(new Pose2d(12, 43, 90)); //PGP
-    public static final Pose2d backSpikePos = allianceCoordinate(new Pose2d(35, 43, 90)); //GPP
-    public static final Pose2d cornerPickupPos = allianceCoordinate(new Pose2d(48, 60, 90)); //pick up corner PGP
-    public static final Pose2d gateReleasePos = allianceCoordinate(new Pose2d(0, 52, 90)); //open the gate
-    public static final Pose2d backShootPos = allianceCoordinate(new Pose2d(48, 10, 90)); //PPG
-    public static final Pose2d frontShootPos = allianceCoordinate(new Pose2d(-12, 17, 90)); //PPG
+    public static Pose2d backSpikePos;
+    public static Pose2d cornerPickupPos;
+    public static Pose2d gateReleasePos;
+    public static Pose2d backShootPos;
+    public static Pose2d frontShootPos;
 
+    public static Pose2d originTestPoint = new Pose2d(0,0,0);
+
+
+    public static void updateAlliancePoses() {
+     backStartPos = allianceCoordinate(new Pose2d(-62, 24, 90));
+    frontStartPos = allianceCoordinate(new Pose2d(-54, 47, 305));
+    frontSpikePos = allianceCoordinate(new Pose2d(-12, 43, 90)); //PPG
+     midSpikePos = allianceCoordinate(new Pose2d(12, 43, 90)); //PGP
+     backSpikePos = allianceCoordinate(new Pose2d(-35, 43, 90)); //GPP
+   cornerPickupPos = allianceCoordinate(new Pose2d(48, 60, 90)); //pick up corner PGP
+   gateReleasePos = allianceCoordinate(new Pose2d(0, 52, 90)); //open the gate
+    backShootPos = allianceCoordinate(new Pose2d(48, 10, 90)); //PPG
+   frontShootPos = allianceCoordinate(new Pose2d(-12, 17, 90)); //PPG
+}
     public static void generateTrajectories(MecanumDrive drive, int shootChoice1, int shootChoice2) {
 
         switch (shootChoice1) {
@@ -117,6 +133,10 @@ public class AutoTrajectories {
                 nextStartTangent2 = nextBackStartTangent;
                 break;
         }
+        originTestToStartPos =
+        drive.actionBuilder(originTestPoint)
+                .splineToLinearHeading(backStartPos, allianceTangent(90))
+                .build();
 
         backStartToBackSpike =
                 drive.actionBuilder(backStartPos)
