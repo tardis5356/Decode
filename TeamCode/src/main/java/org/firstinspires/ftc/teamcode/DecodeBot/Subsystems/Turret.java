@@ -29,7 +29,7 @@ public class Turret extends SubsystemBase {
 
 
     public Turret(HardwareMap hardwareMap) {
-        mT = hardwareMap.get(DcMotorEx.class, "yaw");
+        mT = hardwareMap.get(DcMotorEx.class, "mT");
 
         mT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         mT.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
