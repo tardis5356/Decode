@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
-import android.graphics.Color;
-
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -11,7 +9,7 @@ public class Intake extends SubsystemBase {
 
     DcMotorEx mI, mP;
 
-    ColorSensor cSI, cSM, cSS;
+    ColorSensor cSI, cSM, cSSh, cSSt;
 
     public static String intakeState = new String();
 
@@ -26,8 +24,8 @@ public class Intake extends SubsystemBase {
 
         cSI = hardwareMap.get(ColorSensor.class, "cSI");
         cSM = hardwareMap.get(ColorSensor.class, "cSM");
-        cSS = hardwareMap.get(ColorSensor.class, "cSS");
-
+        cSSh = hardwareMap.get(ColorSensor.class, "cSSh");
+        cSSt = hardwareMap.get(ColorSensor.class,"cSSt");
 
     }
 
@@ -83,7 +81,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setCurrentArtifacts(){
-        GlobalVariables.currentArtifacts = greenOrPurple(cSS) + greenOrPurple(cSM) + greenOrPurple(cSI);
+        GlobalVariables.currentArtifacts = greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
     }
 
 }
