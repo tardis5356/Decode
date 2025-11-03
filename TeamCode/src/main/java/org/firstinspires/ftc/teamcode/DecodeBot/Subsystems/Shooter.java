@@ -1,23 +1,29 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.DecodeBot.InterpolatingDoubleTreeMap;
 
+@Config
 public class Shooter extends SubsystemBase {
 
-    DcMotorEx mS;
-    Servo sH;
+    public static float vP = 4f, vI = 1f, vD = 2f;
 
-    InterpolatingDoubleTreeMap regression = new InterpolatingDoubleTreeMap();
+    public DcMotorEx mS;
+    public Servo sH;
+
+    InterpolatingDoubleTreeMap LDRegression = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap SDRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
 
     boolean targeting;
+
+    double distanceFromTarget;
 
     public Shooter(HardwareMap hardwareMap){
         //map subsystems
@@ -25,10 +31,14 @@ public class Shooter extends SubsystemBase {
         sH = hardwareMap.get(Servo.class,"sH");
 
         // TODO: Actually tune the velocity PID
-        mS.setVelocityPIDFCoefficients(.02,.0001,.01,0);
+        mS.setVelocityPIDFCoefficients(vP,vI,vD,0);
 
         //prep regression data
-        regression.put(1.,1.);
+        LDRegression.put(1.,1.);
+
+        SDRegression.put(1.,1.);
+
+        targeting = true;
     }
 
     @Override
@@ -36,12 +46,17 @@ public class Shooter extends SubsystemBase {
 
         updateFlyWheelSpeed(flyWheelSpeed);
 
-        if (targeting != false){
+        if (targeting){
 
-            sH.setPosition(regression.get(getTargetDistance()));
-
+            if( mS.getVelocity() < (BotPositions.LONG_DISTANCE_TPS-30) && mS.getVelocity() > (BotPositions.LONG_DISTANCE_TPS+30)){
+                sH.setPosition(LDRegression.get(distanceFromTarget));
+            }
+            else if (mS.getVelocity() < (BotPositions.SHORT_DISTANCE_TPS-30) && mS.getVelocity() > (BotPositions.SHORT_DISTANCE_TPS+30)){
+                sH.setPosition(SDRegression.get(distanceFromTarget));
+            }
 
         }
+
 
     }
 
@@ -52,23 +67,17 @@ public class Shooter extends SubsystemBase {
         mS.setVelocity(tps);
     }
 
-    public void setFlyWheelSpeed(double rpm){
-        flyWheelSpeed = rpm;
+    public void setFlyWheelSpeed(double tps){
+        flyWheelSpeed = tps;
+
     }
 
     public double getFlyWheelSpeed(){
         return mS.getVelocity();
     }
 
-    public double getTargetDistance(){
-        if(GlobalVariables.aColor == "red"){
-            //place holder
-            return 1;
-        }
-        else{
-            //place holder
-            return 1;
-        }
+    public void setTargetDistance(double d){
+        distanceFromTarget = d;
     }
 
 

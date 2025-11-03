@@ -30,4 +30,6 @@ public class BotPositions {
 
     public static long KICKER_WAIT = 500, GATE_WAIT = 500, SWAP_WAIT = 500, INTAKE_WAIT = 1000;
 
+    public static double LONG_DISTANCE_TPS, SHORT_DISTANCE_TPS;
+
 }

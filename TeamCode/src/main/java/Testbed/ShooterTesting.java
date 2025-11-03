@@ -1,5 +1,8 @@
 package Testbed;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -14,70 +17,72 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
+@Config
 @TeleOp(name="10.2.25_Shooter_Test")
 public class ShooterTesting extends CommandOpMode {
 
     private ElapsedTime myTimer = new ElapsedTime();
 
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+
     DcMotorEx mW;
     Servo sH;
     GamepadEx driver1;
 
-    double hoodPos = 0.95, wheelSpeed = 0;
+    double hoodPos = 0.95;
+    public static double wheelSpeedOne = 0, wheelSpeedTwo = 0, wheelSpeed_Three = 0;
+    double wheelSpeed;
 
     double e1, e2, t;
 
 
     @Override
     public void initialize(){
-        mW = hardwareMap.get(DcMotorEx.class, "mW");
-        sH = hardwareMap.get(Servo.class, "sH");
 
-        mW.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        //mW.setVelocityPIDFCoefficients(.01,0,.002);
-
-
+        mW = hardwareMap.get(DcMotorEx.class,"mS");
+        sH = hardwareMap.get(Servo.class,"sH");
         driver1 = new GamepadEx(gamepad1);
 
-
-        new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenInactive(new InstantCommand(()->
-                        hoodPos -= .05)
-                );
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_UP))
                 .whenInactive(new InstantCommand(()->
                         hoodPos += .05)
                 );
 
-
-        new Trigger(()-> driver1.getButton(GamepadKeys.Button.A))
-                .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed -= .05),
-                                new InstantCommand(()->myTimer.reset())
-                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
-
-                        )
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                .whenInactive(new InstantCommand(()->
+                        hoodPos -= .05)
                 );
+
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.Y))
-                .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()-> wheelSpeed += .05),
+                .whenActive(
+                        new SequentialCommandGroup(
+                                new InstantCommand(()-> wheelSpeed = wheelSpeedOne),
                                 new InstantCommand(()->myTimer.reset())
                                 //new InstantCommand(()->e1 = mW.getCurrentPosition())
 
                         )
                 );
 
-//        new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
-//                .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(()-> wheelSpeed = .8),
-//                                new InstantCommand(()->myTimer.reset())//,
-//                                //new InstantCommand()
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.B))
+                .whenActive(new SequentialCommandGroup(
+                                new InstantCommand(()-> wheelSpeed = wheelSpeedTwo),
+                                new InstantCommand(()->myTimer.reset())
+                                //new InstantCommand(()->e1 = mW.getCurrentPosition())
+
+                        )
+                );
+
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.A))
+                .whenActive(new SequentialCommandGroup(
+                                new InstantCommand(()-> wheelSpeed = wheelSpeed_Three),
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
 //
-//                        )
-//                );
+                        )
+                );
 
 //        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
 //                .whenActive(new SequentialCommandGroup(
@@ -97,20 +102,17 @@ public class ShooterTesting extends CommandOpMode {
     public void run() {
         super.run();
 
+        dashboard.updateConfig();
+
+
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
-        mW.setPower(Math.abs(wheelSpeed));
+        mW.setVelocity(Math.abs(wheelSpeed));
         sH.setPosition(Math.abs(hoodPos));
 
 
         t = myTimer.time(TimeUnit.SECONDS);
 
-        if (myTimer.time(TimeUnit.SECONDS)>3){
-            e2 = mW.getCurrentPosition();
-            telemetry.addData("tics/second", (e2-e1)/t);
-        }
-        else{
-            e2 = 0;
-        }
+
 
         telemetry.update();
         //telemetry.addData("Wheel_RPM",mW.getVelocity(AngleUnit.DEGREES));
