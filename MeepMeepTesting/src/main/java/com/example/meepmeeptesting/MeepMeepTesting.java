@@ -15,8 +15,8 @@ import javax.imageio.ImageIO;
 
 
 public class MeepMeepTesting {
-static String aColor = "red";
 
+    static String aColor = "blue";
     public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(63,26,90));
     public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-54,47,305));
     public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12,43,90)); //PPG
@@ -51,6 +51,7 @@ static String aColor = "red";
         }
 
     }
+
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
@@ -91,7 +92,9 @@ static String aColor = "red";
                                .waitSeconds(1.5)
                                .setTangent(allianceTangent(0))
                                .splineToLinearHeading(gateReleasePos, allianceTangent(90))
-//
+                               .back(20)
+                               .setTangent(allianceTangent(270))
+                               .splineToLinearHeading(frontSpikePos, allianceTangent(90))
                                .build());
 
         Image img = null;

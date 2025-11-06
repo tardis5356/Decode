@@ -1,20 +1,11 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backSpikeToShoot1;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontSpikeIntake;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontSpikeToGate;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontStartPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeToFrontSpike;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backStartToBackSpike;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.midSpikeToShoot2;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.originTestPoint;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.originTestToStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.shootPos1ToMidSpike;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.shootPos2ToGate;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
+import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -22,9 +13,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -32,7 +21,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 
 import java.util.Set;
 
@@ -42,45 +33,29 @@ import java.util.Set;
 public class DecodeAuto extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
     private MecanumDrive drive;
-    private RRSubsystem rrSubsystem;
-    public static Pose2d startPos;
-    int visionOutputPosition = 1;
-    private DcMotorEx mFL;
-    private DcMotorEx mFR;
-    private DcMotorEx mBL;
-    private DcMotorEx mBR;
-
+    public static RRSubsystem rrSubsystem;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
 
-    // Selection system
-    private int currentSet = 0; // which set you’re editing (0–2)
-    private final int[] choices = {0, 0}; // one choice for each set
-    private boolean dpadUpPressed = false;
-    private boolean dpadDownPressed = false;
+    // --- Cycle selection ---
+    public static final int MAX_CYCLES = 3;
+    private int cycleCount = 2;   // default 2 cycles
+    private int currentCycle = 0;  // row selector
+    private int currentColumn = 0; // column selector: 0=shoot, 1=spike
 
-    private static ActionCommand StartToBackSpike;
-    private static ActionCommand BackSpikeToShoot1;
-    private static ActionCommand Shoot1ToMidSpike;
-    private static ActionCommand MidSpikeToShoot2;
-    private static ActionCommand Shoot2ToGate;
-    private static ActionCommand MidSpikeIntake;
-    private static ActionCommand FrontSpikeIntake;
-    private static ActionCommand MidSpikeToFrontSpike;
-    private static ActionCommand FrontSpikeToGate;
+    private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
 
-    private final String[][] autoNames = {
-            {"Set1-FrontShoot", "Set1-BackShoot"}, //PPG, PGP, GPP
-            {"Set2-FrontShoot", "Set2-BackShoot",}
-    };
+    // choices[cycleIndex][0=shootChoice(0 front,1 back), 1=spikeChoice(0 front,1 mid,2 back)]
+    private int[][] choices = new int[MAX_CYCLES][2];
+
+    public static Pose2d startPos;
+    private String aColor = null;
+
 
 
     @Override
     public void init() {
-        // ✅ Initialize dashboard & telemetry safely
         dashboard = FtcDashboard.getInstance();
         telemetry2 = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
@@ -94,106 +69,139 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void init_loop() {
-        // ----- Alliance color selection -----
-        if (gamepad2.a) aColor = "blue";
-        else if (gamepad2.b) aColor = "red";
-
-        // ----- Starting position selection -----
-        if (aColor != null){
+        // --- Alliance selection ---
+        if (gamepad2.a) {
+            aColor = "blue";
+            GlobalVariables.aColor = "blue";
             AutoTrajectories.updateAlliancePoses();
-//            if (gamepad2.dpad_up) startPos = frontStartPos;
-//            else if (gamepad2.dpad_down) startPos = backStartPos;
-startPos = originTestPoint;
+        } else if (gamepad2.b) {
+            aColor = "red";
+            GlobalVariables.aColor = "red";
+            AutoTrajectories.updateAlliancePoses();
         }
 
-        // ----- Scroll between sets -----
-        if (gamepad1.dpad_up && !dpadUpPressed) {
-            currentSet = (currentSet + 1) % 2;
-            dpadUpPressed = true;
-        } else if (!gamepad1.dpad_up) {
-            dpadUpPressed = false;
+        // --- Start position selection ---
+        if (aColor != null) {
+            if (gamepad2.dpad_up) startPos = AutoTrajectories.frontStartPos;
+            else if (gamepad2.dpad_down) startPos = AutoTrajectories.backStartPos;
         }
 
-        if (gamepad1.dpad_down && !dpadDownPressed) {
-            currentSet = (currentSet - 1 + 2) % 2;
-            dpadDownPressed = true;
-        } else if (!gamepad1.dpad_down) {
-            dpadDownPressed = false;
-        }
-
-        // ----- Choose A/B -----
-        if (gamepad1.a) choices[currentSet] = 0;
-        if (gamepad1.b) choices[currentSet] = 1;
-
-        // ----- Initialize drive once startPos chosen -----
+        // --- Initialize drive for trajectory preview ---
         if (startPos != null && drive == null && aColor != null) {
             drive = new MecanumDrive(hardwareMap, startPos);
+            AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
         }
 
-        // ----- Generate trajectories dynamically -----
-        if (drive != null && startPos != null && aColor != null) {
-            if (gamepad1.x) { // say X confirms your selection
+        // --- Handle user input for cycles ---
+        handleInput();
 
-                AutoTrajectories.generateTrajectories(drive, choices[0], choices[1]);
-            }
-        }
+        // --- Display telemetry table and alliance/start ---
+        printTelemetryTable();
 
-        // ----- Telemetry -----
-        telemetry2.addLine("Use D-Pad to switch sets");
-        telemetry2.addLine("Pick A=1, B=2 inside the current set");
-        for (int i = 0; i < 2; i++) {
-            telemetry2.addData("Set " + (i + 1),
-                    autoNames[i][choices[i]] + (i == currentSet ? "  <==" : ""));
-        }
-        telemetry2.addData("startPos", startPos);
-        telemetry2.addData("Alliance Color", aColor);
-        telemetry2.update();
-
-        // ----- Dashboard visualization (optional) -----
+        // --- Dashboard visualization (optional) ---
         TelemetryPacket packet = new TelemetryPacket();
         Canvas field = packet.fieldOverlay();
         if (startPos != null) {
             field.setStroke("#00FF00");
-            field.strokeCircle(startPos.position.x, startPos.position.y, 5);
+            field.strokeCircle(startPos.position.x, startPos.position.y, 8);
+            double headingLength = 8;
+            double x = startPos.position.x, y = startPos.position.y, heading = startPos.heading.toDouble();
+            field.strokeLine(x, y, x + headingLength * Math.cos(heading), y + headingLength * Math.sin(heading));
         }
         dashboard.sendTelemetryPacket(packet);
+    }
+
+    private void handleInput() {
+        // Navigate cycles (up/down)
+        if (gamepad1.dpad_up && !dpadUpPressed) {
+            currentCycle = (currentCycle - 1 + cycleCount) % cycleCount;
+            dpadUpPressed = true;
+        } else if (!gamepad1.dpad_up) dpadUpPressed = false;
+
+        if (gamepad1.dpad_down && !dpadDownPressed) {
+            currentCycle = (currentCycle + 1) % cycleCount;
+            dpadDownPressed = true;
+        } else if (!gamepad1.dpad_down) dpadDownPressed = false;
+
+        // Navigate columns (left/right)
+        if (gamepad1.dpad_left && !dpadLeftPressed) {
+            currentColumn = (currentColumn - 1 + 2) % 2;
+            dpadLeftPressed = true;
+        } else if (!gamepad1.dpad_left) dpadLeftPressed = false;
+
+        if (gamepad1.dpad_right && !dpadRightPressed) {
+            currentColumn = (currentColumn + 1) % 2;
+            dpadRightPressed = true;
+        } else if (!gamepad1.dpad_right) dpadRightPressed = false;
+
+        // Adjust cycle count with bumpers
+        if ((gamepad1.left_bumper || gamepad1.right_bumper) && !bumperPressed) {
+            if (gamepad1.right_bumper && cycleCount < MAX_CYCLES) cycleCount++;
+            if (gamepad1.left_bumper && cycleCount > 1) cycleCount--;
+            currentCycle = Math.min(currentCycle, cycleCount - 1);
+            bumperPressed = true;
+        } else if (!gamepad1.left_bumper && !gamepad1.right_bumper) bumperPressed = false;
+
+        // Select choices
+        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot front / Spike front
+        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot back / Spike mid
+        if (gamepad1.y && currentColumn == 1) choices[currentCycle][currentColumn] = 2; // Spike back
+    }
+
+    private void printTelemetryTable() {
+        telemetry2.clearAll();
+
+        // --- Alliance + Start position ---
+        String startName = "Not chosen";
+        if (startPos != null) {
+            if (startPos.equals(AutoTrajectories.frontStartPos)) startName = "Front Start";
+            else if (startPos.equals(AutoTrajectories.backStartPos)) startName = "Back Start";
+        }
+        String allianceDisplay = (aColor != null) ? aColor : "None";
+        telemetry2.addData("Alliance Start", allianceDisplay + " - " + startName);
+
+        telemetry2.addLine("=== Cycle Selection ===");
+        telemetry2.addData("Cycle Count", cycleCount);
+        telemetry2.addLine("Use D-Pad to navigate, bumpers to change cycle count");
+        telemetry2.addLine("");
+
+        // --- Table header ---
+        telemetry2.addLine("Cycle | Shoot  | Spike");
+        telemetry2.addLine("-------------------------");
+
+        String[] shootNames = {"Front", "Back"};
+        String[] spikeNames = {"Front", "Mid", "Back"};
+
+        for (int i = 0; i < cycleCount; i++) {
+            String shoot = shootNames[choices[i][0]];
+            String spike = spikeNames[choices[i][1]];
+
+            // Single marker for the selected cell
+            String shootCell = (i == currentCycle && currentColumn == 0) ? "*" + shoot : " " + shoot;
+            String spikeCell = (i == currentCycle && currentColumn == 1) ? "*" + spike : " " + spike;
+
+            telemetry2.addLine(String.format(" %d    | %s   | %s", i + 1, shootCell, spikeCell));
+        }
+
+        telemetry2.update();
     }
 
     @Override
     public void start() {
         runtime.reset();
-
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
-        generateTrajectories(drive, choices[0], choices[1]);
+        AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        StartToBackSpike = new ActionCommand(backStartToBackSpike, requirements);
-        BackSpikeToShoot1 = new ActionCommand(backSpikeToShoot1, requirements);
-        Shoot1ToMidSpike = new ActionCommand(shootPos1ToMidSpike, requirements);
-        MidSpikeToShoot2 = new ActionCommand(midSpikeToShoot2, requirements);
-        Shoot2ToGate = new ActionCommand(shootPos2ToGate, requirements);
-
         CommandScheduler.getInstance().schedule(
-                new SequentialCommandGroup(
-                        new ActionCommand(originTestToStartPos, requirements)
-                       // StartToBackSpike
-//                        BackSpikeToShoot1,
-//                        Shoot1ToMidSpike,
-//                        MidSpikeToShoot2,
-//                        Shoot2ToGate
-                )
+                AutoGenerator.buildAuto(requirements, cycleCount)
         );
     }
 
     @Override
     public void loop() {
         CommandScheduler.getInstance().run();
-
-        telemetry2.addData("Heading", Math.toDegrees(drive.localizer.getPose().heading.toDouble()));
-        telemetry2.addData("X", drive.localizer.getPose().position.x);
-        telemetry2.addData("Y", drive.localizer.getPose().position.y);
-        telemetry2.update();
-
-        drive.updatePoseEstimate();
+        if (drive != null) drive.updatePoseEstimate();
+        startPos = drive.localizer.getPose();
     }
 }

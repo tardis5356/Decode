@@ -3,9 +3,12 @@ package org.firstinspires.ftc.teamcode.DecodeBot.TeleOps;
 
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.startPos;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -21,12 +24,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.IntakeCamera;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
@@ -127,10 +131,12 @@ public class DecodeTeleOp extends CommandOpMode {
     private BreakPad breakPad;
 
     //Cameras
-    private IntakeCamera camera;
+    private Camera camera;
 
     //Roadrunner
     private RRSubsystem rrSubsystem;
+
+    private MecanumDrive drive;
 
     double LeftTrigger;
     double RightTrigger;
@@ -161,6 +167,9 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
+            if (startPos == null) {
+                startPos = new Pose2d(0, 0, Math.toRadians(0));
+            }
 
             //init controllers
             driver1 = new GamepadEx(gamepad1);
@@ -180,9 +189,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
             breakPad = new BreakPad(hardwareMap);
 
-            camera = new IntakeCamera(hardwareMap);
+            camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
+
+            drive = new MecanumDrive(hardwareMap, startPos);
 
             //map motors
             mFL = hardwareMap.get(DcMotorEx.class, "mFL");
@@ -235,7 +246,11 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
+                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "red"));
 
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "blue"));
 
         //Intake
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
@@ -499,35 +514,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
         List<AprilTagDetection> currentDetections = aTagP.getDetections();
 
-        for (AprilTagDetection detection : currentDetections) {
-
-            //  Check to see if we want to track towards this tag.
-            if ((detection.id == desiredTagID)) {
-                // Yes, we want to use this tag.
-                targetFound = true;
-
-                detectedTag = detection;
-                break;  // don't look any further.
-            } else {
-                targetFound = false;
-            }
-        }
-
-        if (detectedTag.id == desiredTagID) {
-
-            turretBearing = detectedTag.ftcPose.bearing;
-
-
-        }
-
-
-
-        //AprilTag converter equation from bearing to encoder ticks
-        //
-
-//        if (tracking == true) {
-//            Turret.targetPosition = Turret.getCurrentPosition() - turretBearing * TURRET_DEGREE_TO_TICK_MULTIPLIER;
-//        }
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;

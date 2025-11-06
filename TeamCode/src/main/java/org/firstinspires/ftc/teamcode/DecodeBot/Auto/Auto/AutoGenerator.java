@@ -1,80 +1,46 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateAction;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.spikeToShoot;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startToSpike;
+
+import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.Subsystem;
+
+import org.firstinspires.ftc.teamcode.DecodeBot.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class AutoGenerator {
 
-    public static SequentialCommandGroup buildAuto(int choice1, int choice2, int choice3,
-                                                   RRSubsystem rrSubsystem, Pose2d startPos) {
-        return new SequentialCommandGroup(
-                // --- Set 1 choice ---
-                branch1(choice1, startPos, rrSubsystem),
-                // --- Set 2 choice ---
-                branch2(choice2, rrSubsystem),
-                // --- Set 3 choice ---
-                branch3(choice3, rrSubsystem)
-        );
-    }
+    /**
+     * Build a sequential auto that:
+     * for each cycle i:
+     *   - runs startToSpikeActions[i]
+     *   - runs spikeToShootActions[i]
+     * after all cycles: runs gateAction
+     */
+    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount) {
+        List<ActionCommand> seq = new ArrayList<>();
 
-    private static SequentialCommandGroup branch1(int choice, Pose2d startPos, RRSubsystem rr) {
-
-            switch (choice) {
-                case 0:
-                    return new SequentialCommandGroup(
-
-                    );
-                case 1:
-                    return new SequentialCommandGroup(
-                            /*Commands*/
-                    );
-                case 2:
-                    return new SequentialCommandGroup(
-                            /*Commands*/
-                    );
-                default:
-                    return new SequentialCommandGroup(); // empty
+        for (int i = 0; i < cycleCount; i++) {
+            // null-checks defensive: if generateTrajectories wasn't called, these might be null.
+            if (startToSpike[i] != null) {
+                seq.add(new ActionCommand(startToSpike[i], requirements));
             }
-
-    }
-
-    private static SequentialCommandGroup branch2(int choice, RRSubsystem rr) {
-        switch (choice) {
-            case 0:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            case 1:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            case 2:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            default:
-                return new SequentialCommandGroup();
+            if (spikeToShoot[i] != null) {
+                seq.add(new ActionCommand(spikeToShoot[i], requirements));
+            }
         }
-    }
 
-    private static SequentialCommandGroup branch3(int choice, RRSubsystem rr) {
-        switch (choice) {
-            case 0:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            case 1:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            case 2:
-                return new SequentialCommandGroup(
-                        /*Commands*/
-                );
-            default:
-                return new SequentialCommandGroup();
+        if (gateAction != null) {
+            seq.add(new ActionCommand(gateAction, requirements));
         }
+
+        return new SequentialCommandGroup(seq.toArray(new ActionCommand[0]));
     }
 }

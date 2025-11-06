@@ -13,16 +13,12 @@ public class TurretFlipCommand extends CommandBase {
     private Turret turret;
     public double targetPosition;
     int tolerance;
-    public TurretFlipCommand(Turret turret, int tolerance) {
-
-
-        this.turret = turret;
+    public TurretFlipCommand( int tolerance) {
         this.tolerance = tolerance;
     }
 
     @Override
     public void initialize() { // runs once
-      //  turret.tracking = false;
 
 
 
@@ -32,14 +28,14 @@ public class TurretFlipCommand extends CommandBase {
         } else if (Turret.getCurrentPosition() < 0) {
             targetPosition = getCurrentPosition() + TURRET_360_TURN_TICKS;
         }
-//        lift.setTargetPosition(targetPosition);
 
+        Turret.setTargetPosition(targetPosition);
     }
 
     @Override
     public void execute() { // runs continuously
 
-        Turret.setTargetPosition(targetPosition);
+
 
     }
 
@@ -53,7 +49,7 @@ public class TurretFlipCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        //Turret.tracking = true;
+        Turret.turretFlipping = false;
     }
 
 }
