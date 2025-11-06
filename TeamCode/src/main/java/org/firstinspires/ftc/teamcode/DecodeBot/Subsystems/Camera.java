@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
@@ -20,24 +21,63 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
+import org.firstinspires.ftc.vision.opencv.ColorRange;
+import org.firstinspires.ftc.vision.opencv.ColorSpace;
+import org.firstinspires.ftc.vision.opencv.ImageRegion;
+import org.opencv.core.Scalar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Camera extends SubsystemBase {
 
+    PIDController yawController, forwardController;
+
+    private static final int IMG_HEIGHT = 720;
+    private static final int IMG_WIDTH = 1280;
+    public static double yawPower, forwardPower;
+
+    List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
+
     // === CAMERA ENUM ===
     public enum ActiveCamera {
-        INTAKE,
+        INTAKE_GREEN,
+        INTAKE_PURPLE,
         TURRET
     }
 
     // === HARDWARE AND PROCESSORS ===
     private VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
-    private ColorBlobLocatorProcessor greenLocator;
-
+    private AprilTagDetection desiredTag = null;
     private WebcamName intakeWebcam, turretWebcam;
     private CameraName switchableCamera;
+
+    ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
+            .setTargetColorRange(//ColorRange.BLUE
+                    new ColorRange(
+                            ColorSpace.YCrCb,
+                            new Scalar( 16,   0, 0),
+                            new Scalar(200, 110, 110))
+            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
+            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
+            .setDrawContours(true)                        // Show contours on the Stream Preview
+            .setBlurSize(20)                               // Smooth the transitions between different colors in image
+            .setErodeSize(10)
+            .build();
+
+    ColorBlobLocatorProcessor purpleLocator = new ColorBlobLocatorProcessor.Builder()
+            .setTargetColorRange(//ColorRange.BLUE
+                    new ColorRange(
+                            ColorSpace.YCrCb,
+                            new Scalar( 16,   0, 0),
+                            new Scalar(200, 110, 110))
+            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
+            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
+            .setDrawContours(true)                        // Show contours on the Stream Preview
+            .setBlurSize(20)                               // Smooth the transitions between different colors in image
+            .setErodeSize(10)
+            .build();
 
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
 
@@ -49,7 +89,7 @@ public class Camera extends SubsystemBase {
         turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
 
         aprilTagProcessor = new AprilTagProcessor.Builder().build();
-        greenLocator = new ColorBlobLocatorProcessor.Builder().build();
+
 
         // Start with the turret camera
         switchableCamera = turretWebcam;
@@ -57,6 +97,7 @@ public class Camera extends SubsystemBase {
         visionPortal = new VisionPortal.Builder()
                 .setCamera(switchableCamera)
                 .addProcessor(aprilTagProcessor)
+                .addProcessor(purpleLocator)
                 .addProcessor(greenLocator)
                 .build();
 
@@ -64,20 +105,50 @@ public class Camera extends SubsystemBase {
         visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
+    public void periodic(){
+        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
+
+            if(visionPortal.getProcessorEnabled(greenLocator)){
+                blobs = greenLocator.getBlobs();
+            }
+            else if (visionPortal.getProcessorEnabled(purpleLocator)){
+                blobs = purpleLocator.getBlobs();
+            }
+
+
+            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
+            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
+        }
+        else{
+            yawPower = 0;
+            forwardPower = 0;
+        }
+
+
+    }
+
     // === CAMERA SWITCHING ===
     public void switchCamera(ActiveCamera camera) {
         currentCamera = camera;
 
         switch (camera) {
-            case INTAKE:
+            case INTAKE_GREEN:
                 visionPortal.setActiveCamera(intakeWebcam);
                 visionPortal.setProcessorEnabled(greenLocator, true);
+                visionPortal.setProcessorEnabled(purpleLocator,false);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, false);
                 break;
+
+            case INTAKE_PURPLE:
+                visionPortal.setActiveCamera(intakeWebcam);
+                visionPortal.setProcessorEnabled(greenLocator, false);
+                visionPortal.setProcessorEnabled(purpleLocator,true);
+                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
 
             case TURRET:
                 visionPortal.setActiveCamera(turretWebcam);
                 visionPortal.setProcessorEnabled(greenLocator, false);
+                visionPortal.setProcessorEnabled(purpleLocator,false);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, true);
                 break;
         }
@@ -143,5 +214,64 @@ public class Camera extends SubsystemBase {
         return new Pose2d(finalX / aTagAmount, finalY / aTagAmount, drive.localizer.getPose().heading.toDouble());
     }
 
+    public List<AprilTagDetection> getCurrentAprilTagDetections(){
+        return aprilTagProcessor.getDetections();
+    }
+
+    public AprilTagDetection getDesiredTag(List<AprilTagDetection> currentDetections, int desiredTagID) {
+        boolean targetFound;
+        for (AprilTagDetection detection : currentDetections) {
+            // Look to see if we have size info on this tag.
+            if (detection.metadata != null) {
+                //  Check to see if we want to track towards this tag.
+                if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
+                    // Yes, we want to use this tag.
+                    targetFound = true;
+                    desiredTag = detection;
+                    break;  // don't look any further.
+                } else {
+                    // This tag is in the library, but we do not want to track it right now.
+//                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                }
+            } else {
+                return null;
+                // This tag is NOT in the library, so we don't have enough information to track to it.
+//                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+            }
+        }
+        return desiredTag;
+    }
+
+    public double getBlobCenterX(){
+        double cx;
+
+        if (!blobs.isEmpty()) {
+            ColorBlobLocatorProcessor.Blob BigBlob = blobs.get(0);
+
+            cx = BigBlob.getBoxFit().center.x;
+
+        }
+        else{
+            cx = IMG_WIDTH/2;
+        }
+
+        return cx;
+    }
+
+    public double getBlobCenterY(){
+        double cy;
+
+        if (!blobs.isEmpty()) {
+            ColorBlobLocatorProcessor.Blob BigBlob = blobs.get(0);
+
+            cy = BigBlob.getBoxFit().center.y;
+
+        }
+        else{
+            cy = IMG_HEIGHT/4;
+        }
+
+        return cy;
+    }
 
 }
