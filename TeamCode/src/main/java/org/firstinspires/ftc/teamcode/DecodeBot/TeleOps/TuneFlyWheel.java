@@ -28,10 +28,10 @@ public class TuneFlyWheel extends CommandOpMode {
         shooter.sH.setPosition(0);
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(()->shooter.setFlyWheelSpeed(1000));
+                .whenInactive(()->shooter.setVel(1000));
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(()->shooter.setFlyWheelSpeed(1500));
+                .whenInactive(()->shooter.setVel(1500));
 
     }
 
