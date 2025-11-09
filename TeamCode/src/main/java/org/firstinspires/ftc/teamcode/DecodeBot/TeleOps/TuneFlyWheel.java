@@ -40,7 +40,7 @@ public class TuneFlyWheel extends CommandOpMode {
         super.run();
 
         telemetry.addData("TPS", shooter.getFlyWheelSpeed());
-        telemetry.addData("motorPower", shooter.mS.getPower());
+        telemetry.addData("motorPower", shooter.mST.getPower());
         telemetry.update();
     }
 }
