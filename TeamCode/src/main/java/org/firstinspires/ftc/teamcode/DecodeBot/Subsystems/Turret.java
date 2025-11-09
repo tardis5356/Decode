@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 
 public class Turret extends SubsystemBase {
 
-    private static DcMotorEx mT;
+    public static DcMotorEx mT;
     private PIDController controller;
 
     private static double targetPositionTicks;
@@ -74,7 +74,7 @@ public class Turret extends SubsystemBase {
         targetPositionTicks = ticks;
     }
 
-    public double getTurretPosition() {
+    public double getTargetPosition() {
        return targetPositionTicks;
     }
 
@@ -98,13 +98,14 @@ public class Turret extends SubsystemBase {
         // Select tag based on alliance color
         int desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
-        // Set targetOffset
-        double targetXOffset = 0, targetYOffset = 0;
+        // Shooting Target Offset relative to AprilTag
+        // Positive Offset = further behind apriltag
+        double targetTagXOffset = 0, targetTagYOffset = 0;
 
         Pose2d targetPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
         // === Apply offset away from origin ===
-        double tagX = targetPos.position.x + Math.signum(targetPos.position.x) * targetXOffset;
-        double tagY = targetPos.position.y + Math.signum(targetPos.position.y) * targetYOffset;
+        double goalX = targetPos.position.x + Math.signum(targetPos.position.x) * targetTagXOffset;
+        double goalY = targetPos.position.y + Math.signum(targetPos.position.y) * targetTagYOffset;
 
         // === Compute turret tracking ===
         double robotX = drive.localizer.getPose().position.x;
@@ -116,7 +117,7 @@ public class Turret extends SubsystemBase {
         double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
                 + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
-        double desiredFieldTurretAngle = Math.atan2(tagY - turretFieldY, tagX - turretFieldX);
+        double desiredFieldTurretAngle = Math.atan2(goalY - turretFieldY, goalX - turretFieldX);
         double desiredTurretOnBotAngle = (desiredFieldTurretAngle - robotHeadingRad) % (2 * Math.PI);
         double desiredTurretAngleRobot = unwrapAngle(desiredTurretOnBotAngle, lastTurretAngle);
         lastTurretAngle = desiredTurretAngleRobot;
@@ -124,12 +125,12 @@ public class Turret extends SubsystemBase {
         int desiredTicks = (int) Math.round(desiredTurretAngleRobot / TURRET_TICK_TO_RADIAN_MULTIPLIER);
         setTargetPosition(desiredTicks);
 
-        double turretDistance = Math.hypot(tagY - turretFieldY, tagX - turretFieldX);
+        double turretDistance = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
 
         // Telemetry
         telemetry.addData("Tag ID", desiredTagID);
-        telemetry.addData("Offset X", targetXOffset);
-        telemetry.addData("Offset Y", targetYOffset);
+        telemetry.addData("Offset X", targetTagXOffset);
+        telemetry.addData("Offset Y", targetTagYOffset);
         telemetry.addData("Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);

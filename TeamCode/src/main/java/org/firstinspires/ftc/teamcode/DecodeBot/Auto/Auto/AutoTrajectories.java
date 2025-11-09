@@ -21,13 +21,14 @@ public class AutoTrajectories {
     public static Action gateAction;
 
     // Tangents in DEGREES (easy to read & edit)
-    // Spike tangents: [front, mid, back]
+    // Spike tangents: [front, back] based on shoot position
     public static double[] spikeStartTangentDeg = {0, 180};
+    // Spike tangents: [front, mid, back]
     public static double[] spikeEndTangentDeg   = {90, 90, 90};
 
     // Shoot tangents: [front, back]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg   = {135, 270}; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg   = {225, 0}; // final heading tangent at shoot
 
     // Gate release tangents [front, back]
     public static double[] gateReleaseStartTangentDeg = {0 , 180};
@@ -60,7 +61,7 @@ public class AutoTrajectories {
         backSpikePos   = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
         frontShootPos  = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         backShootPos   = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
-        gateReleasePos = allianceCoordinate(new Pose2d(0, 56, Math.toRadians(90)));
+        gateReleasePos = allianceCoordinate(new Pose2d(0, 46, Math.toRadians(90)));
     }
 
     /**
@@ -94,9 +95,9 @@ public class AutoTrajectories {
             // ---- First cycle special case ----
             if (i == 0) {
                 if (currentStart.equals(frontStartPos)) {
-                    spikeStartDeg = 0;     // front start
+                    spikeStartDeg = 245;     // front start
                 } else if (currentStart.equals(backStartPos)) {
-                    spikeStartDeg = 245;   // back start
+                    spikeStartDeg = 180;   // back start
                 } else {
                     // fallback if startPos doesn’t exactly match
                     spikeStartDeg = spikeStartTangentDeg[spikeChoice];
@@ -104,9 +105,9 @@ public class AutoTrajectories {
             } else {
                 // ---- Normal rule (depends on shootPos from previous cycle) ----
                 if (shootPose.equals(backShootPos)) {
-                    spikeStartDeg = 0;     // shooting from back → start next path forward
+                    spikeStartDeg = 270;     // shooting from back → start next path forward
                 } else {
-                    spikeStartDeg = 180;   // shooting from front → turn around
+                    spikeStartDeg = 0;   // shooting from front → turn around
                 }
             }
 
