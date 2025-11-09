@@ -34,7 +34,7 @@ public class TurretFlipCommand extends CommandBase {
 
     @Override
     public void execute() { // runs continuously
-
+        Turret.setTargetPosition(targetPosition);
 
 
     }

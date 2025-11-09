@@ -3,7 +3,8 @@ package org.firstinspires.ftc.teamcode.DecodeBot.TeleOps;
 
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.startPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
+
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -168,8 +169,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
-            if (startPos == null) {
-                startPos = new Pose2d(0, 0, Math.toRadians(0));
+            if (savedPos == null) {
+                savedPos = new Pose2d(0, 0, Math.toRadians(0));
             }
 
             //init controllers
@@ -194,7 +195,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 
-            drive = new MecanumDrive(hardwareMap, startPos);
+            drive = new MecanumDrive(hardwareMap, savedPos);
 
             //map motors
             mFL = hardwareMap.get(DcMotorEx.class, "mFL");

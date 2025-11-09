@@ -1,24 +1,15 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.startPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem.imu;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
-import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
-
-import android.util.Size;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -27,38 +18,18 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 //TODO AprilTag Acquisition Time optimizations
 //Run the AprilTag Optimize Exposure Teleop for more fps and preventing whitewashing for camera.
 //Lower Resolution
 //Add Decimation for shorter processing time (skip undistortion of image if needed)
-// Add portal.setCameraStreamFrameQueueDepth(1); for minimized buffering
 // close the camera stream
 // Make code To Manually Turn on the camera stream only when needed by disabling and enabling the RC preview (called LiveView)
 //https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
@@ -82,7 +53,7 @@ public class FieldTurretTest extends CommandOpMode {
 
 
     // relocalize every 5 seconds
-    private static final double RELOCALIZE_INTERVAL_SEC = 5.0;
+    private static final double RELOCALIZE_INTERVAL_SEC = 1;
 
     // Dashboard telemetry
     private final MultipleTelemetry dashboardTelemetry =
@@ -93,9 +64,11 @@ public class FieldTurretTest extends CommandOpMode {
         telemetry = dashboardTelemetry;
         CommandScheduler.getInstance().reset();
 
-        if (startPos != null){
-            startPos = new Pose2d(0,0,0);
+        if (savedPos == null){
+            savedPos = new Pose2d(0,0,0);
         }
+
+
 
         // === Hardware init ===
         mFL = hardwareMap.get(DcMotorEx.class, "mFL");
@@ -110,8 +83,10 @@ public class FieldTurretTest extends CommandOpMode {
         driver2 = new GamepadEx(gamepad2);
 
         turret = new Turret(hardwareMap);
-        drive = new MecanumDrive(hardwareMap, startPos);
+        drive = new MecanumDrive(hardwareMap, savedPos);
         camera = new Camera(hardwareMap);
+
+
 
         GlobalVariables.aColor = "red";
 
@@ -121,10 +96,25 @@ public class FieldTurretTest extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
                 .whenActive(() -> GlobalVariables.aColor = "blue");
 
+        //relocalize heading with robot facing audience
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
+                .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y,0)));
+
+
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                .whenActive(() -> camera.setObeliskMotif());
+        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
         telemetry.addLine("Initialized — ready to start!");
         telemetry.update();
 
+if (camera.getCurrentAprilTagDetections().isEmpty()){
+    drive.localizer.setPose(camera.getRelocalizedPose(drive));
+}
+
+
         relocalizeTimer.reset();
+
     }
 
     @Override
@@ -151,11 +141,10 @@ public class FieldTurretTest extends CommandOpMode {
         mBL.setPower(mBLPower);
         mBR.setPower(mBRPower);
 
-        // === Relocalization every 5 seconds ===
-        if (relocalizeTimer.seconds() > RELOCALIZE_INTERVAL_SEC) {
+
+
             drive.localizer.setPose(camera.getRelocalizedPose(drive));
-            relocalizeTimer.reset();
-        }
+
 
         // === Telemetry ===
         Pose2d pose = drive.localizer.getPose();

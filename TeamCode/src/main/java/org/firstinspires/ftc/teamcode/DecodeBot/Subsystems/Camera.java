@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
+
+import android.util.Size;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -28,6 +33,7 @@ import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Camera extends SubsystemBase {
 
@@ -38,6 +44,10 @@ public class Camera extends SubsystemBase {
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
+    public double fx = 911.942 * (55.6 / 57.4);
+    public double fy = 911.942 * (55.6 / 57.4);
+    public double cx = 640, cy = 393.994;
+
 
     // === CAMERA ENUM ===
     public enum ActiveCamera {
@@ -85,44 +95,49 @@ public class Camera extends SubsystemBase {
 
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
-        intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
-        turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
+        //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
+        turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        aprilTagProcessor = new AprilTagProcessor.Builder().build();
+        aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
 
 
         // Start with the turret camera
         switchableCamera = turretWebcam;
 
         visionPortal = new VisionPortal.Builder()
-                .setCamera(switchableCamera)
+                //.setCamera(switchableCamera)
+                .setCamera(turretWebcam)
                 .addProcessor(aprilTagProcessor)
                 .addProcessor(purpleLocator)
                 .addProcessor(greenLocator)
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
                 .build();
+
+
 
         // Disable intake camera processors initially
         visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
     public void periodic(){
-        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
-
-            if(visionPortal.getProcessorEnabled(greenLocator)){
-                blobs = greenLocator.getBlobs();
-            }
-            else if (visionPortal.getProcessorEnabled(purpleLocator)){
-                blobs = purpleLocator.getBlobs();
-            }
-
-
-            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
-            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
-        }
-        else{
-            yawPower = 0;
-            forwardPower = 0;
-        }
+//        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
+//
+//            if(visionPortal.getProcessorEnabled(greenLocator)){
+//                blobs = greenLocator.getBlobs();
+//            }
+//            else if (visionPortal.getProcessorEnabled(purpleLocator)){
+//                blobs = purpleLocator.getBlobs();
+//            }
+//
+//
+//            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
+//            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
+//        }
+//        else{
+//            yawPower = 0;
+//            forwardPower = 0;
+//        }
 
 
     }
@@ -214,32 +229,70 @@ public class Camera extends SubsystemBase {
         return new Pose2d(finalX / aTagAmount, finalY / aTagAmount, drive.localizer.getPose().heading.toDouble());
     }
 
+
+
+
     public List<AprilTagDetection> getCurrentAprilTagDetections(){
         return aprilTagProcessor.getDetections();
     }
 
-    public AprilTagDetection getDesiredTag(List<AprilTagDetection> currentDetections, int desiredTagID) {
-        boolean targetFound;
-        for (AprilTagDetection detection : currentDetections) {
-            // Look to see if we have size info on this tag.
-            if (detection.metadata != null) {
-                //  Check to see if we want to track towards this tag.
-                if ((desiredTagID < 0) || (detection.id == desiredTagID)) {
-                    // Yes, we want to use this tag.
-                    targetFound = true;
-                    desiredTag = detection;
-                    break;  // don't look any further.
-                } else {
-                    // This tag is in the library, but we do not want to track it right now.
-//                    telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
-                }
-            } else {
-                return null;
-                // This tag is NOT in the library, so we don't have enough information to track to it.
-//                telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
-            }
+    public void setObeliskMotif() {
+        List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
+        if (detections == null || detections.isEmpty()) {
+            motif = null;
+            return;
         }
-        return desiredTag;
+
+        // Filter to only obelisk tags
+        List<AprilTagDetection> obeliskTags = detections.stream()
+                .filter(d -> d.metadata != null && d.metadata.name.contains("Obelisk"))
+                .collect(Collectors.toList());
+        if (obeliskTags.isEmpty()) {
+            motif = null;
+            return;
+        }
+
+        // Pick tag based on alliance color and yaw direction
+        AprilTagDetection motifAprilTag = null;
+        if ("red".equals(aColor)) {
+            motifAprilTag = obeliskTags.stream()
+                    .filter(d -> d.ftcPose.yaw < 0) // red prefers negative yaw
+                    .findFirst()
+                    .orElse(null);
+        } else if ("blue".equals(aColor)) {
+            motifAprilTag = obeliskTags.stream()
+                    .filter(d -> d.ftcPose.yaw > 0) // blue prefers positive yaw
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        // Fallback if none matched by yaw
+        if (motifAprilTag == null && obeliskTags.size() == 1) {
+            motifAprilTag = obeliskTags.get(0);
+        }
+
+        // Validate chosen tag
+        if (motifAprilTag == null) {
+            motif = null;
+            return;
+        }
+
+
+        // Assign motif based on AprilTag ID
+        switch (motifAprilTag.id) {
+            case 21:
+                motif = "GPP";
+                break;
+            case 22:
+                motif = "PGP";
+                break;
+            case 23:
+                motif = "PPG";
+                break;
+            default:
+                motif = null;
+                break;
+        }
     }
 
     public double getBlobCenterX(){

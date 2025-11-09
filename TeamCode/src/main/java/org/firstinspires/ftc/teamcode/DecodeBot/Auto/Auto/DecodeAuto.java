@@ -1,26 +1,23 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.backStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.frontStartPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.generateTrajectories;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
-import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
@@ -37,6 +34,7 @@ public class DecodeAuto extends OpMode {
     public static RRSubsystem rrSubsystem;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
+    private Turret turret;
 
     // --- Cycle selection ---
     public static final int MAX_CYCLES = 3;
@@ -49,9 +47,14 @@ public class DecodeAuto extends OpMode {
     // choices[cycleIndex][0=shootChoice(0 front,1 back), 1=spikeChoice(0 front,1 mid,2 back)]
     private int[][] choices = new int[MAX_CYCLES][2];
 
-    public static Pose2d startPos;
+    public Pose2d startPos;
+
+    private Camera camera;
     private String aColor = null;
 
+    public static Pose2d savedPos;
+
+    private Command auto;
 
 
     @Override
@@ -61,7 +64,10 @@ public class DecodeAuto extends OpMode {
 
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
+        turret = new Turret(hardwareMap);
+        camera = new Camera(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
+
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
@@ -86,17 +92,17 @@ public class DecodeAuto extends OpMode {
             else if (gamepad2.dpad_down) startPos = AutoTrajectories.backStartPos;
         }
 
-        // --- Initialize drive for trajectory preview ---
-        if (startPos != null && drive == null && aColor != null) {
-            drive = new MecanumDrive(hardwareMap, startPos);
-            AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
-        }
-
         // --- Handle user input for cycles ---
         handleInput();
+        if (aColor != null){
+            camera.setObeliskMotif();
+        }
+
 
         // --- Display telemetry table and alliance/start ---
         printTelemetryTable();
+
+
 
         // --- Dashboard visualization (optional) ---
         TelemetryPacket packet = new TelemetryPacket();
@@ -108,6 +114,7 @@ public class DecodeAuto extends OpMode {
             double x = startPos.position.x, y = startPos.position.y, heading = startPos.heading.toDouble();
             field.strokeLine(x, y, x + headingLength * Math.cos(heading), y + headingLength * Math.sin(heading));
         }
+
         dashboard.sendTelemetryPacket(packet);
     }
 
@@ -142,21 +149,29 @@ public class DecodeAuto extends OpMode {
             bumperPressed = true;
         } else if (!gamepad1.left_bumper && !gamepad1.right_bumper) bumperPressed = false;
 
+
+
+
         // Select choices
         if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot front / Spike front
         if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot back / Spike mid
-        if (gamepad1.y && currentColumn == 1) choices[currentCycle][currentColumn] = 2; // Spike back
+        if (gamepad1.y && currentColumn == 1)
+            choices[currentCycle][currentColumn] = 2; // Spike back
     }
 
     private void printTelemetryTable() {
         telemetry2.clearAll();
-
+        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+        if (motif != null){
+            telemetry2.addData("Motif", motif);
+        }
         // --- Alliance + Start position ---
         String startName = "Not chosen";
         if (startPos != null) {
             if (startPos.equals(AutoTrajectories.frontStartPos)) startName = "Front Start";
             else if (startPos.equals(AutoTrajectories.backStartPos)) startName = "Back Start";
         }
+
         String allianceDisplay = (aColor != null) ? aColor : "None";
         telemetry2.addData("Alliance Start", allianceDisplay + " - " + startName);
 
@@ -193,15 +208,24 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount);
         CommandScheduler.getInstance().schedule(
-                AutoGenerator.buildAuto(requirements, cycleCount)
+                auto
         );
     }
 
     @Override
     public void loop() {
         CommandScheduler.getInstance().run();
+        if (runtime.seconds() > 29.5 && auto != null) {
+            CommandScheduler.getInstance().cancel(auto);
+            auto = null;
+        }
+
+
         if (drive != null) drive.updatePoseEstimate();
-        startPos = drive.localizer.getPose();
+        savedPos = drive.localizer.getPose();
+        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+
     }
 }
