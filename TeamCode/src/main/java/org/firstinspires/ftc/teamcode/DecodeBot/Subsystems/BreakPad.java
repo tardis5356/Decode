@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class BreakPad extends SubsystemBase {
     Servo sB;
+    public static boolean breakPadEngaged;
 
     public BreakPad (HardwareMap hardwareMap){
         sB = hardwareMap.get(Servo.class,"sB");
@@ -23,10 +24,12 @@ public class BreakPad extends SubsystemBase {
 
     public void deployBreakPad(){
         sB.setPosition(BotPositions.BREAKPAD_ACTIVE);
+        breakPadEngaged = true;
     }
 
     public void retractBreakPad(){
         sB.setPosition(BotPositions.BREAKPAD_INACTIVE);
+        breakPadEngaged = false;
     }
 
 }
