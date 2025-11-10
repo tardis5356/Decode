@@ -69,6 +69,7 @@ public class Intake extends SubsystemBase {
     }
 
     public String greenOrPurple(ColorSensor cs){
+        //TODO: actually set the rgb ranges
         if (cs.red()>10){
             return "P";
         }

@@ -57,6 +57,13 @@ public class BellyPan extends SubsystemBase {
         PTO_Engaged = true;
     }
 
+    public void disEngagePTO() {
+        sP.setPosition(PTO_DISENGAGED);
+        sLL.setPosition(BotPositions.BELLYPAN_LEFT_LATCHED);
+        sRL.setPosition(BotPositions.BELLYPAN_RIGHT_LATCHED);
+        PTO_Engaged = false;
+    }
+
 
 
     public double getCurrentMotorPower() {

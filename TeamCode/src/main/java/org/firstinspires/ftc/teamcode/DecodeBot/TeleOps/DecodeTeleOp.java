@@ -71,7 +71,8 @@ public class DecodeTeleOp extends CommandOpMode {
         FLY,
         STORE_MIDDLE,
         STORE_ONE_FOR_LAST,
-        STORE_ONE_FOR_SECOND
+        STORE_ONE_FOR_SECOND,
+        MANUAL
     }
 
     shootModes currentShootMode;
@@ -276,11 +277,9 @@ public class DecodeTeleOp extends CommandOpMode {
                 ));
 
 
-        //Engage PTO
+        //Engage/Disengage PTO
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.BACK))
-                .whenActive(new ParallelCommandGroup(
-                        new InstantCommand(bellyPan::engagePTO)
-                ));
+                .toggleWhenActive(bellyPan::engagePTO,bellyPan::disEngagePTO);
 
         //BreakPad
         new Trigger(()->driver1.getButton(GamepadKeys.Button.A))
@@ -293,7 +292,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         //automated targetting on/off
-        new Trigger(()->driver2.getButton(GamepadKeys.Button.B))
+        new Trigger(()->driver2.getButton(GamepadKeys.Button.BACK))
                 .whenActive(()-> autoTarget = true);
 
             //if driver 2 stickY's or triggers are used the autotarget is turned off
@@ -495,7 +494,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         
-        if(flyMode  || GlobalVariables.currentArtifacts == GlobalVariables.motif){
+        if(flyMode || GlobalVariables.currentArtifacts == GlobalVariables.motif){
             currentShootMode = shootModes.FLY;
         }
         else if( (GlobalVariables.currentArtifacts == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts == "PGP" && GlobalVariables.motif == "PPG") ){
@@ -507,14 +506,12 @@ public class DecodeTeleOp extends CommandOpMode {
         else if( (GlobalVariables.currentArtifacts == "GPP" && GlobalVariables.motif == "PGP") ){
             currentShootMode = shootModes.STORE_ONE_FOR_SECOND;
         }
+        else{
+            currentShootMode = shootModes.MANUAL;
+        }
 
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
-
-        AprilTagProcessor aTagP = new AprilTagProcessor.Builder().build();
-
-        List<AprilTagDetection> currentDetections = aTagP.getDetections();
-
 
 
         Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
@@ -544,6 +541,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
             mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
 
+            telemetry.update();
 
 
     }
