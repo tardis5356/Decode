@@ -34,7 +34,7 @@ public class Intake extends SubsystemBase {
         mI.setPower(intakePower);
         mP.setPower(pathPower);
 
-        if(GlobalVariables.currentArtifacts == "PPG" || GlobalVariables.currentArtifacts == "PGP" || GlobalVariables.currentArtifacts == "GPP"){
+        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
             currentArtifactsEstablished = true;
         }
 
@@ -82,7 +82,7 @@ public class Intake extends SubsystemBase {
     }
 
     public void setCurrentArtifacts(){
-        GlobalVariables.currentArtifacts = greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
+        GlobalVariables.currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
     }
 
 }
