@@ -20,10 +20,10 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 new InstantCommand(()->moveOne(intake)),
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 new InstantCommand(()->moveOne(intake)),
                                 new InstantCommand(()->launcOne(storage)),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0),
@@ -39,7 +39,7 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                                 new InstantCommand(storage::openGate),
                                 //launch first
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 //pull in
                                 new InstantCommand(()->moveOne(intake)),
                                 //store second
@@ -52,7 +52,7 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                                 new InstantCommand(()->moveOne(intake)),
                                 //launch third
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 //new InstantCommand(storage::closeGate),
                                 //return second
                                 new InstantCommand(()->unstore(storage)),
@@ -74,12 +74,12 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                                 new InstantCommand(()->moveOne(intake)),
                                 //launch second
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 //pull in
                                 new InstantCommand(()->moveOne(intake)),
                                 //launch third
                                 new InstantCommand(()->launcOne(storage)),
-                                new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                                 //return first
                                 new InstantCommand(()->unstore(storage)),
                                 //launch first
@@ -100,12 +100,12 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                         new InstantCommand(()-> closeGate(storage)),
                         //launch the second
                         new InstantCommand(()->launcOne(storage)),
-                        new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                         //return the first
                         new InstantCommand(()-> unstore(storage)),
                         //launch the first
                         new InstantCommand(()->launcOne(storage)),
-                        new InstantCommand(()-> GlobalVariables.ballsShot += 1),
+
                         new InstantCommand(()->openGate(storage)),
                         //pull in
                         new InstantCommand(()->moveOne(intake)),
@@ -172,12 +172,16 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
 
     }
     public void launcOne(Storage s){
-        new SequentialCommandGroup(
+        new ParallelCommandGroup(
+                new SequentialCommandGroup(
                 new InstantCommand(s::raiseKicker),
                 new WaitCommand(BotPositions.KICKER_WAIT),
                 new InstantCommand(s::lowerKicker),
                 new WaitCommand(BotPositions.KICKER_WAIT)
-        );
+                ),
+                new InstantCommand(()-> GlobalVariables.ballsShot += 1)
+                );
+
     }
 
     public void moveOne(Intake i){

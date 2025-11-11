@@ -67,7 +67,7 @@ public class DecodeTeleOp extends CommandOpMode {
     boolean targetFound = false;
     boolean flyMode = true;
 
-    enum shootModes {
+    public enum shootModes {
         FLY,
         STORE_MIDDLE,
         STORE_ONE_FOR_LAST,
@@ -276,6 +276,13 @@ public class DecodeTeleOp extends CommandOpMode {
                         new InstantCommand(intake::stop)
                 ));
 
+        //swapper
+        new Trigger(()-> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                .whenActive(storage::storeSlot);
+
+        new Trigger(()-> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
+                .whenActive(storage::returnSlot);
+
 
         //Engage/Disengage PTO
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.BACK))
@@ -296,7 +303,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(()-> autoTarget = true);
 
             //if driver 2 stickY's or triggers are used the autotarget is turned off
-        new Trigger(()-> driftLock((float) driver2.getLeftY()) != 0 || driftLock((float) driver2.getRightY()) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0)
+        new Trigger(()-> driftLock((float) driver2.getLeftY()) != 0 || driftLock((float) driver2.getRightY()) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0 || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(()-> autoTarget = false);
 
 
@@ -494,16 +501,16 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         
-        if(flyMode || GlobalVariables.currentArtifacts == GlobalVariables.motif){
+        if(flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif){
             currentShootMode = shootModes.FLY;
         }
-        else if( (GlobalVariables.currentArtifacts == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts == "PGP" && GlobalVariables.motif == "PPG") ){
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG") ){
             currentShootMode = shootModes.STORE_MIDDLE;
         }
-        else if( (GlobalVariables.currentArtifacts == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts == "GPP" && GlobalVariables.motif == "PPG") ){
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG") ){
             currentShootMode = shootModes.STORE_ONE_FOR_LAST;
         }
-        else if( (GlobalVariables.currentArtifacts == "GPP" && GlobalVariables.motif == "PGP") ){
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP") ){
             currentShootMode = shootModes.STORE_ONE_FOR_SECOND;
         }
         else{

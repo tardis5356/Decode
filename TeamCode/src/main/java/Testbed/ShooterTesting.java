@@ -7,11 +7,14 @@ import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -21,11 +24,17 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name="10.2.25_Shooter_Test")
 public class ShooterTesting extends CommandOpMode {
 
+    public static float vP = 0.001f, vI = 0, vD = 0, vV = 0.00052f, vS = 0;
+
+    PIDController velPIDController = new PIDController(vP, vI, vD);
+    SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
+
     private ElapsedTime myTimer = new ElapsedTime();
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     DcMotorEx mW;
+    DcMotorEx m2;
     Servo sH;
     GamepadEx driver1;
 
@@ -39,9 +48,12 @@ public class ShooterTesting extends CommandOpMode {
     @Override
     public void initialize(){
 
-        mW = hardwareMap.get(DcMotorEx.class,"mS");
+        mW = hardwareMap.get(DcMotorEx.class,"mST");
+        m2 = hardwareMap.get(DcMotorEx.class,"mSB");
         sH = hardwareMap.get(Servo.class,"sH");
         driver1 = new GamepadEx(gamepad1);
+
+        mW.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -106,7 +118,8 @@ public class ShooterTesting extends CommandOpMode {
 
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
-        mW.setVelocity(Math.abs(wheelSpeed));
+        mW.setPower(calculateFlyWheelPower(wheelSpeed));
+        m2.setPower(calculateFlyWheelPower(wheelSpeed));
         sH.setPosition(Math.abs(hoodPos));
 
 
@@ -127,5 +140,10 @@ public class ShooterTesting extends CommandOpMode {
         telemetry.addData("HoodPos", sH.getPosition());
 
 
+    }
+
+
+    public double calculateFlyWheelPower(double tps){
+        return velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
     }
 }
