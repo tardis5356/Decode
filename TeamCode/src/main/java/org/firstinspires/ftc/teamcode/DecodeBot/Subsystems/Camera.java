@@ -39,8 +39,8 @@ public class Camera extends SubsystemBase {
 
     PIDController yawController, forwardController;
 
-    private static final int IMG_HEIGHT = 720;
-    private static final int IMG_WIDTH = 1280;
+    private static final int IMG_HEIGHT = 480;//720
+    private static final int IMG_WIDTH = 640;//1280
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
