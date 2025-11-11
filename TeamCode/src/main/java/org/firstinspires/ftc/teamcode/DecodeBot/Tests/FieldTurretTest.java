@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.List;
 
@@ -165,6 +166,8 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
 //        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
 
         telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
+
+
         telemetry.update();
     }
 
