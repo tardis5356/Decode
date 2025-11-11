@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.visionPortal;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.turretFlipping;
@@ -131,7 +133,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
        drive.localizer.update();
 
         // === Turret control ===
-        turret.updateTurretTracking(drive, telemetry, 200);
+       turret.updateTurretTracking(drive, telemetry, 200);
 
 
         // === Driving Control ===
@@ -151,7 +153,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
 
 
 
-          //  drive.localizer.setPose(camera.getRelocalizedPose(drive));
+          //  drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
 
 
         // === Telemetry ===
@@ -163,10 +165,12 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
         telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
         telemetry.addData("Alliance", GlobalVariables.aColor);
         telemetry.addData("Flip Active", turret.turretFlipping);
-//        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
+        telemetry.addData("FPS", camera.visionPortal.getFps());
+//        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(de
+//        siredTurretAngleRobot));
 
         telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
-
+telemetry.addData("manualExposure", manualExposure);
 
         telemetry.update();
     }

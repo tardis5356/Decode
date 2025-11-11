@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -64,11 +66,14 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
-@Disabled
+
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
     private VisionPortal visionPortal = null;        // Used to manage the video source.
-    private AprilTagProcessor aprilTag;              // Used for managing the AprilTag detection process.
+    private AprilTagProcessor aprilTag;// Used for managing the AprilTag detection process.
+    private static final int IMG_HEIGHT = 480;//720
+    private static final int IMG_WIDTH = 640;//1280
+
     private int     myExposure  ;
     private int     minExposure ;
     private int     maxExposure ;
@@ -118,6 +123,7 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 
             telemetry.addData("Exposure","%d  (%d - %d)", myExposure, minExposure, maxExposure);
             telemetry.addData("Gain","%d  (%d - %d)", myGain, minGain, maxGain);
+            telemetry.addData("FPS", visionPortal.getFps());
             telemetry.update();
 
             // check to see if we need to change exposure or gain.
@@ -164,6 +170,8 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
                 .addProcessor(aprilTag)
+                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+                .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
                 .build();
     }
 

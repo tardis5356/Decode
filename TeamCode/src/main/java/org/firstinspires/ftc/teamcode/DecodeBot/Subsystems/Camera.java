@@ -9,6 +9,8 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariable
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 
+import static java.lang.Thread.sleep;
+
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -16,8 +18,11 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -33,6 +38,7 @@ import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Camera extends SubsystemBase {
@@ -41,12 +47,16 @@ public class Camera extends SubsystemBase {
 
     private static final int IMG_HEIGHT = 480;//720
     private static final int IMG_WIDTH = 640;//1280
+
+
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    public double fx = 911.942 * (55.6 / 57.4);
-    public double fy = 911.942 * (55.6 / 57.4);
-    public double cx = 640, cy = 393.994;
+    public double fx = 545.605 * 56.5/58;//911.942 * (55.6 / 57.4);
+    public double fy = 545.605 * 56.5/58;//911.942 * (55.6 / 57.4);
+    public double cx = 320, cy = 262.311;
+
+    public static boolean manualExposure;
 
 
     // === CAMERA ENUM ===
@@ -57,7 +67,7 @@ public class Camera extends SubsystemBase {
     }
 
     // === HARDWARE AND PROCESSORS ===
-    private VisionPortal visionPortal;
+    public static VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
     private AprilTagDetection desiredTag = null;
     private WebcamName intakeWebcam, turretWebcam;
@@ -100,7 +110,7 @@ public class Camera extends SubsystemBase {
 
         aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
 
-
+aprilTagProcessor.setDecimation(5);
         // Start with the turret camera
         switchableCamera = turretWebcam;
 
@@ -138,6 +148,12 @@ public class Camera extends SubsystemBase {
 //            yawPower = 0;
 //            forwardPower = 0;
 //        }
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING){
+            setManualExposure(2, 94);
+            manualExposure = true;
+        } else {
+            manualExposure = false;
+        }
 
 
     }
@@ -174,7 +190,7 @@ public class Camera extends SubsystemBase {
     }
 
     // === RELOCALIZATION ===
-    public static Pose2d getRelocalizedPose(MecanumDrive drive) {
+    public static Pose2d getRelocalizedPose(MecanumDrive drive, Telemetry telemetry) {
         List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
         if (detections.isEmpty()) return drive.localizer.getPose();
 
@@ -196,19 +212,29 @@ public class Camera extends SubsystemBase {
             // Camera → Tag translation
             double xCameraToTag = detection.ftcPose.x;
             double yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
-
+            telemetry.addData("xCameraToTag", xCameraToTag);
+            telemetry.addData("yCameraToTag", yCameraToTag);
             // Rotate relative to turret
             double xTagToTurret = xCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad)
                     - yCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad);
             double yTagToTurret = xCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad)
                     + yCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad);
 
+            telemetry.addData("xTagToTurret", xTagToTurret);
+            telemetry.addData("yTagToTurret", yTagToTurret);
+
+
             // Offset from turret to bot center
             double xTagToBot = xTagToTurret + TURRET_OFFSET_X;
             double yTagToBot = yTagToTurret + TURRET_OFFSET_Y;
+            telemetry.addData("xTagToBot", xTagToBot);
+            telemetry.addData("yTagToBot", yTagToBot);
+
 
             // Tag orientation
             double headingBotOnFieldRad = drive.localizer.getPose().heading.toDouble();
+            telemetry.addData("headingBotOnFieldRad", headingBotOnFieldRad);
+
 
             // Bot position on field
             double xBotOnField = -(xTagToBot * Math.cos(headingBotOnFieldRad)
@@ -216,9 +242,15 @@ public class Camera extends SubsystemBase {
             double yBotOnField = -(xTagToBot * Math.sin(headingBotOnFieldRad)
                     + yTagToBot * Math.cos(headingBotOnFieldRad));
 
+
+
+
             xBotOnField += tagPose.position.x;
             yBotOnField += tagPose.position.y;
 
+            telemetry.addData("xBotOnField", xBotOnField);
+            telemetry.addData("yBotOnField", yBotOnField);
+            telemetry.addLine();
             finalX += xBotOnField;
             finalY += yBotOnField;
             aTagAmount++;
@@ -294,6 +326,34 @@ public class Camera extends SubsystemBase {
                 break;
         }
     }
+//2, 94
+    private void setManualExposure(int exposureMS, int gain) {
+
+
+
+        {
+            // Set exposure.  Make sure we are in Manual Mode for these values to take effect.
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl.setMode(ExposureControl.Mode.Manual);
+
+            }
+            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+
+
+            // Set Gain.
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            gainControl.setGain(gain);
+
+
+        }
+    }
+
+    /*
+        Read this camera's minimum and maximum Exposure and Gain settings.
+        Can only be called AFTER calling initAprilTag();
+     */
+
 
     public double getBlobCenterX(){
         double cx;
