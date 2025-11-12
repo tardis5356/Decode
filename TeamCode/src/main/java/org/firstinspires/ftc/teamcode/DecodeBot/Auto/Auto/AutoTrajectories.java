@@ -20,9 +20,8 @@ public class AutoTrajectories {
     public static Action[] spikeToShoot = new Action[MAX_CYCLES];
     public static Action gateAction;
 
-    // Tangents in DEGREES (easy to read & edit)
-    // Spike tangents: [front, back] based on shoot position
-    public static double[] spikeStartTangentDeg = {0, 180};
+
+
     // Spike tangents: [front, mid, back]
     public static double[] spikeEndTangentDeg   = {90, 90, 90};
 
@@ -34,6 +33,10 @@ public class AutoTrajectories {
     public static double[] gateReleaseStartTangentDeg = {0 , 180};
     public static double gateReleaseEndTangentDeg   = 270;
 
+
+    public static double[] startPosTangentDeg = {245, 180}; // [frontStart, backStart]
+
+    public static double[] spikeStartTangentDeg = {0, 180};    // [frontShoot, backShoot]
 
 
     // Helper: mirror coordinate if alliance is blue
@@ -91,24 +94,14 @@ public class AutoTrajectories {
 
             // === SPIKE START TANGENT LOGIC ===
             double spikeStartDeg;
-
-            // ---- First cycle special case ----
             if (i == 0) {
-                if (currentStart.equals(frontStartPos)) {
-                    spikeStartDeg = 245;     // front start
-                } else if (currentStart.equals(backStartPos)) {
-                    spikeStartDeg = 180;   // back start
-                } else {
-                    // fallback if startPos doesn’t exactly match
-                    spikeStartDeg = spikeStartTangentDeg[spikeChoice];
-                }
+                // first cycle: based on start position
+                spikeStartDeg = currentStart.equals(frontStartPos)
+                        ? startPosTangentDeg[0]
+                        : startPosTangentDeg[1];
             } else {
-                // ---- Normal rule (depends on shootPos from previous cycle) ----
-                if (shootPose.equals(backShootPos)) {
-                    spikeStartDeg = 270;     // shooting from back → start next path forward
-                } else {
-                    spikeStartDeg = 0;   // shooting from front → turn around
-                }
+                // later cycles: based on previous shoot position
+                spikeStartDeg = spikeStartTangentDeg[choices[i-1][0]];
             }
 
             // End tangent for spike

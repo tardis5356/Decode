@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 
@@ -50,6 +51,8 @@ public class DecodeAuto extends OpMode {
     public Pose2d startPos;
 
     private Camera camera;
+    private Intake intake;
+
     private String aColor = null;
 
     public static Pose2d savedPos;
@@ -66,6 +69,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         camera = new Camera(hardwareMap);
+        intake = new Intake(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
 
 
@@ -208,7 +212,7 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake);
         CommandScheduler.getInstance().schedule(
                 auto
         );

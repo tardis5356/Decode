@@ -313,13 +313,13 @@ aprilTagProcessor.setDecimation(5);
         // Assign motif based on AprilTag ID
         switch (motifAprilTag.id) {
             case 21:
-                motif = "GPP";
+                motif= " GPP";
                 break;
             case 22:
-                motif = "PGP";
+                motif = " PGP";
                 break;
             case 23:
-                motif = "PPG";
+                motif = " PPG";
                 break;
             default:
                 motif = null;
