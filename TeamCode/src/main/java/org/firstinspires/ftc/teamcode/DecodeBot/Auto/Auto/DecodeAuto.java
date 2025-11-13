@@ -45,7 +45,7 @@ public class DecodeAuto extends OpMode {
 
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
 
-    // choices[cycleIndex][0=shootChoice(0 front,1 back), 1=spikeChoice(0 front,1 mid,2 back)]
+    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=spikeChoice(0 goal,1 mid,2 audience)]
     private int[][] choices = new int[MAX_CYCLES][2];
 
     public Pose2d startPos;
@@ -92,8 +92,8 @@ public class DecodeAuto extends OpMode {
 
         // --- Start position selection ---
         if (aColor != null) {
-            if (gamepad2.dpad_up) startPos = AutoTrajectories.frontStartPos;
-            else if (gamepad2.dpad_down) startPos = AutoTrajectories.backStartPos;
+            if (gamepad2.dpad_up) startPos = AutoTrajectories.goalStartPos;
+            else if (gamepad2.dpad_down) startPos = AutoTrajectories.audienceStartPos;
         }
 
         // --- Handle user input for cycles ---
@@ -157,10 +157,10 @@ public class DecodeAuto extends OpMode {
 
 
         // Select choices
-        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot front / Spike front
-        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot back / Spike mid
+        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot goal / Spike goal
+        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot audience / Spike mid
         if (gamepad1.y && currentColumn == 1)
-            choices[currentCycle][currentColumn] = 2; // Spike back
+            choices[currentCycle][currentColumn] = 2; // Spike audience
     }
 
     private void printTelemetryTable() {
@@ -172,8 +172,8 @@ public class DecodeAuto extends OpMode {
         // --- Alliance + Start position ---
         String startName = "Not chosen";
         if (startPos != null) {
-            if (startPos.equals(AutoTrajectories.frontStartPos)) startName = "Front Start";
-            else if (startPos.equals(AutoTrajectories.backStartPos)) startName = "Back Start";
+            if (startPos.equals(AutoTrajectories.goalStartPos)) startName = "Goal Start";
+            else if (startPos.equals(AutoTrajectories.audienceStartPos)) startName = "Audience Start";
         }
 
         String allianceDisplay = (aColor != null) ? aColor : "None";
@@ -188,8 +188,8 @@ public class DecodeAuto extends OpMode {
         telemetry2.addLine("Cycle | Shoot  | Spike");
         telemetry2.addLine("-------------------------");
 
-        String[] shootNames = {"Front", "Back"};
-        String[] spikeNames = {"Front", "Mid", "Back"};
+        String[] shootNames = {"Goal", "Audience"};
+        String[] spikeNames = {"Goal", "Mid", "Audience"};
 
         for (int i = 0; i < cycleCount; i++) {
             String shoot = shootNames[choices[i][0]];

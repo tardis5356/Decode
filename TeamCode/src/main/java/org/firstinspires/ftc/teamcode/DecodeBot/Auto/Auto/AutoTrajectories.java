@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 public class AutoTrajectories {
 
     // Key poses (will be mirrored when alliance is blue)
-    public static Pose2d frontStartPos, backStartPos;
-    public static Pose2d frontShootPos, backShootPos;
-    public static Pose2d frontSpikePos, midSpikePos, backSpikePos, gateReleasePos;
+    public static Pose2d goalStartPos, audienceStartPos;
+    public static Pose2d goalShootPos, audienceShootPos;
+    public static Pose2d goalSpikePos, midSpikePos, audienceSpikePos, gateReleasePos;
 
     // Actions: for each cycle index we create startToSpike and spikeToShoot actions
     public static Action[] startToSpike = new Action[MAX_CYCLES];
@@ -22,21 +22,21 @@ public class AutoTrajectories {
 
 
 
-    // Spike tangents: [front, mid, back]
+    // Spike tangents: [goal, mid, audience]
     public static double[] spikeEndTangentDeg   = {90, 90, 90};
 
-    // Shoot tangents: [front, back]
+    // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
     public static double[] shootEndTangentDeg   = {225, 0}; // final heading tangent at shoot
 
-    // Gate release tangents [front, back]
+    // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0 , 180};
     public static double gateReleaseEndTangentDeg   = 270;
 
 
-    public static double[] startPosTangentDeg = {245, 180}; // [frontStart, backStart]
+    public static double[] startPosTangentDeg = {245, 180}; // [goalStart, audienceStart]
 
-    public static double[] spikeStartTangentDeg = {0, 180};    // [frontShoot, backShoot]
+    public static double[] spikeStartTangentDeg = {0, 180};    // [goalShoot, audienceShoot]
 
 
     // Helper: mirror coordinate if alliance is blue
@@ -57,13 +57,13 @@ public class AutoTrajectories {
 
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
-        backStartPos   = allianceCoordinate(new Pose2d(62, 24, Math.toRadians(90)));
-        frontStartPos  = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
-        frontSpikePos  = allianceCoordinate(new Pose2d(-12, 45, Math.toRadians(90)));
+        audienceStartPos = allianceCoordinate(new Pose2d(62, 24, Math.toRadians(90)));
+        goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
+        goalSpikePos  = allianceCoordinate(new Pose2d(-12, 45, Math.toRadians(90)));
         midSpikePos    = allianceCoordinate(new Pose2d(12, 45, Math.toRadians(90)));
-        backSpikePos   = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
-        frontShootPos  = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
-        backShootPos   = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
+        audienceSpikePos   = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
+        goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
+        audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 46, Math.toRadians(90)));
     }
 
@@ -79,10 +79,10 @@ public class AutoTrajectories {
      * @param startPos starting pose for cycle 1
      */
     public static void generateTrajectories(MecanumDrive drive, int[][] choices, int cycles, Pose2d startPos) {
-        Pose2d[] shootPositions = {frontShootPos, backShootPos};
-        Pose2d[] spikePositions = {frontSpikePos, midSpikePos, backSpikePos};
+        Pose2d[] shootPositions = {goalShootPos, audienceShootPos};
+        Pose2d[] spikePositions = {goalSpikePos, midSpikePos, audienceSpikePos};
 
-        Pose2d currentStart = (startPos != null) ? startPos : frontStartPos;
+        Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;
 
         int shootChoice = 0;
         for (int i = 0; i < cycles; i++) {
@@ -96,7 +96,7 @@ public class AutoTrajectories {
             double spikeStartDeg;
             if (i == 0) {
                 // first cycle: based on start position
-                spikeStartDeg = currentStart.equals(frontStartPos)
+                spikeStartDeg = currentStart.equals(goalStartPos)
                         ? startPosTangentDeg[0]
                         : startPosTangentDeg[1];
             } else {

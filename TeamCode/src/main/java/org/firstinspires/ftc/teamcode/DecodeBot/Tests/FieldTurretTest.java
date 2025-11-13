@@ -108,10 +108,7 @@ public class FieldTurretTest extends CommandOpMode {
                 .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y,0)));
 
 
-        double maxAngleDeg = 200;
-//        new Trigger(() -> Math.abs(Math.toDegrees(getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER)
-//) > maxAngleDeg && !turretFlipping)
-//                .whenActive(new TurretFlipCommand(10, turret));
+
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> camera.setObeliskMotif());

@@ -30,9 +30,11 @@ public class AutoGenerator {
         List<Command> seq = new ArrayList<>();
 
         for (int i = 0; i < cycleCount; i++) {
+           //seq.add( /*Shoot Fly Command*/ );
             if (startToSpike[i] != null) {
-                seq.add(new InstantCommand(intake::in));
+                //seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToSpike[i], requirements));
+                //seq.add(new InstantCommand(intake::stop));
 
             }
             if (spikeToShoot[i] != null) {
