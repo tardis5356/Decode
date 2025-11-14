@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 
@@ -44,12 +45,14 @@ public class DecodeAuto extends OpMode {
 
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
 
-    // choices[cycleIndex][0=shootChoice(0 front,1 back), 1=spikeChoice(0 front,1 mid,2 back)]
+    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=spikeChoice(0 goal,1 mid,2 audience)]
     private int[][] choices = new int[MAX_CYCLES][2];
 
     public Pose2d startPos;
 
     private Camera camera;
+    private Intake intake;
+
     private String aColor = null;
 
     public static Pose2d savedPos;
@@ -66,6 +69,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         camera = new Camera(hardwareMap);
+        intake = new Intake(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
 
 
@@ -88,8 +92,8 @@ public class DecodeAuto extends OpMode {
 
         // --- Start position selection ---
         if (aColor != null) {
-            if (gamepad2.dpad_up) startPos = AutoTrajectories.frontStartPos;
-            else if (gamepad2.dpad_down) startPos = AutoTrajectories.backStartPos;
+            if (gamepad2.dpad_up) startPos = AutoTrajectories.goalStartPos;
+            else if (gamepad2.dpad_down) startPos = AutoTrajectories.audienceStartPos;
         }
 
         // --- Handle user input for cycles ---
@@ -153,10 +157,10 @@ public class DecodeAuto extends OpMode {
 
 
         // Select choices
-        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot front / Spike front
-        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot back / Spike mid
+        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot goal / Spike goal
+        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot audience / Spike mid
         if (gamepad1.y && currentColumn == 1)
-            choices[currentCycle][currentColumn] = 2; // Spike back
+            choices[currentCycle][currentColumn] = 2; // Spike audience
     }
 
     private void printTelemetryTable() {
@@ -168,8 +172,8 @@ public class DecodeAuto extends OpMode {
         // --- Alliance + Start position ---
         String startName = "Not chosen";
         if (startPos != null) {
-            if (startPos.equals(AutoTrajectories.frontStartPos)) startName = "Front Start";
-            else if (startPos.equals(AutoTrajectories.backStartPos)) startName = "Back Start";
+            if (startPos.equals(AutoTrajectories.goalStartPos)) startName = "Goal Start";
+            else if (startPos.equals(AutoTrajectories.audienceStartPos)) startName = "Audience Start";
         }
 
         String allianceDisplay = (aColor != null) ? aColor : "None";
@@ -184,8 +188,8 @@ public class DecodeAuto extends OpMode {
         telemetry2.addLine("Cycle | Shoot  | Spike");
         telemetry2.addLine("-------------------------");
 
-        String[] shootNames = {"Front", "Back"};
-        String[] spikeNames = {"Front", "Mid", "Back"};
+        String[] shootNames = {"Goal", "Audience"};
+        String[] spikeNames = {"Goal", "Mid", "Audience"};
 
         for (int i = 0; i < cycleCount; i++) {
             String shoot = shootNames[choices[i][0]];
@@ -208,7 +212,7 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake);
         CommandScheduler.getInstance().schedule(
                 auto
         );

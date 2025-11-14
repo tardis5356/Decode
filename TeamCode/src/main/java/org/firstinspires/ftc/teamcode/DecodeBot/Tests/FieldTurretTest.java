@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.visionPortal;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.turretFlipping;
@@ -26,6 +28,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
+import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.List;
 
@@ -105,10 +108,7 @@ public class FieldTurretTest extends CommandOpMode {
                 .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y,0)));
 
 
-        double maxAngleDeg = 200;
-//        new Trigger(() -> Math.abs(Math.toDegrees(getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER)
-//) > maxAngleDeg && !turretFlipping)
-//                .whenActive(new TurretFlipCommand(10, turret));
+
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> camera.setObeliskMotif());
@@ -130,7 +130,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
        drive.localizer.update();
 
         // === Turret control ===
-        turret.updateTurretTracking(drive, telemetry, 200);
+       turret.updateTurretTracking(drive, telemetry, 200);
 
 
         // === Driving Control ===
@@ -150,7 +150,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
 
 
 
-          //  drive.localizer.setPose(camera.getRelocalizedPose(drive));
+          //  drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
 
 
         // === Telemetry ===
@@ -162,9 +162,13 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
         telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
         telemetry.addData("Alliance", GlobalVariables.aColor);
         telemetry.addData("Flip Active", turret.turretFlipping);
-//        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
+        telemetry.addData("FPS", camera.visionPortal.getFps());
+//        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(de
+//        siredTurretAngleRobot));
 
         telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
+telemetry.addData("manualExposure", manualExposure);
+
         telemetry.update();
     }
 
