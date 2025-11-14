@@ -127,6 +127,7 @@ aprilTagProcessor.setDecimation(5);
 
 
         // Disable intake camera processors initially
+        visionPortal.setProcessorEnabled(purpleLocator, false);
         visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
@@ -148,11 +149,9 @@ aprilTagProcessor.setDecimation(5);
 //            yawPower = 0;
 //            forwardPower = 0;
 //        }
-        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING){
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure){
             setManualExposure(2, 94);
             manualExposure = true;
-        } else {
-            manualExposure = false;
         }
 
 
@@ -175,6 +174,7 @@ aprilTagProcessor.setDecimation(5);
                 visionPortal.setProcessorEnabled(greenLocator, false);
                 visionPortal.setProcessorEnabled(purpleLocator,true);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, false);
+                break;
 
             case TURRET:
                 visionPortal.setActiveCamera(turretWebcam);
@@ -313,13 +313,13 @@ aprilTagProcessor.setDecimation(5);
         // Assign motif based on AprilTag ID
         switch (motifAprilTag.id) {
             case 21:
-                motif= " GPP";
+                motif= "GPP";
                 break;
             case 22:
-                motif = " PGP";
+                motif = "PGP";
                 break;
             case 23:
-                motif = " PPG";
+                motif = "PPG";
                 break;
             default:
                 motif = null;

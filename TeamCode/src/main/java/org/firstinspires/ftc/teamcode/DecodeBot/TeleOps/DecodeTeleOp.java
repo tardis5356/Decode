@@ -66,9 +66,9 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
     boolean targetFound = false;
-    boolean flyMode = true;
+   public static boolean flyMode = true;
 
-    public enum shootModes {
+    public static enum shootModes {
         FLY,
         STORE_MIDDLE,
         STORE_ONE_FOR_LAST,
@@ -76,7 +76,7 @@ public class DecodeTeleOp extends CommandOpMode {
         MANUAL
     }
 
-    shootModes currentShootMode;
+   public static shootModes currentShootMode;
     //String shootMode;
 
     boolean autoTarget = true;

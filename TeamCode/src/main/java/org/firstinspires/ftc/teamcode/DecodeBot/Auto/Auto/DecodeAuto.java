@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
+import static org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp.flyMode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
@@ -224,6 +226,22 @@ public class DecodeAuto extends OpMode {
         if (runtime.seconds() > 29.5 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
             auto = null;
+        }
+
+        if(flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif){
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
+        }
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG") ){
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
+        }
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG") ){
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
+        }
+        else if( (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP") ){
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
+        }
+        else{
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.MANUAL;
         }
 
 

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.currentArtifacts;
+
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -38,9 +40,18 @@ public class Intake extends SubsystemBase {
 //            currentArtifactsEstablished = true;
 //        }
 
-        if(!currentArtifactsEstablished){
+
             setCurrentArtifacts();
+
+        long emptySlots = GlobalVariables.currentArtifacts.chars()
+                .filter(c -> c == ' ')
+                .count();
+
+        // If less than 2 empty slots → STOP the intake
+        if (emptySlots < 2) {
+           stop();
         }
+
 
     }
 
@@ -50,7 +61,7 @@ public class Intake extends SubsystemBase {
        intakeState = "in";
     }
 
-    
+
 
     public void oneOut(){
         intakePower = -1;
@@ -69,20 +80,17 @@ public class Intake extends SubsystemBase {
     }
 
     public String greenOrPurple(ColorSensor cs){
-        //TODO: actually set the rgb ranges
-        if (cs.red()>10){
-            return "P";
-        }
-        else if(cs.red()<=10){
+        if (cs.red() < 3) {
             return "G";
-        }
-        else{
-            return "V";
+        } else if (cs.red() > 10) {
+            return "P";
+        } else {
+            return " ";
         }
     }
 
     public void setCurrentArtifacts(){
-        GlobalVariables.currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
+        currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
     }
 
 }

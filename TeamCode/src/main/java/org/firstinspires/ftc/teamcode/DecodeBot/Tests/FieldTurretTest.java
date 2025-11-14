@@ -55,9 +55,13 @@ public class FieldTurretTest extends CommandOpMode {
     private ElapsedTime relocalizeTimer = new ElapsedTime();  // timer for relocalization
 
 
-    // === Field variables ===
+    // How fast the robot is allowed to be moving (in/s) to relocalize
+    public static double MAX_RELOCALIZE_SPEED_IN_PER_SEC = 3;
 
 
+
+    // Separate timer for speed deltas
+    private ElapsedTime speedTimer = new ElapsedTime();
 
     // relocalize every 5 seconds
     private static final double RELOCALIZE_INTERVAL_SEC = 1;
@@ -150,11 +154,35 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
 
 
 
-          //  drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
+        // === Estimate robot speed (in/s) ===
+        Pose2d pose = drive.localizer.getPose();
+        double dt = speedTimer.seconds();
+        double speedInPerSec = 0.0;
+
+        if (dt > 0 && savedPos != null) {
+            double dx = pose.position.x - savedPos.position.x;
+            double dy = pose.position.y - savedPos.position.y;
+            speedInPerSec = Math.hypot(dx, dy) / dt;
+        }
+
+        savedPos = pose;
+        speedTimer.reset();
+
+
+        // === Conditional relocalization ===
+
+        boolean slowEnough = speedInPerSec < MAX_RELOCALIZE_SPEED_IN_PER_SEC;
+        boolean timeElapsed = relocalizeTimer.seconds() > RELOCALIZE_INTERVAL_SEC;
+        boolean seesTag = !camera.getCurrentAprilTagDetections().isEmpty();
+
+        if (slowEnough && timeElapsed && seesTag) {
+            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
+            drive.localizer.setPose(relocalizedPose);
+            relocalizeTimer.reset();
+        }
 
 
         // === Telemetry ===
-        Pose2d pose = drive.localizer.getPose();
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
