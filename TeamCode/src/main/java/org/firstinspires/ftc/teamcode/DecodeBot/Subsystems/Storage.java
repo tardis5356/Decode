@@ -5,14 +5,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Storage extends SubsystemBase {
-    Servo sG, sS, sK, sB;
+    public Servo sG;
+    public Servo sS;
+    public Servo sK;
+    public Servo sBG;
     public static boolean gateOpen, slotFly, kickerDown, backOpen;
 
     public Storage(HardwareMap hardwareMap){
         sG = hardwareMap.get(Servo.class,"sG");
         sS = hardwareMap.get(Servo.class,"sS");
         sK = hardwareMap.get(Servo.class,"sK");
-        sB = hardwareMap.get(Servo.class, "sB");
+        sBG = hardwareMap.get(Servo.class, "sBG");
 
         closeBack();
     }
@@ -33,11 +36,11 @@ public class Storage extends SubsystemBase {
     }
 
     public void openBack(){
-        sB.setPosition(BotPositions.BACK_OPEN);
+        sBG.setPosition(BotPositions.BACK_OPEN);
         backOpen = true;
     }
     public void closeBack(){
-        sB.setPosition(BotPositions.BACK_CLOSE);
+        sBG.setPosition(BotPositions.BACK_CLOSE);
         backOpen = false;
     }
 

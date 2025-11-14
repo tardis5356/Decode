@@ -52,6 +52,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
     //This is just a boolean used for telemetry to see if we took in the incorrect sample color
 
+    //TODO:
 
     //
     int desiredTagID;
@@ -133,7 +134,7 @@ public class DecodeTeleOp extends CommandOpMode {
     private BreakPad breakPad;
 
     //Cameras
-    private Camera camera;
+    //private Camera camera;
 
     //Roadrunner
     private RRSubsystem rrSubsystem;
@@ -185,17 +186,17 @@ public class DecodeTeleOp extends CommandOpMode {
 
             bellyPan = new BellyPan(hardwareMap);
 
-            turret = new Turret(hardwareMap);
+            //turret = new Turret(hardwareMap);
 
             shooter = new Shooter(hardwareMap);
 
             breakPad = new BreakPad(hardwareMap);
 
-            camera = new Camera(hardwareMap);
+            //camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 
-            drive = new MecanumDrive(hardwareMap, savedPos);
+            //drive = new MecanumDrive(hardwareMap, savedPos);
 
             //map motors
             mFL = hardwareMap.get(DcMotorEx.class, "mFL");
@@ -205,6 +206,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             //this motor physically runs opposite. For convenience, reverse direction.
+            //mBL.setDirection(DcMotorSimple.Direction.REVERSE);
+            //mFL.setDirection(DcMotorSimple.Direction.REVERSE);
             mBR.setDirection(DcMotorSimple.Direction.REVERSE);
             mFR.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -248,6 +251,7 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
+        //red vs blue alliance
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
                 .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "red"));
 
@@ -276,12 +280,13 @@ public class DecodeTeleOp extends CommandOpMode {
                         new InstantCommand(intake::stop)
                 ));
 
-        //swapper
+        //Swapper
         new Trigger(()-> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenActive(storage::storeSlot);
+                .toggleWhenActive(storage::storeSlot, storage::returnSlot);
 
+        //Back Gate
         new Trigger(()-> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenActive(storage::returnSlot);
+                .toggleWhenActive(storage::closeBack, storage::openBack);
 
 
         //Engage/Disengage PTO
@@ -309,183 +314,183 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shoot
 
-        {
-            // Fly mode manual shots
-            {
-                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(fly)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                pullIn,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-
-                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(fly)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                pullIn,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-
-            }
-
-            // Store Middle manual shots
-            {
-                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeMiddle)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                pullIn,
-                                store,
-                                pullIn,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeMiddle)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                unStore,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-            }
-
-            // Store One For Last manual shots
-            {
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeOneForLast)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                store,
-                                pullIn,
-                                launch,
-                                pullIn,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeOneForLast)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                unStore,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-            }
-
-            // Store One For Second manual shots
-            {
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeOneForSecond)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                store,
-                                pullIn,
-                                launch,
-                                unStore,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                        //.whileActiveOnce(storeOneForSecond)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(()->firing = true),
-                                launch,
-                                pullIn,
-                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(()->firing = false)
-                        ))
-                ;
-            }
-
-            // All shoot modes end with just launching
-            new Trigger(() -> GlobalVariables.ballsShot == 2 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-                    //.whileActiveOnce(storeOneForSecond)
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(()->firing = true),
-                            launch,
-                            new InstantCommand(() -> GlobalVariables.ballsShot = 0),
-                            new InstantCommand(()->firing = false)
-                    ))
-            ;
-
-            // Triple shot modes
-            // TODO: Check that these actually launch all 3 or if it just stops at one
-            {
-                new Trigger(() -> currentShootMode == shootModes.FLY && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
-                        .whileActiveOnce(
-                                new SequentialCommandGroup(
-                                        new InstantCommand(()->firing = true),
-                                        fly,
-                                        new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
-                                )
-                        );
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
-                        .whileActiveOnce(
-                                new SequentialCommandGroup(
-                                        new InstantCommand(()->firing = true),
-                                        storeMiddle,
-                                        new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
-                                )
-                        );
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
-                        .whileActiveOnce(
-                                new SequentialCommandGroup(
-                                        new InstantCommand(()->firing = true),
-                                        storeOneForLast,
-                                        new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
-                                )
-                        );
-
-                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
-                        .whileActiveOnce(
-                                new SequentialCommandGroup(
-                                        new InstantCommand(()->firing = true),
-                                        storeOneForSecond,
-                                        new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
-                                )
-                        );
-
-            }
-            
-            new Trigger(() -> firing && driver2.wasJustReleased(GamepadKeys.Button.B))
-                    .whenActive(
-                            new SequentialCommandGroup(
-                                    new InstantCommand(()-> fly.cancel()),
-                                    new InstantCommand(()-> storeMiddle.cancel()),
-                                    new InstantCommand(()-> storeOneForSecond.cancel()),
-                                    new InstantCommand(()-> storeOneForLast.cancel()),
-                                    new InstantCommand((Runnable) scram),
-                                    new InstantCommand(()->driver2.gamepad.rumble(1500))
-                            )
-                            
-                    );
-        }
+//        {
+//            // Fly mode manual shots
+//            {
+//                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(fly)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                pullIn,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//
+//                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(fly)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                pullIn,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//
+//            }
+//
+//            // Store Middle manual shots
+//            {
+//                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeMiddle)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                pullIn,
+//                                store,
+//                                pullIn,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeMiddle)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                unStore,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//            }
+//
+//            // Store One For Last manual shots
+//            {
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeOneForLast)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                store,
+//                                pullIn,
+//                                launch,
+//                                pullIn,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeOneForLast)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                unStore,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//            }
+//
+//            // Store One For Second manual shots
+//            {
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeOneForSecond)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                store,
+//                                pullIn,
+//                                launch,
+//                                unStore,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                        //.whileActiveOnce(storeOneForSecond)
+//                        .whenActive(new SequentialCommandGroup(
+//                                new InstantCommand(()->firing = true),
+//                                launch,
+//                                pullIn,
+//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+//                                new InstantCommand(()->firing = false)
+//                        ))
+//                ;
+//            }
+//
+//            // All shoot modes end with just launching
+//            new Trigger(() -> GlobalVariables.ballsShot == 2 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                    //.whileActiveOnce(storeOneForSecond)
+//                    .whenActive(new SequentialCommandGroup(
+//                            new InstantCommand(()->firing = true),
+//                            launch,
+//                            new InstantCommand(() -> GlobalVariables.ballsShot = 0),
+//                            new InstantCommand(()->firing = false)
+//                    ))
+//            ;
+//
+//            // Triple shot modes
+//            // TODO: Check that these actually launch all 3 or if it just stops at one
+//            {
+//                new Trigger(() -> currentShootMode == shootModes.FLY && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+//                        .whileActiveOnce(
+//                                new SequentialCommandGroup(
+//                                        new InstantCommand(()->firing = true),
+//                                        fly,
+//                                        new InstantCommand(()->firing = false),
+//                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+//                                )
+//                        );
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+//                        .whileActiveOnce(
+//                                new SequentialCommandGroup(
+//                                        new InstantCommand(()->firing = true),
+//                                        storeMiddle,
+//                                        new InstantCommand(()->firing = false),
+//                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+//                                )
+//                        );
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+//                        .whileActiveOnce(
+//                                new SequentialCommandGroup(
+//                                        new InstantCommand(()->firing = true),
+//                                        storeOneForLast,
+//                                        new InstantCommand(()->firing = false),
+//                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+//                                )
+//                        );
+//
+//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 0 && driver2.getButton(GamepadKeys.Button.B))
+//                        .whileActiveOnce(
+//                                new SequentialCommandGroup(
+//                                        new InstantCommand(()->firing = true),
+//                                        storeOneForSecond,
+//                                        new InstantCommand(()->firing = false),
+//                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+//                                )
+//                        );
+//
+//            }
+//
+//            new Trigger(() -> firing && driver2.wasJustReleased(GamepadKeys.Button.B))
+//                    .whenActive(
+//                            new SequentialCommandGroup(
+//                                    new InstantCommand(()-> fly.cancel()),
+//                                    new InstantCommand(()-> storeMiddle.cancel()),
+//                                    new InstantCommand(()-> storeOneForSecond.cancel()),
+//                                    new InstantCommand(()-> storeOneForLast.cancel()),
+//                                    new InstantCommand((Runnable) scram),
+//                                    new InstantCommand(()->driver2.gamepad.rumble(1500))
+//                            )
+//
+//                    );
+//        }
     }
 
     //this is the main run loop
@@ -521,7 +526,7 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("preview on/off", "... Camera Stream\n");
 
 
-        Rotation = cubicScaling(-gamepad1.right_stick_x) * 0.5;
+        Rotation = cubicScaling(gamepad1.left_trigger-gamepad1.right_trigger) * 0.75;
         FB = cubicScaling(gamepad1.left_stick_y);
         LR = cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
@@ -539,6 +544,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mFRPower = FB;
             mBLPower = FB;
             mBRPower = FB;
+            shooter.setVel(0);
         }
         //actually sets the motor powers
 

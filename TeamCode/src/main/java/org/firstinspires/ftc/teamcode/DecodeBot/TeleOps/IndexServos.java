@@ -62,6 +62,10 @@ public class IndexServos extends CommandOpMode {
 
         telemetry.addData("PTO_State", bellyPan.PTO_Engaged);
         telemetry.addData("BreakPad_State", breakPad.breakPadEngaged);
+        telemetry.addData("YolkPos",storage.sS.getPosition());
+        telemetry.addData("GatePos",storage.sG.getPosition());
+        telemetry.addData("KickerPos",storage.sK.getPosition());
+        telemetry.addData("BackPos",storage.sBG.getPosition());
         telemetry.update();
     }
 }

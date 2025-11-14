@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake extends SubsystemBase {
 
-    DcMotorEx mI, mP;
+    DcMotorEx mI;
 
     ColorSensor cSI, cSM, cSSh, cSSt;
 
@@ -20,7 +20,7 @@ public class Intake extends SubsystemBase {
     public Intake(HardwareMap hardwareMap){
 
         mI = hardwareMap.get(DcMotorEx.class, "mI");
-        mP = hardwareMap.get(DcMotorEx.class, "mP");
+
 
         cSI = hardwareMap.get(ColorSensor.class, "cSI");
         cSM = hardwareMap.get(ColorSensor.class, "cSM");
@@ -32,11 +32,11 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic(){
         mI.setPower(intakePower);
-        mP.setPower(pathPower);
+        //mP.setPower(pathPower);
 
-        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
-            currentArtifactsEstablished = true;
-        }
+//        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
+//            currentArtifactsEstablished = true;
+//        }
 
         if(!currentArtifactsEstablished){
             setCurrentArtifacts();

@@ -29,7 +29,7 @@ public class BellyPan extends SubsystemBase {
         sP = hardwareMap.get(Servo.class, "sP");
         sLL = hardwareMap.get(Servo.class, "sLL");
         sRL = hardwareMap.get(Servo.class, "sRL");
-        limitLift = hardwareMap.get(TouchSensor.class, "lL");
+        //limitLift = hardwareMap.get(TouchSensor.class, "lL");
         sP.setPosition(PTO_DISENGAGED);
         sLL.setPosition(BotPositions.BELLYPAN_LEFT_LATCHED);
         sRL.setPosition(BotPositions.BELLYPAN_RIGHT_LATCHED);

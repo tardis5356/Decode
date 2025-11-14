@@ -119,7 +119,10 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
             case "PullIn":
                 addCommands(
                         new SequentialCommandGroup(
-                                new InstantCommand(()->moveOne(intake))
+                                new InstantCommand(storage::openGate),
+                                new WaitCommand(BotPositions.GATE_WAIT),
+                                new InstantCommand(()->moveOne(intake)),
+                                new InstantCommand(storage::openGate)
                         )
                 );
             break;

@@ -19,7 +19,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0, vI = 0, vD = 0, vV = 0, vS = 0;
+    public static float vP = 0.001f, vI = 0, vD = 0, vV = 0.00052f, vS = 0;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
         mSB = hardwareMap.get(DcMotorEx.class, "mSB");
         sH = hardwareMap.get(Servo.class,"sH");
 
-        mSB.setDirection(DcMotorSimple.Direction.REVERSE);
+        mST.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         //prep regression data

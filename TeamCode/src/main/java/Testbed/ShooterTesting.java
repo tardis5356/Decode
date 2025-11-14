@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name="10.2.25_Shooter_Test")
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.001f, vI = 0, vD = 0, vV = 0.00052f, vS = 0;
+    public static float vP = 0.0013f, vI = 0.000012f, vD = 0.000015f, vV = 0.00052f, vS = 0;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -39,7 +39,7 @@ public class ShooterTesting extends CommandOpMode {
     GamepadEx driver1;
 
     double hoodPos = 0.95;
-    public static double wheelSpeedOne = 0, wheelSpeedTwo = 0, wheelSpeed_Three = 0;
+    public static double wheelSpeedOne = 1400, wheelSpeedTwo = 1100, wheelSpeed_Three = 800;
     double wheelSpeed;
 
     double e1, e2, t;
