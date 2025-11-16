@@ -33,6 +33,8 @@ public class Intake extends SubsystemBase {
         cSSh = hardwareMap.get(ColorSensor.class, "cSSh");
         cSSt = hardwareMap.get(ColorSensor.class,"cSSt");
 
+
+
     }
 
     @Override

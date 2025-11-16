@@ -16,6 +16,8 @@ public class TuneFlyWheel extends CommandOpMode {
     private Shooter shooter;
     private GamepadEx driver1;
 
+    double MP;
+
     FtcDashboard dashboard = FtcDashboard.getInstance();
 
     @Override
@@ -28,10 +30,10 @@ public class TuneFlyWheel extends CommandOpMode {
         shooter.sH.setPosition(0);
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(()->shooter.setVel(1000));
+                .whenInactive(()->MP+=.05);
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(()->shooter.setVel(1500));
+                .whenInactive(()->MP-=.05);
 
     }
 
@@ -39,7 +41,8 @@ public class TuneFlyWheel extends CommandOpMode {
     public void run() {
         super.run();
 
-
+        shooter.mST.setPower(MP);
+        shooter.mSB.setPower(MP);
 
         telemetry.addData("TPS", shooter.getFlyWheelSpeed());
         telemetry.addData("motorPower", shooter.mST.getPower());
