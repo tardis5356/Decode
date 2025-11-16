@@ -504,6 +504,9 @@ public class DecodeTeleOp extends CommandOpMode {
             desiredTagID = 20;
         }
 
+        if(autoTarget) {
+            turret.updateTurretTracking(drive, telemetry, 200);
+        }
 
         
         if(flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif){
@@ -533,19 +536,13 @@ public class DecodeTeleOp extends CommandOpMode {
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
 
 
-        if(!BellyPan.PTO_Engaged){
+
             mFLPower = FB + LR + Rotation;
             mFRPower = FB - LR - Rotation;
             mBLPower = FB - LR + Rotation;
             mBRPower = FB + LR - Rotation;
-        }
-        else{
-            mFLPower = FB;
-            mFRPower = FB;
-            mBLPower = FB;
-            mBRPower = FB;
-            shooter.setVel(0);
-        }
+
+
         //actually sets the motor powers
 
 

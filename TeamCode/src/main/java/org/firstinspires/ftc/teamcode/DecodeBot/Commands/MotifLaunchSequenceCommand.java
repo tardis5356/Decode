@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class AutomaticMotifLaunchSequence extends SequentialCommandGroup {
+public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
 
     // External subsystems used by commands
     private final Intake intake;
@@ -31,7 +31,7 @@ public class AutomaticMotifLaunchSequence extends SequentialCommandGroup {
     // wait constants (use your existing BotPositions constants)
 
 
-    public AutomaticMotifLaunchSequence(Intake intake, Storage storage) {
+    public MotifLaunchSequenceCommand(Intake intake, Storage storage) {
         this.intake = intake;
         this.storage = storage;
 
