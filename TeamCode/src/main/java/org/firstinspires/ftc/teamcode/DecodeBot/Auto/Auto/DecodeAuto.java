@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp;
 
@@ -38,6 +39,7 @@ public class DecodeAuto extends OpMode {
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
     private Turret turret;
+    private Storage storage;
 
     // --- Cycle selection ---
     public static final int MAX_CYCLES = 3;
@@ -72,6 +74,7 @@ public class DecodeAuto extends OpMode {
         turret = new Turret(hardwareMap);
         camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
+        storage = new Storage(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
 
 
@@ -214,7 +217,7 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage);
         CommandScheduler.getInstance().schedule(
                 auto
         );
@@ -228,21 +231,6 @@ public class DecodeAuto extends OpMode {
             auto = null;
         }
 
-        if(flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif){
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
-        }
-        else if( (GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG") ){
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
-        }
-        else if( (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG") ){
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
-        }
-        else if( (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP") ){
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
-        }
-        else{
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.MANUAL;
-        }
 
 
         if (drive != null) drive.updatePoseEstimate();

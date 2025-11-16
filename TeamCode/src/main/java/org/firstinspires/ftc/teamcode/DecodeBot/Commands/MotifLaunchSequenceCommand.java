@@ -143,15 +143,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 // shift left: new front is b, middle becomes c, back becomes ' '
                 line.addFirst(b);
                 line.removeFirst(); // remove the old second we reinserted (we manipulated too many times)
-                // simpler approach: recompose:
-                // but because we already popped 3 elements above, recompute properly:
-                // We'll instead rebuild properly:
-                // (Rebuild safe shift – easier:)
-                // revert to correct safe shift simulation below:
 
-                // (To avoid complexity in the Java-like pseudo-manip above, do a correct shift:)
-                // We'll re-implement the shift simulation correctly after the loop by using a helper; but here in code we will
-                // actually simulate properly. (See full code for exact shift simulation.)
                 safetyCounter++;
             }
 

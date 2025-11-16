@@ -10,7 +10,9 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 
+import org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Util;
 
 import java.util.ArrayList;
@@ -26,11 +28,11 @@ public class AutoGenerator {
      * - runs spikeToShootActions[i]
      * after all cycles: runs gateAction
      */
-    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake) {
+    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage) {
         List<Command> seq = new ArrayList<>();
 
         for (int i = 0; i < cycleCount; i++) {
-           //seq.add( /*Shoot Fly Command*/ );
+          // seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
             if (startToSpike[i] != null) {
                 //seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToSpike[i], requirements));
