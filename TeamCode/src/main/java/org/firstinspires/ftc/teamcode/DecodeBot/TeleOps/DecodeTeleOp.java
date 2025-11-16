@@ -13,7 +13,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -31,15 +30,11 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
-import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
-import java.util.List;
 
 @Config
 @TeleOp(name = "DecodeTeleop", group = "AGen1")
@@ -263,7 +258,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new InstantCommand(intake::in));
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenActive(new InstantCommand(intake::allOut));
+                .whenActive(new InstantCommand(intake::out));
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y))
                 .whenActive(new InstantCommand(intake::stop));
@@ -275,7 +270,7 @@ public class DecodeTeleOp extends CommandOpMode {
         //only spit out the one in the intake
         new Trigger(()-> driver2.getButton(GamepadKeys.Button.X))
                 .whenActive(new SequentialCommandGroup(
-                        new InstantCommand(intake::oneOut),
+                        new InstantCommand(intake::out),
                         new WaitCommand(2000),
                         new InstantCommand(intake::stop)
                 ));

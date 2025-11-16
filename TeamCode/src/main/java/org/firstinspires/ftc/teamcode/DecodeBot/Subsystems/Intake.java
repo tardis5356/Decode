@@ -17,7 +17,7 @@ public class Intake extends SubsystemBase {
 
     boolean currentArtifactsEstablished;
 
-    double intakePower = 0, pathPower = 0;
+    double intakePower = 0;
 
     public Intake(HardwareMap hardwareMap){
 
@@ -57,25 +57,21 @@ public class Intake extends SubsystemBase {
 
     public void in(){
        intakePower = 1;
-       pathPower = 1;
+       //pathPower = 1;
        intakeState = "in";
     }
 
 
 
-    public void oneOut(){
-        intakePower = -1;
-        intakeState = "out";
-    }
 
-    public void allOut(){
+    public void out(){
         intakePower = -1;
-        pathPower = -1;
+        //pathPower = -1;
         intakeState = "out";
     }
     public void stop(){
         intakePower = 0;
-        pathPower = 0;
+        //pathPower = 0;
         intakeState = "stop";
     }
 
