@@ -93,7 +93,7 @@ public class MeepMeepTesting {
                                .setTangent(allianceTangent(0))
                                .splineToLinearHeading(gateReleasePos, allianceTangent(90))
                                .back(20)
-                               .setTangent(allianceTangent(180))
+                               .setTangent(allianceTangent(270))
                                .splineToLinearHeading(frontSpikePos, allianceTangent(90))
                                .build());
 

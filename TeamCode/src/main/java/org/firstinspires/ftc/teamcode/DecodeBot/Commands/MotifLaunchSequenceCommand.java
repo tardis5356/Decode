@@ -35,19 +35,19 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
         this.intake = intake;
         this.storage = storage;
 
-
+       intake.setCurrentArtifacts();
 
 
         // Parse currentArtifacts
         char storageSlot = currentArtifacts.charAt(0);
-        // normalize spaces to ' ' and upper-case the chars just in case:
-        storageSlot = (storageSlot == ' ' ? ' ' : Character.toUpperCase(storageSlot));
+        // normalize spaces to '_' and upper-case the chars just in case:
+        storageSlot = (storageSlot == '_' ? '_' : Character.toUpperCase(storageSlot));
 
         // Line is a queue representing slots 1..3 (front/closest to shooter is first)
         Deque<Character> line = new ArrayDeque<>();
         for (int i = 1; i <= 3; i++) {
             char c = currentArtifacts.charAt(i);
-            if (c == ' ') c = ' ';
+            if (c == '_') c = '_';
             else c = Character.toUpperCase(c);
             // keep spaces as spaces to preserve empty slots
             line.addLast(c);
@@ -77,7 +77,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 seq.add(launchOne(storage));
                 // update model: front becomes empty
                 line.removeFirst();
-                line.addFirst(' ');
+                line.addFirst('_');
                 continue;
             }
 
@@ -86,7 +86,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 // unstore: bring storage into front (this generally requires gate open depending on your mechanism;
                 // we will ensure gate is open for launch operations)
                 seq.add(unstore(storage));      // places stored ball into front
-                storageSlot = ' ';
+                storageSlot = '_';
                 // ensure gate open for launch
                 if (!gateOpenScheduled) {
                     seq.add(openGate(storage));
@@ -95,30 +95,30 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 seq.add(launchOne(storage));
                 // update model
                 line.removeFirst();
-                line.addFirst(' ');
+                line.addFirst('_');
                 continue;
             }
 
             // CASE 3: target is deeper in line (in slot 2 or 3)
             // Step A: if front isn't empty, store it to open up room to shift
             boolean frontStored = false;
-            if (front != ' ' && storageSlot == ' ') {
+            if (front != '_' && storageSlot == '_') {
                 // close gate before storing (automatic gate control)
                 seq.add(closeGate(storage));
                 seq.add(store(storage));       // store front into storage slot
                 storageSlot = front;
                 // update model: front becomes empty
                 line.removeFirst();
-                line.addFirst(' ');
+                line.addFirst('_');
                 frontStored = true;
-            } else if (front != ' ' && storageSlot != ' ') {
+            } else if (front != '_' && storageSlot != '_') {
                 // Edge-case: storage already occupied. We must free storage first by unstore->launch or unstore->put front.
                 // Simpler deterministic strategy: unstore to front (so storage becomes free), then store new front.
                 // ensure gate open for unstore/launch combination if we need to launch a stored ball
                 seq.add(unstore(storage)); // put stored ball to front
                 // model: move stored into front
                 char storedBall = storageSlot;
-                storageSlot = ' ';
+                storageSlot = '_';
                 // push old front to next positions by treating unstore as placing in front (we simulate by inserting)
                 line.removeFirst();
                 line.addFirst(storedBall);
@@ -127,7 +127,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 seq.add(closeGate(storage));
                 seq.add(store(storage));
                 storageSlot = line.removeFirst(); // stored front
-                line.addFirst(' ');
+                line.addFirst('_');
                 frontStored = true;
             }
 
@@ -140,7 +140,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
                 char a = line.removeFirst();
                 char b = line.removeFirst();
                 char c = line.removeFirst();
-                // shift left: new front is b, middle becomes c, back becomes ' '
+                // shift left: new front is b, middle becomes c, back becomes '_'
                 line.addFirst(b);
                 line.removeFirst(); // remove the old second we reinserted (we manipulated too many times)
 
@@ -155,15 +155,15 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
             seq.add(launchOne(storage));
             // simulate removal from front
             line.removeFirst();
-            line.addFirst(' ');
+            line.addFirst('_');
 
             // Step C: if we had stored a front earlier, return it to the front (unstore)
-            if (frontStored && storageSlot != ' ') {
+            if (frontStored && storageSlot != '_') {
                 seq.add(unstore(storage));
                 // put stored back into front
                 line.removeFirst();
                 line.addFirst(storageSlot);
-                storageSlot = ' ';
+                storageSlot = '_';
             }
         }
 

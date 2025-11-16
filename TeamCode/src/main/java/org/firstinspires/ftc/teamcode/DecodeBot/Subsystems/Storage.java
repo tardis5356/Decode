@@ -9,7 +9,7 @@ public class Storage extends SubsystemBase {
     public Servo sS;
     public Servo sK;
     public Servo sBG;
-    public static boolean gateOpen, slotFly, kickerDown, backOpen;
+    public static boolean gateOpen = true, slotFly = true, kickerDown = true, backOpen = false;
 
     public Storage(HardwareMap hardwareMap){
         sG = hardwareMap.get(Servo.class,"sG");

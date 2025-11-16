@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -11,7 +12,10 @@ public class Intake extends SubsystemBase {
 
     DcMotorEx mI;
 
-    ColorSensor cSI, cSM, cSSh, cSSt;
+    public ColorSensor cSI;
+   public ColorSensor cSM;
+   public ColorSensor cSSh;
+   public ColorSensor cSSt;
 
     public static String intakeState = new String();
 
@@ -41,7 +45,7 @@ public class Intake extends SubsystemBase {
 //        }
 
 
-            setCurrentArtifacts();
+
 
         long emptySlots = GlobalVariables.currentArtifacts.chars()
                 .filter(c -> c == ' ')
@@ -57,7 +61,6 @@ public class Intake extends SubsystemBase {
 
     public void in(){
        intakePower = 1;
-       //pathPower = 1;
        intakeState = "in";
     }
 
@@ -66,22 +69,23 @@ public class Intake extends SubsystemBase {
 
     public void out(){
         intakePower = -1;
-        //pathPower = -1;
         intakeState = "out";
     }
     public void stop(){
         intakePower = 0;
-        //pathPower = 0;
         intakeState = "stop";
     }
 
     public String greenOrPurple(ColorSensor cs){
+        if (cs == cSSt && slotFly) {
+            return "_";
+        }
         if (cs.red() < 3) {
             return "G";
         } else if (cs.red() > 10) {
             return "P";
         } else {
-            return " ";
+            return "_";
         }
     }
 

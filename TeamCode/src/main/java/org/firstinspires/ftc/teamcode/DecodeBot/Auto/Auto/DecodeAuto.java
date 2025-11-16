@@ -15,6 +15,8 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
@@ -76,6 +78,9 @@ public class DecodeAuto extends OpMode {
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
+        turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
 
 
         telemetry2.addData("Status", "Initialized");

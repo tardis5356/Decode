@@ -38,7 +38,6 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
-        mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         mT.setDirection(DcMotorSimple.Direction.REVERSE);

@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BreakPad;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 
@@ -18,6 +19,7 @@ public class IndexServos extends CommandOpMode {
     Shooter shooter;
     BreakPad breakPad;
     BellyPan bellyPan;
+    Intake intake;
     GamepadEx driver;
 
     @Override
@@ -66,6 +68,23 @@ public class IndexServos extends CommandOpMode {
         telemetry.addData("GatePos",storage.sG.getPosition());
         telemetry.addData("KickerPos",storage.sK.getPosition());
         telemetry.addData("BackPos",storage.sBG.getPosition());
+
+        telemetry.addData("IntakeRed", intake.cSI.red());
+        telemetry.addData("IntakeGreen", intake.cSI.green());
+        telemetry.addData("IntakeBlue", intake.cSI.blue());
+
+        telemetry.addData("MiddleRed", intake.cSM.red());
+        telemetry.addData("MiddleGreen", intake.cSM.green());
+        telemetry.addData("MiddleBlue", intake.cSM.blue());
+
+        telemetry.addData("ShooterRed", intake.cSSh.red());
+        telemetry.addData("ShooterGreen", intake.cSSh.green());
+        telemetry.addData("ShooterBlue", intake.cSSh.blue());
+
+        telemetry.addData("YolkRed", intake.cSSt.red());
+        telemetry.addData("YolkGreen", intake.cSSt.green());
+        telemetry.addData("YolkBlue", intake.cSSt.blue());
+
         telemetry.update();
     }
 }
