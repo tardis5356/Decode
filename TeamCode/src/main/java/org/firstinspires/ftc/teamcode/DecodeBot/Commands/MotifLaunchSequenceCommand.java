@@ -37,6 +37,13 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
 
        intake.setCurrentArtifacts();
 
+        if (shootAll()) {
+            addCommands(
+                   new LaunchSequenceCommand(intake, storage, "Fly")
+            );
+            return;
+        }
+
 
         // Parse currentArtifacts
         char storageSlot = currentArtifacts.charAt(0);
@@ -177,6 +184,25 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
     // ---------------------------
     // Helper commands (return Command objects so they can be composed)
     // ---------------------------
+
+
+    boolean shootAll() {
+        int countG = 0;
+        for (char c : currentArtifacts.toCharArray()) {
+            if (c == 'G') countG++;
+        }
+
+        // Condition 1: more than one G
+        if (countG > 1) return true;
+
+        // Condition 2: all P
+        if (currentArtifacts.equals("_PPP")) return true;
+
+        // Condition 3: current matches motif (e.g. GPP matching GPP)
+        if (currentArtifacts.substring(1).equals( motif)) return true;
+
+        return false;
+    }
 
     public Command launchOne(Storage s) {
         return new ParallelCommandGroup(
