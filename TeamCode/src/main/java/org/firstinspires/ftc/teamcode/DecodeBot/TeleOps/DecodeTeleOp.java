@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RecoveryBuilder;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
@@ -133,6 +134,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
     //Roadrunner
     private RRSubsystem rrSubsystem;
+
+    private RecoveryBuilder recoveryBuilder;
 
     private MecanumDrive drive;
 
@@ -438,7 +441,7 @@ public class DecodeTeleOp extends CommandOpMode {
                                         new InstantCommand(()->firing = true),
                                         fly,
                                         new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+                                        new InstantCommand(()->driver2.gamepad.rumble(.5,.5, 500))
                                 )
                         );
 
@@ -448,7 +451,7 @@ public class DecodeTeleOp extends CommandOpMode {
                                         new InstantCommand(()->firing = true),
                                         storeMiddle,
                                         new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+                                        new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500))
                                 )
                         );
 
@@ -458,7 +461,7 @@ public class DecodeTeleOp extends CommandOpMode {
                                         new InstantCommand(()->firing = true),
                                         storeOneForLast,
                                         new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+                                        new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500))
                                 )
                         );
 
@@ -468,7 +471,7 @@ public class DecodeTeleOp extends CommandOpMode {
                                         new InstantCommand(()->firing = true),
                                         storeOneForSecond,
                                         new InstantCommand(()->firing = false),
-                                        new InstantCommand(()->driver2.gamepad.rumble(500))
+                                        new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500))
                                 )
                         );
 
@@ -481,8 +484,10 @@ public class DecodeTeleOp extends CommandOpMode {
                                     new InstantCommand(()-> storeMiddle.cancel()),
                                     new InstantCommand(()-> storeOneForSecond.cancel()),
                                     new InstantCommand(()-> storeOneForLast.cancel()),
-                                    new InstantCommand((Runnable) scram),
-                                    new InstantCommand(()->driver2.gamepad.rumble(1500))
+                                    new InstantCommand(()-> intake.setCurrentArtifacts()),
+                                    recoveryBuilder.BuildRecSequence(pullIn,pullInAgain,store,unStore,launch,currentShootMode,storage),
+                                    //new InstantCommand((Runnable) scram),
+                                    new InstantCommand(()->driver2.gamepad.rumble(1,1,1000))
                             )
 
                     );
