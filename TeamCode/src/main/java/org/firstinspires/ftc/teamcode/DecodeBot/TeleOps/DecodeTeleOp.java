@@ -541,6 +541,16 @@ public class DecodeTeleOp extends CommandOpMode {
             mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
             mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
 
+            telemetry.addData("mFLPower", mFLPower);
+        telemetry.addData("mFRPower", mFRPower);
+        telemetry.addData("mBLPower", mBLPower);
+        telemetry.addData("mBRPower", mBRPower);
+        telemetry.addData("FB", FB);
+        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
+
+
+
+
             telemetry.update();
 
 
