@@ -313,10 +313,12 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shoot
 
-        {
-            // Fly mode manual shots
+//        {
+//            // Fly mode manual shots
 //            {
-//                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                new Trigger(() -> ( (currentShootMode == shootModes.FLY) && (GlobalVariables.ballsShot == 0 || GlobalVariables.ballsShot == 1) && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) )||
+//                        ( currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X) ) )
+//                )
 //                        //.whileActiveOnce(fly)
 //                        .whenActive(new SequentialCommandGroup(
 //                                new InstantCommand(()->firing = true),
@@ -324,19 +326,9 @@ public class DecodeTeleOp extends CommandOpMode {
 //                                pullIn,
 //                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
 //                                new InstantCommand(()->firing = false)
-//                        ))
-//                ;
+//                        ));
 //
-//                new Trigger(() -> (currentShootMode == shootModes.FLY) && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-//                        //.whileActiveOnce(fly)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(()->firing = true),
-//                                launch,
-//                                pullIn,
-//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(()->firing = false)
-//                        ))
-//                ;
+//
 //
 //            }
 //
@@ -355,7 +347,8 @@ public class DecodeTeleOp extends CommandOpMode {
 //                        ))
 //                ;
 //
-//                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
+//                new Trigger(() -> ( currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) ) ||
+//                (currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X))) )
 //                        //.whileActiveOnce(storeMiddle)
 //                        .whenActive(new SequentialCommandGroup(
 //                                new InstantCommand(()->firing = true),
@@ -382,16 +375,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //                        ))
 //                ;
 //
-//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-//                        //.whileActiveOnce(storeOneForLast)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(()->firing = true),
-//                                launch,
-//                                unStore,
-//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(()->firing = false)
-//                        ))
-//                ;
+//
 //            }
 //
 //            // Store One For Second manual shots
@@ -409,16 +393,6 @@ public class DecodeTeleOp extends CommandOpMode {
 //                        ))
 //                ;
 //
-//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)))
-//                        //.whileActiveOnce(storeOneForSecond)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(()->firing = true),
-//                                launch,
-//                                pullIn,
-//                                new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(()->firing = false)
-//                        ))
-//                ;
 //            }
 //
 //            // All shoot modes end with just launching
@@ -497,7 +471,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //                            )
 //
 //                    );
-        }
+//        }
     }
 
     //this is the main run loop
