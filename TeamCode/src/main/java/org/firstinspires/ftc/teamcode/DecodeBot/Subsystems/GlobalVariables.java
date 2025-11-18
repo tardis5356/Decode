@@ -8,7 +8,7 @@ public class GlobalVariables {
 
     public static int ballsShot;
 
-    public static String currentArtifacts = new String();
+    public static String currentArtifacts = new String("____");
     public static String aColor = new String();
 
     public static double currentTPS;

@@ -19,7 +19,7 @@ public class Intake extends SubsystemBase {
 
     public static String intakeState = new String();
 
-    boolean currentArtifactsEstablished;
+    public boolean currentArtifactsEstablished;
 
     double intakePower = 0;
 
@@ -42,15 +42,22 @@ public class Intake extends SubsystemBase {
         mI.setPower(intakePower);
         //mP.setPower(pathPower);
 
-//        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
-//            currentArtifactsEstablished = true;
-//        }
+        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
+            currentArtifactsEstablished = true;
+        }
+        else{
+            currentArtifactsEstablished = false;
+        }
+
+        if(!currentArtifactsEstablished){
+            setCurrentArtifacts();
+        }
 
 
 
 
         long emptySlots = GlobalVariables.currentArtifacts.chars()
-                .filter(c -> c == ' ')
+                .filter(c -> c == '_')
                 .count();
 
         // If less than 2 empty slots → STOP the intake
