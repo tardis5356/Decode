@@ -10,8 +10,8 @@ public class RecoveryBuilder {
 
 
 
-    public SequentialCommandGroup BuildRecSequence(LaunchSequenceCommand pullIn, LaunchSequenceCommand pullInAgain, LaunchSequenceCommand store, LaunchSequenceCommand unstore, LaunchSequenceCommand launch, DecodeTeleOp.shootModes shootMode, Storage storage ){
-        SequentialCommandGroup recovery = null;
+    public static SequentialCommandGroup BuildRecSequence(DecodeTeleOp.shootModes shootMode, Storage storage, Intake intake){
+        SequentialCommandGroup recovery = new SequentialCommandGroup();
 
         //The logic below has _ mean empty. If the yolk/storage is _ then it should be in the fly position
 
@@ -24,7 +24,7 @@ public class RecoveryBuilder {
         else if(shootMode == DecodeTeleOp.shootModes.FLY){
             //Check if there is already something in the shooter area
             if (GlobalVariables.currentArtifacts.substring(1,2) == "_"){
-                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), new LaunchSequenceCommand(intake, storage, "PullIn"));
             }
             else{
                 recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker));
@@ -40,16 +40,21 @@ public class RecoveryBuilder {
 
                 //if the yolk is not stored and the shooter is empty
                 if(GlobalVariables.currentArtifacts.substring(0,1) == "_" && GlobalVariables.currentArtifacts.substring(1,2) == "_"){
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn, store, pullInAgain);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"),
+                            new LaunchSequenceCommand(intake, storage, "Store"),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
                 //if the yolk isn't empty (and thus stored) and the shooter is empty
                 else if(GlobalVariables.currentArtifacts.substring(0,1) != "_" && GlobalVariables.currentArtifacts.substring(1,2) == "_"){
 
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
             }
             else if(GlobalVariables.ballsShot == 2){
-                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), unstore);
+                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                        new LaunchSequenceCommand(intake, storage, "UnStore"));
             }
         }
         else if(shootMode == DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST){
@@ -57,45 +62,54 @@ public class RecoveryBuilder {
                 //check state of the yolk
                 if(GlobalVariables.currentArtifacts.substring(0,1) != "_" /*if the yolk is in stored*/){
                     if(GlobalVariables.currentArtifacts.substring(1,2) == "_" /*if the shooter is empty*/){
-                        recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                        recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                                new LaunchSequenceCommand(intake, storage, "PullIn"));
                     }
                     else{
                         recovery = new SequentialCommandGroup();
                     }
                 }
                 else{
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), store, pullIn);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "Store"),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
             }
             else if(GlobalVariables.ballsShot == 1){
                 if(GlobalVariables.currentArtifacts.substring(1,2) == "_" /*if the shooter is empty*/){
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
                 else{
                     recovery = new SequentialCommandGroup();
                 }
             }
             else if(GlobalVariables.ballsShot == 2){
-                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), unstore);
+                recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                        new LaunchSequenceCommand(intake, storage, "UnStore"));
             }
         }
         else if(shootMode == DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND){
             if(GlobalVariables.ballsShot == 0){
                 if(GlobalVariables.currentArtifacts.substring(0,1) != "_" /*if the yolk is in stored*/){
                     if(GlobalVariables.currentArtifacts.substring(1,2) == "_" /*if the shooter is empty*/){
-                        recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                        recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                                new LaunchSequenceCommand(intake, storage, "PullIn"));
                     }
                     else{
                         recovery = new SequentialCommandGroup();
                     }
                 }
                 else{
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), store, pullIn);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "Store"),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
             }
             else if(GlobalVariables.ballsShot == 1){
                 if(GlobalVariables.currentArtifacts.substring(0,1) != "_" /*if the yolk is in stored*/){
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), unstore);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "UnStore"));
                 }
                 else{
                     recovery = new SequentialCommandGroup();
@@ -104,7 +118,8 @@ public class RecoveryBuilder {
             else if(GlobalVariables.ballsShot == 2){
                 //Check if there is already something in the shooter area
                 if (GlobalVariables.currentArtifacts.substring(1,2) == "_"){
-                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker), pullIn);
+                    recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker),
+                            new LaunchSequenceCommand(intake, storage, "PullIn"));
                 }
                 else{
                     recovery = new SequentialCommandGroup(new InstantCommand(storage :: lowerKicker));

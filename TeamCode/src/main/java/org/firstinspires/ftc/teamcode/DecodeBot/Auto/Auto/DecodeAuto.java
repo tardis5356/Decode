@@ -44,7 +44,8 @@ public class DecodeAuto extends OpMode {
     private Storage storage;
 
     // --- Cycle selection ---
-    public static final int MAX_CYCLES = 3;
+    public static int gateCycleIndex = 0;
+    public static final int MAX_CYCLES = 5;
     private int cycleCount = 2;   // default 2 cycles
     private int currentCycle = 0;  // row selector
     private int currentColumn = 0; // column selector: 0=shoot, 1=spike
@@ -53,6 +54,8 @@ public class DecodeAuto extends OpMode {
 
     // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=spikeChoice(0 goal,1 mid,2 audience)]
     private int[][] choices = new int[MAX_CYCLES][2];
+
+    private boolean gateCyclePressed;
 
     public Pose2d startPos;
 
@@ -165,6 +168,22 @@ public class DecodeAuto extends OpMode {
 
 
 
+//        if ((gamepad2.right_bumper || gamepad2.left_bumper) && !gateCyclePressed) {
+//
+//            if (gamepad2.right_bumper) {
+//                gateCycleIndex = (gateCycleIndex + 1) % (cycleCount + 1);
+//            }
+//
+//            if (gamepad2.left_bumper) {
+//                gateCycleIndex = (gateCycleIndex - 1 + (cycleCount + 1)) % (cycleCount + 1);
+//            }
+//
+//            gateCyclePressed = true;
+//
+//        } else if (!gamepad2.right_bumper && !gamepad2.left_bumper) {
+//            gateCyclePressed = false;
+//        }
+
 
         // Select choices
         if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot goal / Spike goal
@@ -174,11 +193,18 @@ public class DecodeAuto extends OpMode {
     }
 
     private void printTelemetryTable() {
-        telemetry2.clearAll();
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
         if (motif != null){
             telemetry2.addData("Motif", motif);
         }
+
+
+//        String gateTxt = (gateCycleIndex == cycleCount)
+//                ? "After ALL cycles"
+//                : "After cycle " + (gateCycleIndex + 1);
+//        telemetry2.addData("Gate Action", gateTxt);
+//
+
         // --- Alliance + Start position ---
         String startName = "Not chosen";
         if (startPos != null) {

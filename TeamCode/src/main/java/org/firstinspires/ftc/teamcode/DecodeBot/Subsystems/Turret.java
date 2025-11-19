@@ -132,7 +132,7 @@ public class Turret extends SubsystemBase {
 
 
 
-        int desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        int desiredTicks = (int) Math.round((desiredTurretOnBotAngleRAD + Math.PI)/ TURRET_TICK_TO_RADIAN_MULTIPLIER);
 
 
 

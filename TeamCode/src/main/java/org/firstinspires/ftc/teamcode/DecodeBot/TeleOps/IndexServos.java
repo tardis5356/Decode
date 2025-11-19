@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.TeleOps;
 
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.currentArtifacts;
+
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
@@ -31,6 +34,9 @@ public class IndexServos extends CommandOpMode {
         shooter = new Shooter(hardwareMap);
         breakPad = new BreakPad(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
+        intake = new Intake(hardwareMap);
+
+
 
         shooter.sH.setPosition(0);
 
@@ -72,18 +78,29 @@ public class IndexServos extends CommandOpMode {
         telemetry.addData("IntakeRed", intake.cSI.red());
         telemetry.addData("IntakeGreen", intake.cSI.green());
         telemetry.addData("IntakeBlue", intake.cSI.blue());
+        telemetry.addData("IntakeDist", intake.dSI.getDistance(DistanceUnit.CM));
+
 
         telemetry.addData("MiddleRed", intake.cSM.red());
         telemetry.addData("MiddleGreen", intake.cSM.green());
         telemetry.addData("MiddleBlue", intake.cSM.blue());
+        telemetry.addData("MiddleDist", intake.dSM.getDistance(DistanceUnit.CM));
+
 
         telemetry.addData("ShooterRed", intake.cSSh.red());
         telemetry.addData("ShooterGreen", intake.cSSh.green());
         telemetry.addData("ShooterBlue", intake.cSSh.blue());
+        telemetry.addData("ShooterDist", intake.dSSh.getDistance(DistanceUnit.CM));
+
 
         telemetry.addData("YolkRed", intake.cSSt.red());
         telemetry.addData("YolkGreen", intake.cSSt.green());
         telemetry.addData("YolkBlue", intake.cSSt.blue());
+        telemetry.addData("YolkDist", intake.dSSt.getDistance(DistanceUnit.CM));
+
+        intake.setCurrentArtifacts();
+
+        telemetry.addData("artifactState", currentArtifacts );
 
         telemetry.update();
     }

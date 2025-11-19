@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage.slotFl
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake extends SubsystemBase {
@@ -16,6 +17,13 @@ public class Intake extends SubsystemBase {
    public ColorSensor cSM;
    public ColorSensor cSSh;
    public ColorSensor cSSt;
+
+   public DistanceSensor dSI;
+
+    public DistanceSensor dSM;
+    public DistanceSensor dSSh;
+    public DistanceSensor dSSt;
+
 
     public static String intakeState = new String();
 
@@ -29,9 +37,14 @@ public class Intake extends SubsystemBase {
 
 
         cSI = hardwareMap.get(ColorSensor.class, "cSI");
+        dSI = hardwareMap.get(DistanceSensor.class, "cSI");
         cSM = hardwareMap.get(ColorSensor.class, "cSM");
+        dSM = hardwareMap.get(DistanceSensor.class, "cSM");
         cSSh = hardwareMap.get(ColorSensor.class, "cSSh");
+        dSSh = hardwareMap.get(DistanceSensor.class, "cSSh");
         cSSt = hardwareMap.get(ColorSensor.class,"cSSt");
+        dSSt = hardwareMap.get(DistanceSensor.class, "cSSt");
+
 
 
 

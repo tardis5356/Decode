@@ -1,25 +1,28 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateAction;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateExit;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateRelease;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.spikeToShoot;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startToSpike;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.gateCycleIndex;
 
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand;
+import org.firstinspires.ftc.teamcode.DecodeBot.Commands.MotifLaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
-import org.firstinspires.ftc.teamcode.DecodeBot.Util;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class AutoGenerator {
+
+   public static boolean gateReleased = false;
 
     /**
      * Build a sequential auto that:
@@ -32,20 +35,32 @@ public class AutoGenerator {
         List<Command> seq = new ArrayList<>();
 
         for (int i = 0; i < cycleCount; i++) {
-          // seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+//
+
+
             if (startToSpike[i] != null) {
                 //seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToSpike[i], requirements));
                 //seq.add(new InstantCommand(intake::stop));
 
             }
+
             if (spikeToShoot[i] != null) {
                 seq.add(new ActionCommand(spikeToShoot[i], requirements));
             }
-        }
+//            if (!gateReleased){
+//                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+//            } else {
+//                seq.add(new MotifLaunchSequenceCommand(intake, storage));
+//            }
 
-        if (gateAction != null) {
-            seq.add(new ActionCommand(gateAction, requirements));
+            if (i == gateCycleIndex) {
+                seq.add(new ActionCommand(gateRelease, requirements));
+            }
+            if(i == gateCycleIndex) {
+                seq.add(new ActionCommand(gateExit, requirements));
+                gateReleased = true;
+            }
         }
 
         return new SequentialCommandGroup(seq.toArray(new Command[0]));

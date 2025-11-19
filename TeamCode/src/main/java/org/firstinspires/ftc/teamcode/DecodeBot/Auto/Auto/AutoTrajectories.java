@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.MAX_CYCLES;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.roadrunner.Action;
@@ -14,24 +15,25 @@ public class AutoTrajectories {
     public static Pose2d goalStartPos, audienceStartPos;
     public static Pose2d goalShootPos, audienceShootPos;
     public static Pose2d goalSpikePos, midSpikePos, audienceSpikePos, gateReleasePos;
+    public static Pose2d gateExitWaypointPos;
+
 
     // Actions: for each cycle index we create startToSpike and spikeToShoot actions
     public static Action[] startToSpike = new Action[MAX_CYCLES];
     public static Action[] spikeToShoot = new Action[MAX_CYCLES];
-    public static Action gateAction;
-
+    public static Action gateRelease, gateExit;
 
 
     // Spike tangents: [goal, mid, audience]
-    public static double[] spikeEndTangentDeg   = {90, 90, 90};
+    public static double[] spikeEndTangentDeg = {90, 90, 90};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg   = {225, 0}; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg = {225, 0}; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
-    public static double[] gateReleaseStartTangentDeg = {0 , 180};
-    public static double gateReleaseEndTangentDeg   = 270;
+    public static double[] gateReleaseStartTangentDeg = {0, 180};
+    public static double gateReleaseEndTangentDeg = 270;
 
 
     public static double[] startPosTangentDeg = {245, 180}; // [goalStart, audienceStart]
@@ -59,12 +61,13 @@ public class AutoTrajectories {
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
-        goalSpikePos  = allianceCoordinate(new Pose2d(-12, 45, Math.toRadians(90)));
-        midSpikePos    = allianceCoordinate(new Pose2d(12, 45, Math.toRadians(90)));
-        audienceSpikePos   = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
+        goalSpikePos = allianceCoordinate(new Pose2d(-12, 45, Math.toRadians(90)));
+        midSpikePos = allianceCoordinate(new Pose2d(12, 45, Math.toRadians(90)));
+        audienceSpikePos = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 46, Math.toRadians(90)));
+        gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 56, Math.toRadians(90)));
     }
 
     /**
@@ -99,10 +102,15 @@ public class AutoTrajectories {
                 spikeStartDeg = currentStart.equals(goalStartPos)
                         ? startPosTangentDeg[0]
                         : startPosTangentDeg[1];
-            } else {
-                // later cycles: based on previous shoot position
-                spikeStartDeg = spikeStartTangentDeg[choices[i-1][0]];
             }
+//            else if (i - 1 == gateCycleIndex) {
+//                spikeStartDeg = allianceTangent(270);
+//            }
+            else {
+                // later cycles: based on previous shoot position
+                spikeStartDeg = spikeStartTangentDeg[choices[i - 1][0]];
+            }
+
 
             // End tangent for spike
             double spikeEndRad = allianceTangent(spikeEndTangentDeg[spikeChoice]);
@@ -125,16 +133,26 @@ public class AutoTrajectories {
 
             // Next cycle starts from the shoot pose
             currentStart = shootPose;
+//            if (i == gateCycleIndex) {
+//                double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[shootChoice]);
+//                double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
+//
+//                gateRelease = drive.actionBuilder(currentStart)
+//                        .setTangent(gateStartRad)
+//                        .splineToLinearHeading(gateReleasePos, gateEndRad)
+//                        .build();
+//
+//                gateExit = drive.actionBuilder(gateReleasePos)
+//                        .setTangent(allianceTangent(270))
+//                        .splineToLinearHeading(gateExitWaypointPos, allianceTangent(270))
+//                        .build();
+//
+//                currentStart = gateExitWaypointPos;
+//            }
         }
 
-        // === Final Gate Release ===
-        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[shootChoice]);
-        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
 
-        gateAction = drive.actionBuilder(currentStart)
-                .setTangent(gateStartRad)
-                .splineToLinearHeading(gateReleasePos, gateEndRad)
-                .build();
+
     }
 
 }
