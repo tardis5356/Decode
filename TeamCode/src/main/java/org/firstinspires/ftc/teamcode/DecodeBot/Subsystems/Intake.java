@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariable
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -13,16 +14,10 @@ public class Intake extends SubsystemBase {
 
     DcMotorEx mI;
 
-    public ColorSensor cSI;
-   public ColorSensor cSM;
-   public ColorSensor cSSh;
-   public ColorSensor cSSt;
-
-   public DistanceSensor dSI;
-
-    public DistanceSensor dSM;
-    public DistanceSensor dSSh;
-    public DistanceSensor dSSt;
+    public ColorRangeSensor cSI;
+    public ColorRangeSensor cSM;
+    public ColorRangeSensor cSSh;
+    public ColorRangeSensor cSSt;
 
 
     public static String intakeState = new String();
@@ -31,42 +26,33 @@ public class Intake extends SubsystemBase {
 
     double intakePower = 0;
 
-    public Intake(HardwareMap hardwareMap){
+
+    public Intake(HardwareMap hardwareMap) {
 
         mI = hardwareMap.get(DcMotorEx.class, "mI");
 
 
-        cSI = hardwareMap.get(ColorSensor.class, "cSI");
-        dSI = hardwareMap.get(DistanceSensor.class, "cSI");
-        cSM = hardwareMap.get(ColorSensor.class, "cSM");
-        dSM = hardwareMap.get(DistanceSensor.class, "cSM");
-        cSSh = hardwareMap.get(ColorSensor.class, "cSSh");
-        dSSh = hardwareMap.get(DistanceSensor.class, "cSSh");
-        cSSt = hardwareMap.get(ColorSensor.class,"cSSt");
-        dSSt = hardwareMap.get(DistanceSensor.class, "cSSt");
-
-
+        cSI = hardwareMap.get(ColorRangeSensor.class, "cSI");
+        cSM = hardwareMap.get(ColorRangeSensor.class, "cSM");
+        cSSh = hardwareMap.get(ColorRangeSensor.class, "cSSh");
+        cSSt = hardwareMap.get(ColorRangeSensor.class, "cSSt");
 
 
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         mI.setPower(intakePower);
         //mP.setPower(pathPower);
-
-        if(GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP"){
+        if (GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP") {
             currentArtifactsEstablished = true;
-        }
-        else{
+        } else {
             currentArtifactsEstablished = false;
         }
 
-        if(!currentArtifactsEstablished){
+        if (!currentArtifactsEstablished) {
             setCurrentArtifacts();
         }
-
-
 
 
         long emptySlots = GlobalVariables.currentArtifacts.chars()
@@ -75,43 +61,56 @@ public class Intake extends SubsystemBase {
 
         // If less than 2 empty slots → STOP the intake
         if (emptySlots < 2) {
-           stop();
+            stop();
         }
 
 
     }
 
-    public void in(){
-       intakePower = 1;
-       intakeState = "in";
+    public void in() {
+        intakePower = 1;
+        intakeState = "in";
     }
 
 
-
-
-    public void out(){
+    public void out() {
         intakePower = -1;
         intakeState = "out";
     }
-    public void stop(){
+
+    public void stop() {
         intakePower = 0;
         intakeState = "stop";
     }
 
-    public String greenOrPurple(ColorSensor cs){
+    //0 = red, 1 = green, 2 = blue
+    public double[] normalizeRGB(double r, double g, double b) {
+        double total = r + g + b;
+
+
+        double red = r / total;
+        double green = g / total;
+        double blue = b / total;
+//0 = red, 1 = green, 2 = blue
+        return new double[]{red, green, blue};
+    }
+
+    public String greenOrPurple(ColorSensor cs) {
+        double[] normalizedRGB = normalizeRGB(cs.red(), cs.green(), cs.blue());
+
         if (cs == cSSt && slotFly) {
             return "_";
         }
-        if (cs.red() < 3) {
+        if (normalizedRGB[0] < 3) {
             return "G";
-        } else if (cs.red() > 10) {
+        } else if (normalizedRGB[0] > 10) {
             return "P";
         } else {
             return "_";
         }
     }
 
-    public void setCurrentArtifacts(){
+    public void setCurrentArtifacts() {
         currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
     }
 

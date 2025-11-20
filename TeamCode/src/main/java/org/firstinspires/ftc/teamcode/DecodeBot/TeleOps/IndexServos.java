@@ -78,25 +78,25 @@ public class IndexServos extends CommandOpMode {
         telemetry.addData("IntakeRed", intake.cSI.red());
         telemetry.addData("IntakeGreen", intake.cSI.green());
         telemetry.addData("IntakeBlue", intake.cSI.blue());
-        telemetry.addData("IntakeDist", intake.dSI.getDistance(DistanceUnit.CM));
+        telemetry.addData("IntakeDist", intake.cSI.getDistance(DistanceUnit.CM));
 
 
         telemetry.addData("MiddleRed", intake.cSM.red());
         telemetry.addData("MiddleGreen", intake.cSM.green());
         telemetry.addData("MiddleBlue", intake.cSM.blue());
-        telemetry.addData("MiddleDist", intake.dSM.getDistance(DistanceUnit.CM));
+        telemetry.addData("MiddleDist", intake.cSM.getDistance(DistanceUnit.CM));
 
 
         telemetry.addData("ShooterRed", intake.cSSh.red());
         telemetry.addData("ShooterGreen", intake.cSSh.green());
         telemetry.addData("ShooterBlue", intake.cSSh.blue());
-        telemetry.addData("ShooterDist", intake.dSSh.getDistance(DistanceUnit.CM));
+        telemetry.addData("ShooterDist", intake.cSSh.getDistance(DistanceUnit.CM));
 
 
         telemetry.addData("YolkRed", intake.cSSt.red());
         telemetry.addData("YolkGreen", intake.cSSt.green());
         telemetry.addData("YolkBlue", intake.cSSt.blue());
-        telemetry.addData("YolkDist", intake.dSSt.getDistance(DistanceUnit.CM));
+        telemetry.addData("YolkDist", intake.cSSt.getDistance(DistanceUnit.CM));
 
         intake.setCurrentArtifacts();
 
