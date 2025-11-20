@@ -83,27 +83,17 @@ public class Intake extends SubsystemBase {
         intakeState = "stop";
     }
 
-    //0 = red, 1 = green, 2 = blue
-    public double[] normalizeRGB(double r, double g, double b) {
-        double total = r + g + b;
 
 
-        double red = r / total;
-        double green = g / total;
-        double blue = b / total;
-//0 = red, 1 = green, 2 = blue
-        return new double[]{red, green, blue};
-    }
-
-    public String greenOrPurple(ColorSensor cs) {
-        double[] normalizedRGB = normalizeRGB(cs.red(), cs.green(), cs.blue());
+    public String greenOrPurple(ColorRangeSensor cs) {
+//Normalized colors return values from 1 to 0
 
         if (cs == cSSt && slotFly) {
             return "_";
         }
-        if (normalizedRGB[0] < 3) {
+        if (cs.getNormalizedColors().red < 3) {
             return "G";
-        } else if (normalizedRGB[0] > 10) {
+        } else if (cs.getNormalizedColors().red > 10) {
             return "P";
         } else {
             return "_";
