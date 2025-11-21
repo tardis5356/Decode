@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand.newTargetOffset;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -53,7 +53,7 @@ public class Turret extends SubsystemBase {
         } else {
             motorPower = 0;
         }
-        mT.setPower(motorPower);
+        //mT.setPower(motorPower);
 
         // Always manage turret flip automatically
 
@@ -69,7 +69,7 @@ public class Turret extends SubsystemBase {
     }
 
     public double getTurretThetaRAD() {
-        return -(getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        return -(getCurrentPosition() * TURRET_RADIANS_PER_TICK);
     }
 
     public static void setTargetPosition(double ticks) {
@@ -132,7 +132,7 @@ public class Turret extends SubsystemBase {
 
 
 
-        int desiredTicks = (int) Math.round((desiredTurretOnBotAngleRAD + Math.PI)/ TURRET_TICK_TO_RADIAN_MULTIPLIER);
+        int desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK);
 
 
 

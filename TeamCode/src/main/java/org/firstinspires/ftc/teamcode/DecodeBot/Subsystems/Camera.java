@@ -1,10 +1,9 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
@@ -196,14 +195,14 @@ aprilTagProcessor.setDecimation(5);
 
         double finalX = 0, finalY = 0;
         double aTagAmount = 0;
-        double thetaTurretRad = Turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER;
+        double thetaTurretRad = Turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK;
 
         for (AprilTagDetection detection : detections) {
 
             if (detection.metadata.name.contains("Obelisk")) continue;
             // Convert tag metadata to field pose
             Pose2d tagPose = vectorFToPose2d(
-                    detection.metadata.fieldPosition,
+                    detection.metadata.fieldPosition, // position on the arpil tag, can implement real number positions
                     detection.metadata.fieldOrientation
                             .toOrientation(AxesReference.INTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS)
                             .secondAngle

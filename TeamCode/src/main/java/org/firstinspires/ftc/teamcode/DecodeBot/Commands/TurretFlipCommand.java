@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_360_TURN_TICKS;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getTargetPosition;
 
@@ -26,11 +26,11 @@ turret.turretFlipping = true;
 
 
         if (turret.getTargetPosition() > 0) {
-            targetPosition = getTargetPosition() - TURRET_360_TURN_TICKS;
+            targetPosition = getTargetPosition() - TURRET_TICKS_PER_DEGREE;
 
 
         } else if (turret.getTargetPosition() < 0) {
-            targetPosition = getTargetPosition() + TURRET_360_TURN_TICKS;
+            targetPosition = getTargetPosition() + TURRET_TICKS_PER_DEGREE;
 
         }
 

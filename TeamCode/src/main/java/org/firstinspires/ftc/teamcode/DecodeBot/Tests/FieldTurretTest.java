@@ -1,12 +1,9 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.visionPortal;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.getCurrentPosition;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.turretFlipping;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -14,7 +11,6 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -24,13 +20,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
-import org.firstinspires.ftc.vision.VisionPortal;
-
-import java.util.List;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 
 //TODO AprilTag Acquisition Time optimizations
@@ -116,7 +109,7 @@ public class FieldTurretTest extends CommandOpMode {
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> camera.setObeliskMotif());
-        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
 telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
         telemetry.addLine("Initialized — ready to start!");
         telemetry.update();
@@ -134,7 +127,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
        drive.localizer.update();
 
         // === Turret control ===
-       turret.updateTurretTracking(drive, telemetry, 200);
+       //turret.updateTurretTracking(drive, telemetry, 200);
 
 
         // === Driving Control ===
@@ -186,8 +179,18 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
-        telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
-        telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+
+        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()){
+            telemetry.addData("ATagYaw", detection.ftcPose.yaw);
+            telemetry.addData("SensedATagPos",detection.ftcPose.x);
+            telemetry.addData("SensedATagPos",detection.ftcPose.y);
+            telemetry.addLine();
+        }
+
+
+        telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
+        telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
+
         telemetry.addData("Alliance", GlobalVariables.aColor);
         telemetry.addData("Flip Active", turret.turretFlipping);
         telemetry.addData("FPS", camera.visionPortal.getFps());

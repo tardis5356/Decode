@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
-import static org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp.flyMode;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -15,7 +14,6 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -26,7 +24,6 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
-import org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
@@ -193,7 +190,7 @@ public class DecodeAuto extends OpMode {
     }
 
     private void printTelemetryTable() {
-        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         if (motif != null){
             telemetry2.addData("Motif", motif);
         }
@@ -266,7 +263,7 @@ public class DecodeAuto extends OpMode {
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
-        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_TICK_TO_RADIAN_MULTIPLIER));
+        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
 
     }
 }
