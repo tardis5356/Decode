@@ -55,14 +55,14 @@ public class Intake extends SubsystemBase {
         }
 
 
-        long emptySlots = GlobalVariables.currentArtifacts.chars()
-                .filter(c -> c == '_')
-                .count();
-
-        // If less than 2 empty slots → STOP the intake
-        if (emptySlots < 2) {
-            stop();
-        }
+//        long emptySlots = GlobalVariables.currentArtifacts.chars()
+//                .filter(c -> c == '_')
+//                .count();
+//
+//        // If less than 2 empty slots → STOP the intake
+//        if (emptySlots < 2) {
+//            stop();
+//        }
 
 
     }
