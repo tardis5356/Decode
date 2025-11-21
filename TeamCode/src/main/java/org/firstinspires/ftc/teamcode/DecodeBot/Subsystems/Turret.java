@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
@@ -23,7 +24,9 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 public class Turret extends SubsystemBase {
 
     public static DcMotorEx mT;
+    public static TouchSensor lT;
     private PIDController controller;
+
 
     private static double targetPositionTicks;
     private double motorPower;
@@ -38,6 +41,8 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
+        lT = hardwareMap.get(TouchSensor.class, "lT");
+
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -48,12 +53,13 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         // Run PID control if enabled
+
         if (!PIDDisabled) {
             motorPower = controller.calculate(mT.getCurrentPosition(), targetPositionTicks + newTargetOffset);
         } else {
             motorPower = 0;
         }
-        //mT.setPower(motorPower);
+        mT.setPower(motorPower);
 
         // Always manage turret flip automatically
 
@@ -119,7 +125,7 @@ public class Turret extends SubsystemBase {
         double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
                 + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
-        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX);
+        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX) + Math.PI;
 //The following makes sures that the target angle are always between (0, 2PI)
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 //This makes sure that the turret is never pointed at angle past the maxAngle

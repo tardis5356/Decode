@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 
-public class LaunchSequenceCommand extends ParallelCommandGroup {
+public class LaunchSequenceCommand extends SequentialCommandGroup {
 
     public LaunchSequenceCommand(Intake intake, Storage storage, String desiredSequence){
         switch(desiredSequence){
@@ -24,7 +24,6 @@ public class LaunchSequenceCommand extends ParallelCommandGroup {
                                 launcOne(storage),
                                 moveOne(intake),
                                 launcOne(storage),
-
                                 moveOne(intake),
                                 launcOne(storage),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0),
