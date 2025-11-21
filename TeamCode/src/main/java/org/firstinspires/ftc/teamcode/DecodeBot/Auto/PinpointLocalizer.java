@@ -20,8 +20,8 @@ public final class PinpointLocalizer implements Localizer {
         //rotated bot by 180 which flips axes to see potential error
         //If not zeroed then your error would be doubled at 180
         //It uses the RR coordinate system where +x is forward and +y is left
-        public double parYTicks = 0; //-3570; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 0;//-510 + 153; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = -2040.015; //0.2inch off // from angular ramp logger: 2198.3563895847847 // y position of the parallel encoder (in tick units)
+        public double perpXTicks = -3480.1; //0.2inch off // from angular ramp logger: 3388.5196549446373 // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
