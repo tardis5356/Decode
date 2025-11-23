@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
 
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -74,7 +75,7 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
-        camera = new Camera(hardwareMap);
+       // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
@@ -108,9 +109,9 @@ public class DecodeAuto extends OpMode {
 
         // --- Handle user input for cycles ---
         handleInput();
-        if (aColor != null){
-            camera.setObeliskMotif();
-        }
+//        if (aColor != null){
+//            camera.setObeliskMotif();
+//        }
 
 
         // --- Display telemetry table and alliance/start ---
@@ -165,21 +166,21 @@ public class DecodeAuto extends OpMode {
 
 
 
-//        if ((gamepad2.right_bumper || gamepad2.left_bumper) && !gateCyclePressed) {
-//
-//            if (gamepad2.right_bumper) {
-//                gateCycleIndex = (gateCycleIndex + 1) % (cycleCount + 1);
-//            }
-//
-//            if (gamepad2.left_bumper) {
-//                gateCycleIndex = (gateCycleIndex - 1 + (cycleCount + 1)) % (cycleCount + 1);
-//            }
-//
-//            gateCyclePressed = true;
-//
-//        } else if (!gamepad2.right_bumper && !gamepad2.left_bumper) {
-//            gateCyclePressed = false;
-//        }
+        if ((gamepad2.right_bumper || gamepad2.left_bumper) && !gateCyclePressed) {
+
+            if (gamepad2.right_bumper) {
+                gateCycleIndex = (gateCycleIndex + 1) % (cycleCount + 1);
+            }
+
+            if (gamepad2.left_bumper) {
+                gateCycleIndex = (gateCycleIndex - 1 + (cycleCount + 1)) % (cycleCount + 1);
+            }
+
+            gateCyclePressed = true;
+
+        } else if (!gamepad2.right_bumper && !gamepad2.left_bumper) {
+            gateCyclePressed = false;
+        }
 
 
         // Select choices
@@ -196,10 +197,10 @@ public class DecodeAuto extends OpMode {
         }
 
 
-//        String gateTxt = (gateCycleIndex == cycleCount)
-//                ? "After ALL cycles"
-//                : "After cycle " + (gateCycleIndex + 1);
-//        telemetry2.addData("Gate Action", gateTxt);
+        String gateTxt = (gateCycleIndex == cycleCount)
+                ? "After ALL cycles"
+                : "After cycle " + (gateCycleIndex + 1);
+        telemetry2.addData("Gate Action", gateTxt);
 //
 
         // --- Alliance + Start position ---
@@ -263,6 +264,7 @@ public class DecodeAuto extends OpMode {
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
+        telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
 
     }

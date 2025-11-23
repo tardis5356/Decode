@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectorie
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.gateCycleIndex;
 
 import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 
@@ -39,18 +40,19 @@ public class AutoGenerator {
 
 
             if (startToSpike[i] != null) {
-                //seq.add(new InstantCommand(intake::in));
+                seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToSpike[i], requirements));
-                //seq.add(new InstantCommand(intake::stop));
+                seq.add(new InstantCommand(intake::stop));
 
             }
 
             if (spikeToShoot[i] != null) {
                 seq.add(new ActionCommand(spikeToShoot[i], requirements));
             }
-//            if (!gateReleased){
-//                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
-//            } else {
+            else {
+                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+            }
+//            else {
 //                seq.add(new MotifLaunchSequenceCommand(intake, storage));
 //            }
 

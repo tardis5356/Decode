@@ -31,15 +31,9 @@ public final class ManualFeedbackTuner extends LinearOpMode {
 
             while (opModeIsActive()) {
                 Actions.runBlocking(
-                        drive.actionBuilder(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, drive.localizer.getPose().heading.toDouble()))
-                                // .setTangent(Math.toRadians(270))
-                                //Added Code
-                                .strafeToLinearHeading(new Vector2d(DISTANCE, 0), Math.toRadians(0))
-                                .strafeToLinearHeading(new Vector2d(0, 0), Math.toRadians(0))
-                                //Original Code
-//                            .lineToX(DISTANCE)//.lineToX(DISTANCE)
-//                            .lineToX(0)//.lineToX(0)
-
+                        drive.actionBuilder(new Pose2d(0, 0, 0))
+                                .lineToX(DISTANCE)
+                                .lineToX(0)
                                 .build());
             }
         } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
@@ -51,14 +45,14 @@ public final class ManualFeedbackTuner extends LinearOpMode {
                 }
             } else if (drive.localizer instanceof ThreeDeadWheelLocalizer) {
                 if (ThreeDeadWheelLocalizer.PARAMS.perpXTicks == 0 && ThreeDeadWheelLocalizer.PARAMS.par0YTicks == 0 && ThreeDeadWheelLocalizer.PARAMS.par1YTicks == 1) {
-                    throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogbger to tune them.");
+                    throw new RuntimeException("Odometry wheel locations not set! Run AngularRampLogger to tune them.");
                 }
             }
             waitForStart();
 
             while (opModeIsActive()) {
                 Actions.runBlocking(
-                        drive.actionBuilder(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, drive.localizer.getPose().heading.toDouble()))
+                        drive.actionBuilder(new Pose2d(0, 0, 0))
                                 .lineToX(DISTANCE)
                                 .lineToX(0)
                                 .build());
