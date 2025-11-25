@@ -75,13 +75,12 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
-       // camera = new Camera(hardwareMap);
+        // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-
 
 
         telemetry2.addData("Status", "Initialized");
@@ -116,7 +115,6 @@ public class DecodeAuto extends OpMode {
 
         // --- Display telemetry table and alliance/start ---
         printTelemetryTable();
-
 
 
         // --- Dashboard visualization (optional) ---
@@ -165,7 +163,6 @@ public class DecodeAuto extends OpMode {
         } else if (!gamepad1.left_bumper && !gamepad1.right_bumper) bumperPressed = false;
 
 
-
         if ((gamepad2.right_bumper || gamepad2.left_bumper) && !gateCyclePressed) {
 
             if (gamepad2.right_bumper) {
@@ -192,7 +189,7 @@ public class DecodeAuto extends OpMode {
 
     private void printTelemetryTable() {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
-        if (motif != null){
+        if (motif != null) {
             telemetry2.addData("Motif", motif);
         }
 
@@ -207,7 +204,8 @@ public class DecodeAuto extends OpMode {
         String startName = "Not chosen";
         if (startPos != null) {
             if (startPos.equals(AutoTrajectories.goalStartPos)) startName = "Goal Start";
-            else if (startPos.equals(AutoTrajectories.audienceStartPos)) startName = "Audience Start";
+            else if (startPos.equals(AutoTrajectories.audienceStartPos))
+                startName = "Audience Start";
         }
 
         String allianceDisplay = (aColor != null) ? aColor : "None";
@@ -259,7 +257,6 @@ public class DecodeAuto extends OpMode {
             CommandScheduler.getInstance().cancel(auto);
             auto = null;
         }
-
 
 
         if (drive != null) drive.updatePoseEstimate();

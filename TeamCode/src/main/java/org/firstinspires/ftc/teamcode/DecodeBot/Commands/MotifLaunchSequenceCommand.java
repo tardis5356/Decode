@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariable
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 
 import com.arcrobotics.ftclib.command.Command;
+import com.arcrobotics.ftclib.command.CommandGroupBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -22,26 +23,31 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
+public class MotifLaunchSequenceCommand  {
+    private Intake intake;
+    private Storage storage;
+
+    public MotifLaunchSequenceCommand() {
+
+    }
+
 
     // External subsystems used by commands
-    private final Intake intake;
-    private final Storage storage;
+
 
     // wait constants (use your existing BotPositions constants)
 
 
-    public MotifLaunchSequenceCommand(Intake intake, Storage storage) {
-        this.intake = intake;
-        this.storage = storage;
+    public static Command motifLaunchSequenceCommand(Intake intake, Storage storage) {
 
-       intake.setCurrentArtifacts();
+        List<Command> seq = new ArrayList<>();
+
+        intake.setCurrentArtifacts();
 
         if (shootAll()) {
-            addCommands(
-                   new LaunchSequenceCommand(intake, storage, "Fly")
-            );
-            return;
+
+
+            return new LaunchSequenceCommand(intake, storage, "Fly");
         }
 
 
@@ -60,8 +66,6 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
             line.addLast(c);
         }
 
-        // Build sequence of commands
-        List<Command> seq = new ArrayList<>();
 
         // Make sure gate is open before any launch operations — we'll open on demand.
         // We'll track whether we've opened the gate already so we don't unnecessarily schedule multiple opens.
@@ -178,7 +182,8 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
         seq.add(new InstantCommand(() -> GlobalVariables.ballsShot = 0));
 
         // Add all commands as a single sequential group
-        addCommands(new SequentialCommandGroup(seq.toArray(new Command[0])));
+        return new SequentialCommandGroup(seq.toArray(new Command[0]));
+
     }
 
     // ---------------------------
@@ -186,7 +191,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
     // ---------------------------
 
 
-    boolean shootAll() {
+    static boolean shootAll() {
         int countG = 0;
         for (char c : currentArtifacts.toCharArray()) {
             if (c == 'G') countG++;
@@ -199,12 +204,12 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
         if (currentArtifacts.equals("_PPP")) return true;
 
         // Condition 3: current matches motif (e.g. GPP matching GPP)
-        if (currentArtifacts.substring(1).equals( motif)) return true;
+        if (currentArtifacts.substring(1).equals(motif)) return true;
 
         return false;
     }
 
-    public Command launchOne(Storage s) {
+    public static Command launchOne(Storage s) {
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                         new InstantCommand(s::raiseKicker),
@@ -216,7 +221,7 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
         );
     }
 
-    public Command moveOne(Intake i) {
+    public static Command moveOne(Intake i) {
         return new SequentialCommandGroup(
                 new InstantCommand(i::in),
                 new WaitCommand(INTAKE_WAIT),
@@ -224,28 +229,28 @@ public class MotifLaunchSequenceCommand extends SequentialCommandGroup {
         );
     }
 
-    public Command openGate(Storage s) {
+    public static Command openGate(Storage s) {
         return new SequentialCommandGroup(
                 new InstantCommand(s::openGate),
                 new WaitCommand(GATE_WAIT)
         );
     }
 
-    public Command closeGate(Storage s) {
+    public static Command closeGate(Storage s) {
         return new SequentialCommandGroup(
                 new InstantCommand(s::closeGate),
                 new WaitCommand(GATE_WAIT)
         );
     }
 
-    public Command unstore(Storage s) {
+    public static Command unstore(Storage s) {
         return new SequentialCommandGroup(
                 new InstantCommand(s::returnSlot),
                 new WaitCommand(SWAP_WAIT)
         );
     }
 
-    public Command store(Storage s) {
+    public static Command store(Storage s) {
         return new SequentialCommandGroup(
                 new InstantCommand(s::storeSlot),
                 new WaitCommand(SWAP_WAIT)

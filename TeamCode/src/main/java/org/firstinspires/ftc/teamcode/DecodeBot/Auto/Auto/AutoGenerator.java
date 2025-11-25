@@ -49,12 +49,12 @@ public class AutoGenerator {
             if (spikeToShoot[i] != null) {
                 seq.add(new ActionCommand(spikeToShoot[i], requirements));
             }
-            else {
+            else if (!gateReleased){
                 seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
             }
-//            else {
-//                seq.add(new MotifLaunchSequenceCommand(intake, storage));
-//            }
+            else {
+                seq.add(MotifLaunchSequenceCommand.motifLaunchSequenceCommand(intake, storage));
+            }
 
             if (i == gateCycleIndex) {
                 seq.add(new ActionCommand(gateRelease, requirements));
