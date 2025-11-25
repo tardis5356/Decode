@@ -17,6 +17,8 @@ import javax.imageio.ImageIO;
 public class MeepMeepTesting {
 
     static String aColor = "blue";
+    public static final Pose2d parkPos = allianceCoordinate(new Pose2d(30,-30,180));
+
     public static final Pose2d backStartPos = allianceCoordinate(new Pose2d(63,26,90));
     public static final Pose2d frontStartPos = allianceCoordinate(new Pose2d(-54,47,305));
     public static final Pose2d frontSpikePos = allianceCoordinate(new Pose2d(-12,43,90)); //PPG
@@ -77,24 +79,24 @@ public class MeepMeepTesting {
 //                               .setTangent(allianceTangent(0))
 //                               .splineToLinearHeading(gateReleasePos, allianceTangent(90))
 
-                       driveShim.trajectorySequenceBuilder(backStartPos)
-                               .waitSeconds(1.5)
-                               .setTangent(allianceTangent(180))
-                                .splineToLinearHeading(backSpikePos,allianceTangent(90))//fill in tangent
-                                .setTangent(allianceTangent(270))
-                                .splineToLinearHeading(backShootPos, allianceTangent(270))
-                               .waitSeconds(1.5)
-//
-                               .setTangent(allianceTangent(180))
-                               .splineToLinearHeading(midSpikePos, allianceTangent(90))
-                               .setTangent(allianceTangent(225))
-                               .splineToLinearHeading(frontShootPos, allianceTangent(245))
-                               .waitSeconds(1.5)
-                               .setTangent(allianceTangent(0))
-                               .splineToLinearHeading(gateReleasePos, allianceTangent(90))
-                               .back(20)
+                       driveShim.trajectorySequenceBuilder(parkPos)
+                               .waitSeconds(100)
                                .setTangent(allianceTangent(270))
-                               .splineToLinearHeading(frontSpikePos, allianceTangent(90))
+                                .splineToLinearHeading(backSpikePos,allianceTangent(270))//fill in tangent
+//                                .setTangent(allianceTangent(270))
+//                                .splineToLinearHeading(backShootPos, allianceTangent(270))
+//                               .waitSeconds(1.5)
+////
+//                               .setTangent(allianceTangent(180))
+//                               .splineToLinearHeading(midSpikePos, allianceTangent(90))
+//                               .setTangent(allianceTangent(225))
+//                               .splineToLinearHeading(frontShootPos, allianceTangent(245))
+//                               .waitSeconds(1.5)
+//                               .setTangent(allianceTangent(0))
+//                               .splineToLinearHeading(gateReleasePos, allianceTangent(90))
+//                               .back(20)
+//                               .setTangent(allianceTangent(270))
+//                               .splineToLinearHeading(frontSpikePos, allianceTangent(90))
                                .build());
 
         Image img = null;

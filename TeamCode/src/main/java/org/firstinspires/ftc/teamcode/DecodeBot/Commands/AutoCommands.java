@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariable
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.CommandGroupBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -23,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class MotifLaunchSequenceCommand  {
+public class AutoCommands {
     private Intake intake;
     private Storage storage;
 
-    public MotifLaunchSequenceCommand() {
+    public AutoCommands() {
 
     }
 
@@ -38,7 +37,7 @@ public class MotifLaunchSequenceCommand  {
     // wait constants (use your existing BotPositions constants)
 
 
-    public static Command motifLaunchSequenceCommand(Intake intake, Storage storage) {
+    public static Command MotifLaunchSequenceCommand(Intake intake, Storage storage) {
 
         List<Command> seq = new ArrayList<>();
 

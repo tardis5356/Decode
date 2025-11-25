@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
 
@@ -60,6 +61,8 @@ public class DecodeAuto extends OpMode {
     private Camera camera;
     private Intake intake;
 
+    private Shooter shooter;
+
     private String aColor = null;
 
     public static Pose2d savedPos;
@@ -78,6 +81,7 @@ public class DecodeAuto extends OpMode {
         // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -258,6 +262,7 @@ public class DecodeAuto extends OpMode {
             auto = null;
         }
 
+        turret.updateTurretTracking(drive, telemetry2, 200);
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();

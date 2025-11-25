@@ -14,14 +14,17 @@ public class AutoTrajectories {
     // Key poses (will be mirrored when alliance is blue)
     public static Pose2d goalStartPos, audienceStartPos;
     public static Pose2d goalShootPos, audienceShootPos;
+
     public static Pose2d goalSpikePos, midSpikePos, audienceSpikePos, gateReleasePos;
     public static Pose2d gateExitWaypointPos;
-
+    public static Pose2d parkPos;
 
     // Actions: for each cycle index we create startToSpike and spikeToShoot actions
     public static Action[] startToSpike = new Action[MAX_CYCLES];
     public static Action[] spikeToShoot = new Action[MAX_CYCLES];
     public static Action gateRelease, gateExit;
+
+    public static Action park;
 
 
     // Spike tangents: [goal, mid, audience]
@@ -68,6 +71,10 @@ public class AutoTrajectories {
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 46, Math.toRadians(90)));
         gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 56, Math.toRadians(90)));
+
+        parkPos = allianceCoordinate(new Pose2d(30,-30,180));
+
+
     }
 
     /**
@@ -135,25 +142,29 @@ public class AutoTrajectories {
             // Next cycle starts from the shoot pose
             currentStart = shootPose;
 
-                double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[choices[gateCycleIndex][0]]);
-                double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
 
-                gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]])
-                        .setTangent(gateStartRad)
-                        .splineToLinearHeading(gateReleasePos, gateEndRad)
-                        .build();
-
-                gateExit = drive.actionBuilder(gateReleasePos)
-                        .setTangent(allianceTangent(270))
-                        .splineToLinearHeading(gateExitWaypointPos, allianceTangent(270))
-                        .build();
 
 
 
         }
 
 
+        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[choices[gateCycleIndex][0]]);
+        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
 
+        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]])
+                .setTangent(gateStartRad)
+                .splineToLinearHeading(gateReleasePos, gateEndRad)
+                .build();
+
+        gateExit = drive.actionBuilder(gateReleasePos)
+                .setTangent(allianceTangent(90))
+                .splineToLinearHeading(gateExitWaypointPos, allianceTangent(90))
+                .build();
+
+        park = drive.actionBuilder(drive.localizer.getPose())
+                .splineToLinearHeading(parkPos, allianceTangent(0))
+                .build();
     }
 
 }
