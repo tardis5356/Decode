@@ -43,7 +43,7 @@ public class DecodeAuto extends OpMode {
     private Storage storage;
 
     // --- Cycle selection ---
-    public static int gateCycleIndex = 0;
+    public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static final int MAX_CYCLES = 5;
     private int cycleCount = 5;   // default 5 cycles
     private int currentCycle = 0;  // row selector
@@ -78,7 +78,7 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
-         camera = new Camera(hardwareMap);
+        camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -106,12 +106,37 @@ public class DecodeAuto extends OpMode {
 
         // --- Start position selection ---
         if (aColor != null) {
-            if (gamepad2.dpad_up){
+            if (gamepad2.dpad_up) {
                 startPos = AutoTrajectories.goalStartPos;
 
-            }
-            else if (gamepad2.dpad_down) {
+                //default config
+                // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
+                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
+//                cycleCount = 5;
+//                choices = new int[][]{
+//                        {1, 2}, //shoot: audience, intake: audience
+//                        {0, 0}, //shoot: goal, intake: goal
+//                        //gate
+//                        {0, 1}, //shoot: goal, intake: mid
+//                        {1, 4}, //shoot: audience, intake: LZ random
+//                        {1, 4} //shoot: audience, intake: LZ random
+//                };
+            } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;
+
+                //default config
+                // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
+                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
+//                cycleCount = 5;
+//                choices = new int[][]{
+//                        {1, 0}, //shoot: audience, intake: goal
+//                        {0, 1}, //shoot: goal, intake: mid
+//                        //gate
+//                        {0, 2}, //shoot: goal, intake: audience
+//                        {1, 4}, //shoot: audience, intake: LZ random
+//                        {1, 4} //shoot: audience, intake: LZ random
+//                };
+
             }
         }
 
