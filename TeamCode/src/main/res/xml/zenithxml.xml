@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <Webcam name="Webcam 1" serialNumber="PC-LM1E"/>
+    <LynxUsbDevice name="Control Hub Portal" serialNumber="(embedded)" parentModuleAddress="173">
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="mI" port="0"/>
+            <goBILDA5202SeriesMotor name="mT" port="1"/>
+            <goBILDA5202SeriesMotor name="mST" port="2"/>
+            <goBILDA5202SeriesMotor name="mSB" port="3"/>
+            <Servo name="sRL" port="0"/>
+            <RevTouchSensor name="lT" port="1"/>
+            <RevColorSensorV3 name="cSM" port="0" bus="1"/>
+            <RevColorSensorV3 name="cSI" port="0" bus="0"/>
+            <RevColorSensorV3 name="cSSh" port="0" bus="2"/>
+            <RevColorSensorV3 name="cSSt" port="0" bus="3"/>
+        </LynxModule>
+        <ServoHub name="Servo Hub 3" port="3">
+            <Servo name="sP" port="0"/>
+            <Servo name="sS" port="1"/>
+            <Servo name="sH" port="2"/>
+            <Servo name="sK" port="3"/>
+            <Servo name="sG" port="4"/>
+            <Servo name="sB" port="5"/>
+        </ServoHub>
+        <LynxModule name="Control Hub" port="173">
+            <goBILDA5202SeriesMotor name="mBR" port="0"/>
+            <goBILDA5202SeriesMotor name="mFR" port="1"/>
+            <goBILDA5202SeriesMotor name="mBL" port="2"/>
+            <goBILDA5202SeriesMotor name="mFL" port="3"/>
+            <Servo name="sLL" port="0"/>
+            <Servo name="sBG" port="1"/>
+            <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
+            <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>
