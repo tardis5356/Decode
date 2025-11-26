@@ -109,7 +109,7 @@ public class FieldTurretTest extends CommandOpMode {
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> camera.setObeliskMotif());
-        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
+        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
 telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
         telemetry.addLine("Initialized — ready to start!");
         telemetry.update();
@@ -188,7 +188,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
         }
 
 
-        telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
+       // telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
 
         telemetry.addData("Alliance", GlobalVariables.aColor);

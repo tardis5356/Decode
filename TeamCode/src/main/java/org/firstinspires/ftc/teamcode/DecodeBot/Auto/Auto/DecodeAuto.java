@@ -45,13 +45,13 @@ public class DecodeAuto extends OpMode {
     // --- Cycle selection ---
     public static int gateCycleIndex = 0;
     public static final int MAX_CYCLES = 5;
-    private int cycleCount = 2;   // default 2 cycles
+    private int cycleCount = 5;   // default 5 cycles
     private int currentCycle = 0;  // row selector
-    private int currentColumn = 0; // column selector: 0=shoot, 1=spike
+    private int currentColumn = 0; // column selector: 0=shoot, 1=intake
 
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
 
-    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=spikeChoice(0 goal,1 mid,2 audience)]
+    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
     private int[][] choices = new int[MAX_CYCLES][2];
 
     private boolean gateCyclePressed;
@@ -78,7 +78,7 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
-        // camera = new Camera(hardwareMap);
+         camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -106,8 +106,13 @@ public class DecodeAuto extends OpMode {
 
         // --- Start position selection ---
         if (aColor != null) {
-            if (gamepad2.dpad_up) startPos = AutoTrajectories.goalStartPos;
-            else if (gamepad2.dpad_down) startPos = AutoTrajectories.audienceStartPos;
+            if (gamepad2.dpad_up){
+                startPos = AutoTrajectories.goalStartPos;
+
+            }
+            else if (gamepad2.dpad_down) {
+                startPos = AutoTrajectories.audienceStartPos;
+            }
         }
 
         // --- Handle user input for cycles ---
@@ -185,10 +190,14 @@ public class DecodeAuto extends OpMode {
 
 
         // Select choices
-        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot goal / Spike goal
-        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot audience / Spike mid
+        if (gamepad1.a) choices[currentCycle][currentColumn] = 0; // Shoot goal / intake goal
+        if (gamepad1.b) choices[currentCycle][currentColumn] = 1; // Shoot audience / intake mid
         if (gamepad1.y && currentColumn == 1)
-            choices[currentCycle][currentColumn] = 2; // Spike audience
+            choices[currentCycle][currentColumn] = 2; // intake audience
+        if (gamepad1.right_stick_button && currentColumn == 1)
+            choices[currentCycle][currentColumn] = 3; // intake LZ preset
+        if (gamepad1.y && currentColumn == 1)
+            choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
 
     private void printTelemetryTable() {
@@ -221,21 +230,21 @@ public class DecodeAuto extends OpMode {
         telemetry2.addLine("");
 
         // --- Table header ---
-        telemetry2.addLine("Cycle | Shoot  | Spike");
+        telemetry2.addLine("Cycle | Shoot  | Intake");
         telemetry2.addLine("-------------------------");
 
         String[] shootNames = {"Goal", "Audience"};
-        String[] spikeNames = {"Goal", "Mid", "Audience"};
+        String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "LZ Random"};
 
         for (int i = 0; i < cycleCount; i++) {
             String shoot = shootNames[choices[i][0]];
-            String spike = spikeNames[choices[i][1]];
+            String intake = intakeNames[choices[i][1]];
 
             // Single marker for the selected cell
             String shootCell = (i == currentCycle && currentColumn == 0) ? "*" + shoot : " " + shoot;
-            String spikeCell = (i == currentCycle && currentColumn == 1) ? "*" + spike : " " + spike;
+            String intakeCell = (i == currentCycle && currentColumn == 1) ? "*" + intake : " " + intake;
 
-            telemetry2.addLine(String.format(" %d    | %s   | %s", i + 1, shootCell, spikeCell));
+            telemetry2.addLine(String.format(" %d    | %s   | %s", i + 1, shootCell, intakeCell));
         }
 
         telemetry2.update();
