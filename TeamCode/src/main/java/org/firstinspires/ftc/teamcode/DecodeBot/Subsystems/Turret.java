@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -24,7 +25,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 public class Turret extends SubsystemBase {
 
     public static DcMotorEx mT;
-    public static TouchSensor lT;
+    //public static TouchSensor lT;
     private PIDController controller;
 
 
@@ -42,9 +43,10 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
-        lT = hardwareMap.get(TouchSensor.class, "lT");
+        //lT = hardwareMap.get(TouchSensor.class, "lT");
 
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -54,18 +56,18 @@ public class Turret extends SubsystemBase {
     @Override
     public void periodic() {
         // Run PID control if enabled
-
+        controller.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         if (!PIDDisabled) {
-            motorPower = controller.calculate(getCurrentPosition(), targetPositionTicks + newTargetOffset);
+            motorPower = controller.calculate(getCurrentPosition(), targetPositionTicks);
         } else {
             motorPower = 0;
         }
 
 
         // zeros the turret readings when the magnetic sensor is pressed
-        if (lT.isPressed()) {
-            turretOffset += mT.getCurrentPosition();
-        }
+//        if (lT.isPressed()) {
+//            turretOffset += mT.getCurrentPosition();
+//        }
         mT.setPower(motorPower);
 
         // Always manage turret flip automatically
@@ -74,7 +76,7 @@ public class Turret extends SubsystemBase {
 
     // === BASIC CONTROLS ===
     public static double getCurrentPosition() {
-        return mT.getCurrentPosition() - turretOffset;
+        return  -( mT.getCurrentPosition() - turretOffset);
     }
 
     public double getCurrentMotorPower() {
@@ -82,7 +84,7 @@ public class Turret extends SubsystemBase {
     }
 
     public double getTurretThetaRAD() {
-        return -(getCurrentPosition() * TURRET_RADIANS_PER_TICK);
+        return (getCurrentPosition() * TURRET_RADIANS_PER_TICK);
     }
 
     public static void setTargetPosition(double ticks) {
@@ -132,7 +134,7 @@ public class Turret extends SubsystemBase {
         double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
                 + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
-        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX) + Math.PI;
+        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX);
 //The following makes sures that the target angle are always between (0, 2PI)
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 //This makes sure that the turret is never pointed at angle past the maxAngle
@@ -162,6 +164,7 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Offset Y", targetTagYOffset);
         telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
+        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("RawTurretTicks", mT.getCurrentPosition());

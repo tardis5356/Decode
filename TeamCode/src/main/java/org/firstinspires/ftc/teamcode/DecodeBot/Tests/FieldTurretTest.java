@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -86,6 +87,10 @@ public class FieldTurretTest extends CommandOpMode {
         driver2 = new GamepadEx(gamepad2);
 
         turret = new Turret(hardwareMap);
+//        turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+
         drive = new MecanumDrive(hardwareMap, savedPos);
         camera = new Camera(hardwareMap);
 
@@ -109,7 +114,7 @@ public class FieldTurretTest extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> camera.setObeliskMotif());
         telemetry.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
-telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
+        telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
         telemetry.addLine("Initialized — ready to start!");
         telemetry.update();
 
@@ -126,7 +131,7 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
        drive.localizer.update();
 
         // === Turret control ===
-       //turret.updateTurretTracking(drive, telemetry, 200);
+       turret.updateTurretTracking(drive, telemetry, 200);
 
 
         // === Driving Control ===
@@ -167,11 +172,11 @@ telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEm
         boolean timeElapsed = relocalizeTimer.seconds() > RELOCALIZE_INTERVAL_SEC;
         boolean seesTag = !camera.getCurrentAprilTagDetections().isEmpty();
 
-        if (slowEnough && timeElapsed && seesTag) {
-            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
-            drive.localizer.setPose(relocalizedPose);
-            relocalizeTimer.reset();
-        }
+//        if (slowEnough && timeElapsed && seesTag) {
+//            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
+//            drive.localizer.setPose(relocalizedPose);
+//            relocalizeTimer.reset();
+//        }
 
 
         // === Telemetry ===

@@ -149,7 +149,7 @@ aprilTagProcessor.setDecimation(5);
 //            forwardPower = 0;
 //        }
         if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure){
-            setManualExposure(2, 94);
+            setManualExposure(2, 80);
             manualExposure = true;
         }
 
