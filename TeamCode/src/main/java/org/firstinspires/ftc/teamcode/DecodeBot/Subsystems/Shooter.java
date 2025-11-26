@@ -5,10 +5,13 @@ import com.acmerobotics.roadrunner.ftc.FeedforwardFactory;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.InterpolatingDoubleTreeMap;
 
@@ -20,6 +23,12 @@ public class Shooter extends SubsystemBase {
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
     public static float vP = 0.001f, vI = 0, vD = 0, vV = 0.00052f, vS = 0;
+
+    public static double neededVoltage, dutyCycle, batteryVoltage;
+
+    private final VoltageSensor voltageSensor;
+
+
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -40,9 +49,16 @@ public class Shooter extends SubsystemBase {
         //map subsystems
         mST = hardwareMap.get(DcMotorEx.class,"mST");
         mSB = hardwareMap.get(DcMotorEx.class, "mSB");
+
+        mST.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        mSB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         sH = hardwareMap.get(Servo.class,"sH");
 
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
+
         mST.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
 
         //prep regression data
@@ -81,7 +97,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double calculateFlyWheelPower(double tps){
-        return velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps);
+        return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) / voltageSensor.getVoltage();
     }
 
     public double getFlyWheelSpeed(){
@@ -92,6 +108,8 @@ public class Shooter extends SubsystemBase {
     public void setTargetDistance(double d){
         distanceFromTarget = d;
     }
+
+
 
 
 }

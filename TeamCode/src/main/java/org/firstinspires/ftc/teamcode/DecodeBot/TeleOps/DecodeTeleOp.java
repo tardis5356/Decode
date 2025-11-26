@@ -305,7 +305,12 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(() -> autoTarget = true);
 
         //if driver 2 stickY's or triggers are used the autotarget is turned off
-        new Trigger(() -> driftLock((float) driver2.getLeftY()) != 0 || driftLock((float) driver2.getRightY()) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 || driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0 || driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) || driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+        new Trigger(() -> driftLock((float) driver2.getLeftY()) != 0 ||
+                driftLock((float) driver2.getRightY()) != 0 ||
+                driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 ||
+                driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0 ||
+                driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) ||
+                driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
                 .whenActive(() -> autoTarget = false);
 
 
@@ -412,7 +417,7 @@ public class DecodeTeleOp extends CommandOpMode {
                         .whileActiveOnce(
                                 new SequentialCommandGroup(
                                         new InstantCommand(()->firing = true),
-                                        new LaunchSequenceCommand(intake, storage, "Fly"),
+                                        fly,//new LaunchSequenceCommand(intake, storage, "Fly"),
                                         new InstantCommand(()->firing = false),
                                         new InstantCommand(()->driver2.gamepad.rumble(.5,.5, 500)),
                                         new InstantCommand(()->intake.currentArtifactsEstablished = false)
@@ -423,7 +428,7 @@ public class DecodeTeleOp extends CommandOpMode {
                         .whileActiveOnce(
                                 new SequentialCommandGroup(
                                         new InstantCommand(()->firing = true),
-                                        new LaunchSequenceCommand(intake, storage, "StoreMiddle"),
+                                        storeMiddle,//new LaunchSequenceCommand(intake, storage, "StoreMiddle"),
                                         new InstantCommand(()->firing = false),
                                         new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500)),
                                         new InstantCommand(()->intake.currentArtifactsEstablished = false)
@@ -434,7 +439,7 @@ public class DecodeTeleOp extends CommandOpMode {
                         .whileActiveOnce(
                                 new SequentialCommandGroup(
                                         new InstantCommand(()->firing = true),
-                                        new LaunchSequenceCommand(intake, storage, "StoreOneForLast"),
+                                        storeOneForLast,//new LaunchSequenceCommand(intake, storage, "StoreOneForLast"),
                                         new InstantCommand(()->firing = false),
                                         new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500)),
                                         new InstantCommand(()->intake.currentArtifactsEstablished = false)
@@ -445,7 +450,7 @@ public class DecodeTeleOp extends CommandOpMode {
                         .whileActiveOnce(
                                 new SequentialCommandGroup(
                                         new InstantCommand(()->firing = true),
-                                        new LaunchSequenceCommand(intake, storage, "StoreOneForSecond"),
+                                        storeOneForSecond,//new LaunchSequenceCommand(intake, storage, "StoreOneForSecond"),
                                         new InstantCommand(()->firing = false),
                                         new InstantCommand(()->driver2.gamepad.rumble(.5,.5,500)),
                                         new InstantCommand(()->intake.currentArtifactsEstablished = false)

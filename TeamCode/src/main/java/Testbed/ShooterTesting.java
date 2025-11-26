@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 @TeleOp(name="10.2.25_Shooter_Test")
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.0013f, vI = 0.000012f, vD = 0.000015f, vV = 0.00052f, vS = 0;
+    public static float vP = 0, vI = 0, vD = 0, vV = 0.000693f, vS = 0;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -32,6 +33,8 @@ public class ShooterTesting extends CommandOpMode {
     private ElapsedTime myTimer = new ElapsedTime();
 
     FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    VoltageSensor voltageSensor;
 
     DcMotorEx mW;
     DcMotorEx m2;
@@ -52,6 +55,8 @@ public class ShooterTesting extends CommandOpMode {
         m2 = hardwareMap.get(DcMotorEx.class,"mSB");
         sH = hardwareMap.get(Servo.class,"sH");
         driver1 = new GamepadEx(gamepad1);
+
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         mW.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -144,6 +149,7 @@ public class ShooterTesting extends CommandOpMode {
 
 
     public double calculateFlyWheelPower(double tps){
-        return velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
+        double neededVoltage = velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
+        return neededVoltage/voltageSensor.getVoltage();
     }
 }
