@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.mT;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;

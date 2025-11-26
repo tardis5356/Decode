@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
+package org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto;
 
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateExit;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.gateRelease;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.intakeToShoot;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.AutoTrajectories.startToIntake;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.gateCycleIndex;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.gateExit;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.gateRelease;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoCommands.MotifLaunchSequenceCommand;
 
 

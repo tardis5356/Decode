@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
+package org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto;
 
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;

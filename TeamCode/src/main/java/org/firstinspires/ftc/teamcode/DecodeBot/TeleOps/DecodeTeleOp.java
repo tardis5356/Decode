@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.TeleOps;
 
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.savedPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.savedPos;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;

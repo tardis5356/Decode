@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
+package org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.MAX_CYCLES;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto.DecodeAuto.gateCycleIndex;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.MAX_CYCLES;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.roadrunner.Action;

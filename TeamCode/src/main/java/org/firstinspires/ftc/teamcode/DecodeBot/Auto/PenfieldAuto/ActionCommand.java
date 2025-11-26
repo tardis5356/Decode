@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.DecodeBot.Auto.Auto;
+package org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
