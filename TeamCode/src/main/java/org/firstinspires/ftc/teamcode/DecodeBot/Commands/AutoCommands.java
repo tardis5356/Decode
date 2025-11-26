@@ -44,8 +44,6 @@ public class AutoCommands {
         intake.setCurrentArtifacts();
 
         if (shootAll()) {
-
-
             return new LaunchSequenceCommand(intake, storage, "Fly");
         }
 
