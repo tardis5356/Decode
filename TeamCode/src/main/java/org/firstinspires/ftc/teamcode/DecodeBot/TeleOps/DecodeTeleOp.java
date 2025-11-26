@@ -481,12 +481,7 @@ public class DecodeTeleOp extends CommandOpMode {
     public void run() {
         super.run();
 
-        if (GlobalVariables.aColor == "red") {
-            desiredTagID = 24;
-        }
-        if (GlobalVariables.aColor == "blue") {
-            desiredTagID = 20;
-        }
+
 
 //        if(autoTarget) {
 //            turret.updateTurretTracking(drive, telemetry, 200);

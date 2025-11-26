@@ -30,6 +30,7 @@ public class Turret extends SubsystemBase {
 
     private static double targetPositionTicks;
     private double motorPower;
+    public static double turretOffset = 0;
     private boolean PIDDisabled = false;
 
     // === TURRET CONSTANTS ===
@@ -55,9 +56,15 @@ public class Turret extends SubsystemBase {
         // Run PID control if enabled
 
         if (!PIDDisabled) {
-            motorPower = controller.calculate(mT.getCurrentPosition(), targetPositionTicks + newTargetOffset);
+            motorPower = controller.calculate(getCurrentPosition(), targetPositionTicks + newTargetOffset);
         } else {
             motorPower = 0;
+        }
+
+
+        // zeros the turret readings when the magnetic sensor is pressed
+        if (lT.isPressed()) {
+            turretOffset += mT.getCurrentPosition();
         }
         mT.setPower(motorPower);
 
@@ -67,7 +74,7 @@ public class Turret extends SubsystemBase {
 
     // === BASIC CONTROLS ===
     public static double getCurrentPosition() {
-        return mT.getCurrentPosition();
+        return mT.getCurrentPosition() - turretOffset;
     }
 
     public double getCurrentMotorPower() {
@@ -110,10 +117,10 @@ public class Turret extends SubsystemBase {
         // Positive Offset = further behind apriltag
         double targetTagXOffset = 0, targetTagYOffset = 0;
 
-        Pose2d targetPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
+        Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
         // === Apply offset away from origin ===
-        double goalX = targetPos.position.x + Math.signum(targetPos.position.x) * targetTagXOffset;
-        double goalY = targetPos.position.y + Math.signum(targetPos.position.y) * targetTagYOffset;
+        double goalX = targetAprilTagPos.position.x + Math.signum(targetAprilTagPos.position.x) * targetTagXOffset;
+        double goalY = targetAprilTagPos.position.y + Math.signum(targetAprilTagPos.position.y) * targetTagYOffset;
 
         // === Compute turret tracking ===
         double robotX = drive.localizer.getPose().position.x;
@@ -147,13 +154,18 @@ public class Turret extends SubsystemBase {
         double turretDistance = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
 
         // Telemetry
+        telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);
+        telemetry.addData("TargetAprilTagYPose", targetAprilTagPos.position.y);
+        //check these on the testbed to see if the preset april tag positions are correct
         telemetry.addData("Tag ID", desiredTagID);
         telemetry.addData("Offset X", targetTagXOffset);
         telemetry.addData("Offset Y", targetTagYOffset);
-      //  telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(desiredTurretAngleRobot));
+        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
+        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
-        telemetry.addData("Encoder", getCurrentPosition());
+        telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
+        telemetry.addData("ZeroedTurretTicks", getCurrentPosition());
     }
 
     // === FLIP MANAGEMENT ===
