@@ -483,9 +483,9 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 
-//        if(autoTarget) {
-//            turret.updateTurretTracking(drive, telemetry, 200);
-//        }
+        if(autoTarget) {
+            turret.updateTurretTracking(drive, telemetry, 200);
+        }
 
 
         if (flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {

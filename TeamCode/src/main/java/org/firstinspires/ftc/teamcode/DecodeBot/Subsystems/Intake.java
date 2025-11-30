@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 public class Intake extends SubsystemBase {
 
     DcMotorEx mI;
@@ -87,17 +89,19 @@ public class Intake extends SubsystemBase {
 
     public String greenOrPurple(ColorRangeSensor cs) {
 //Normalized colors return values from 1 to 0
+if (cs.getDistance(DistanceUnit.CM) <3){
+    if (cs == cSSt && slotFly) {
+        return "_";
+    }
+    if (cs.getNormalizedColors().red < 3) {
+        return "P";
+    } else if (cs.getNormalizedColors().red > 10) {
+        return "G";
+    } else {
+        return "_";
+    }
+} else return "_";
 
-        if (cs == cSSt && slotFly) {
-            return "_";
-        }
-        if (cs.getNormalizedColors().red < 3) {
-            return "G";
-        } else if (cs.getNormalizedColors().red > 10) {
-            return "P";
-        } else {
-            return "_";
-        }
     }
 
     public void setCurrentArtifacts() {
