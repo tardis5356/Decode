@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
-import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand.newTargetOffset;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -20,7 +20,6 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.DecodeBot.Commands.TurretFlipCommand;
 
 public class Turret extends SubsystemBase {
 
@@ -39,16 +38,18 @@ public class Turret extends SubsystemBase {
     private static final double MAX_ANGLE_DEG = 200; // Flip threshold
 
     private double lastTurretAngle = 0.0; // radians
-    public static boolean turretFlipping = false;
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
         //lT = hardwareMap.get(TouchSensor.class, "lT");
 
+        mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        mT.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //Run without encoder because we don't want to use the firmware PID controller
+        mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
 
         controller = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
     }
@@ -57,18 +58,19 @@ public class Turret extends SubsystemBase {
     public void periodic() {
         // Run PID control if enabled
         controller.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-        if (!PIDDisabled) {
+       // if (!PIDDisabled) {
             motorPower = controller.calculate(getCurrentPosition(), targetPositionTicks);
-        } else {
-            motorPower = 0;
-        }
+//        } else {
+//            motorPower = 0.0;
+//        }
 
 
         // zeros the turret readings when the magnetic sensor is pressed
 //        if (lT.isPressed()) {
 //            turretOffset += mT.getCurrentPosition();
 //        }
-        mT.setPower(motorPower);
+
+      mT.setPower(motorPower);
 
         // Always manage turret flip automatically
 
@@ -106,10 +108,7 @@ public class Turret extends SubsystemBase {
     // === TRACKING TO APRILTAG (with offset) ===
     public void updateTurretTracking(MecanumDrive drive, Telemetry telemetry, double maxAngleDeg) {
 
-        if (turretFlipping) {
-            telemetry.addLine("Turret flipping — tracking paused.");
-            return;
-        }
+
 
 
         // Select tag based on alliance color
@@ -134,7 +133,7 @@ public class Turret extends SubsystemBase {
         double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
                 + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
-        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX);
+        double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX) + Math.PI;
 //The following makes sures that the target angle are always between (0, 2PI)
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 //This makes sure that the turret is never pointed at angle past the maxAngle
@@ -167,8 +166,9 @@ public class Turret extends SubsystemBase {
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
-        telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
+     //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
         telemetry.addData("ZeroedTurretTicks", getCurrentPosition());
+telemetry.addData("TurretRawMotorPower", mT.getPower());
     }
 
     // === FLIP MANAGEMENT ===

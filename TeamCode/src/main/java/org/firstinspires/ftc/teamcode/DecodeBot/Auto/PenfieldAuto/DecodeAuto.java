@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto;
 
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
 
@@ -113,6 +114,7 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
 //                cycleCount = 5;
+//              gateCycleIndex = 1; //default gate cycle after cycle 2
 //                choices = new int[][]{
 //                        {1, 2}, //shoot: audience, intake: audience
 //                        {0, 0}, //shoot: goal, intake: goal
@@ -126,6 +128,7 @@ public class DecodeAuto extends OpMode {
 
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
+//              gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
 //                cycleCount = 5;
 //                choices = new int[][]{

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -68,9 +69,9 @@ public class FieldTurretTest extends CommandOpMode {
         telemetry = dashboardTelemetry;
         CommandScheduler.getInstance().reset();
 
-        if (savedPos == null){
+
             savedPos = new Pose2d(0,0,0);
-        }
+
 
 
 
@@ -196,8 +197,8 @@ public class FieldTurretTest extends CommandOpMode {
         telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
 
         telemetry.addData("Alliance", GlobalVariables.aColor);
-        telemetry.addData("Flip Active", turret.turretFlipping);
         telemetry.addData("FPS", camera.visionPortal.getFps());
+        telemetry.addData("Turret Motor Power", turret.getCurrentMotorPower());
 //        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(de
 //        siredTurretAngleRobot));
 

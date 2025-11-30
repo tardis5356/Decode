@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.aColor;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables.motif;
@@ -10,6 +12,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 
 import static java.lang.Thread.sleep;
 
+import android.graphics.Color;
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.Pose2d;
@@ -73,29 +76,42 @@ public class Camera extends SubsystemBase {
     private CameraName switchableCamera;
 
     ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(//ColorRange.BLUE
-                    new ColorRange(
-                            ColorSpace.YCrCb,
-                            new Scalar( 16,   0, 0),
-                            new Scalar(200, 110, 110))
+            .setTargetColorRange(ColorRange.ARTIFACT_GREEN
+//                    new ColorRange(
+//                            ColorSpace.YCrCb,
+//                            new Scalar( 16,   0, 0),
+//                            new Scalar(200, 110, 110))
             ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
             .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
             .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBlurSize(20)                               // Smooth the transitions between different colors in image
-            .setErodeSize(10)
+            .setBoxFitColor(0)       // Disable the drawing of rectangles
+            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
+            .setBlurSize(5)          // Smooth the transitions between different colors in image
+
+            // the following options have been added to fill in perimeter holes.
+            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
+            .setErodeSize(50)        // Shrink blobs so blobs become separated and you can see individual balls
+            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
             .build();
 
     ColorBlobLocatorProcessor purpleLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(//ColorRange.BLUE
-                    new ColorRange(
-                            ColorSpace.YCrCb,
-                            new Scalar( 16,   0, 0),
-                            new Scalar(200, 110, 110))
+            .setTargetColorRange(ColorRange.ARTIFACT_PURPLE
+//                    new ColorRange(
+//                            ColorSpace.YCrCb,
+//                            new Scalar( 16,   0, 0),
+//                            new Scalar(200, 110, 110)
+//                    )
             ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
             .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
             .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBlurSize(20)                               // Smooth the transitions between different colors in image
-            .setErodeSize(10)
+            .setBoxFitColor(0)       // Disable the drawing of rectangles
+            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
+            .setBlurSize(5)          // Smooth the transitions between different colors in image
+
+            // the following options have been added to fill in perimeter holes.
+            .setErodeSize(50)        // Shrink blobs so blobs become separated
+            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
+            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
             .build();
 
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
