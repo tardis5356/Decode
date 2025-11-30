@@ -154,6 +154,7 @@ public class Turret extends SubsystemBase {
 
         double turretDistance = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
 
+
         // Telemetry
         telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);
         telemetry.addData("TargetAprilTagYPose", targetAprilTagPos.position.y);

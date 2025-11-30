@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -120,18 +121,19 @@ public class Camera extends SubsystemBase {
 
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
-        //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
+        intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
         turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
 
 aprilTagProcessor.setDecimation(5);
         // Start with the turret camera
-        switchableCamera = turretWebcam;
+        switchableCamera = ClassFactory.getInstance()
+                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;
 
         visionPortal = new VisionPortal.Builder()
                 //.setCamera(switchableCamera)
-                .setCamera(turretWebcam)
+                .setCamera(switchableCamera)
                 .addProcessor(aprilTagProcessor)
                 .addProcessor(purpleLocator)
                 .addProcessor(greenLocator)
@@ -141,9 +143,8 @@ aprilTagProcessor.setDecimation(5);
 
 
 
-        // Disable intake camera processors initially
-        visionPortal.setProcessorEnabled(purpleLocator, false);
-        visionPortal.setProcessorEnabled(greenLocator, false);
+
+             switchCamera(ActiveCamera.TURRET);
     }
 
     public void periodic(){
