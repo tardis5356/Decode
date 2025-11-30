@@ -29,6 +29,10 @@ public class sterilTurret extends CommandOpMode {
 
         mT.setPower(motorPower);
 
+        telemetry.addData("MotorDetectedPower", mT.getPower());
+        telemetry.addData("CommandedPower",motorPower);
+        telemetry.update();
+
     }
 
 }
