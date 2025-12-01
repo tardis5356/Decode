@@ -22,7 +22,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0.001f, vI = 0, vD = 0, vV = 0.00052f, vS = 0;
+    public static float vP = 0.0095f, vI = 0, vD = 0.0005f, vV = 0.007f, vS = 0;
 
     public static double neededVoltage, dutyCycle, batteryVoltage;
 
@@ -57,7 +57,7 @@ public class Shooter extends SubsystemBase {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        mST.setDirection(DcMotorSimple.Direction.REVERSE);
+        mSB.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -75,18 +75,19 @@ public class Shooter extends SubsystemBase {
         mSB.setPower(calculateFlyWheelPower(flyWheelSpeed));
         mST.setPower(calculateFlyWheelPower(flyWheelSpeed));
 
+        sH.setPosition(0.95);
 
 
-        if (targeting){
-
-            if( mST.getVelocity() > (BotPositions.LONG_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.LONG_DISTANCE_TPS+50)){
-                sH.setPosition(LDRegression.get(distanceFromTarget));
-            }
-            else if (mST.getVelocity() > (BotPositions.SHORT_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.SHORT_DISTANCE_TPS+50)){
-                sH.setPosition(SDRegression.get(distanceFromTarget));
-            }
-
-        }
+//        if (targeting){
+//
+//            if( mST.getVelocity() > (BotPositions.LONG_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.LONG_DISTANCE_TPS+50)){
+//                sH.setPosition(LDRegression.get(distanceFromTarget));
+//            }
+//            else if (mST.getVelocity() > (BotPositions.SHORT_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.SHORT_DISTANCE_TPS+50)){
+//                sH.setPosition(SDRegression.get(distanceFromTarget));
+//            }
+//
+//        }
 
 
     }
