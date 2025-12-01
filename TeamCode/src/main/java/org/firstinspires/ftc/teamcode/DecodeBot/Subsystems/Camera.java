@@ -48,16 +48,16 @@ public class Camera extends SubsystemBase {
 
     PIDController yawController, forwardController;
 
-    private static final int IMG_HEIGHT = 480;//720
-    private static final int IMG_WIDTH = 640;//1280
+    private static final int IMG_HEIGHT = 600;//720
+    private static final int IMG_WIDTH = 800;//1280
 
 
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    public double fx = 545.605 * 56.5/58;//911.942 * (55.6 / 57.4);
-    public double fy = 545.605 * 56.5/58;//911.942 * (55.6 / 57.4);
-    public double cx = 320, cy = 262.311;
+    public double fx = 532.034 * 42.5/52.5; // actual/roadrunner distance
+    public double fy = 532.034 * 42.5/52.5;
+    public double cx = 305.714, cy = 221.593;
 
     public static boolean manualExposure;
 
@@ -166,7 +166,7 @@ aprilTagProcessor.setDecimation(5);
 //            forwardPower = 0;
 //        }
         if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure){
-            setManualExposure(2, 80);
+            setManualExposure(3, 90);//2,80
             manualExposure = true;
         }
 
@@ -227,9 +227,11 @@ aprilTagProcessor.setDecimation(5);
 
             // Camera → Tag translation
             double xCameraToTag = detection.ftcPose.x;
-            double yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
+            double yCameraToTag = detection.ftcPose.y;
             telemetry.addData("xCameraToTag", xCameraToTag);
             telemetry.addData("yCameraToTag", yCameraToTag);
+            yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
+
             // Rotate relative to turret
             double xTagToTurret = xCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad)
                     - yCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad);

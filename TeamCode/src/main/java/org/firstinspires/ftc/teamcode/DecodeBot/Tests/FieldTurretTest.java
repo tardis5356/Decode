@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Tests;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.savedPos;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera.manualExposure;
@@ -185,12 +186,12 @@ public class FieldTurretTest extends CommandOpMode {
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
 
-        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()){
-            telemetry.addData("ATagYaw", detection.ftcPose.yaw);
-            telemetry.addData("SensedATagPos",detection.ftcPose.x);
-            telemetry.addData("SensedATagPos",detection.ftcPose.y);
-            telemetry.addLine();
-        }
+//        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()){
+//            telemetry.addData("ATagYaw", detection.ftcPose.yaw);
+//            telemetry.addData("SensedATagPos",detection.ftcPose.x);
+//            telemetry.addData("SensedATagPos",detection.ftcPose.y);
+//            telemetry.addLine();
+//        }
 
 
        // telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
@@ -203,7 +204,12 @@ public class FieldTurretTest extends CommandOpMode {
 //        siredTurretAngleRobot));
 
         telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
-telemetry.addData("manualExposure", manualExposure);
+        telemetry.addData("manualExposure", manualExposure);
+
+        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()) {
+            telemetry.addData("xCameraToTag", detection.ftcPose.x);
+            telemetry.addData("yCameraToTag", detection.ftcPose.y + CAMERA_RADIUS);
+        }
 
         telemetry.update();
     }
