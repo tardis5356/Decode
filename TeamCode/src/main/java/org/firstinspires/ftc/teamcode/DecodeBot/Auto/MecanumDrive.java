@@ -73,13 +73,13 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.00197; // This is the only thing that matter for position measurements coming from the odometer wheels
-        public double lateralInPerTick = 0.0012954867690671626; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
-        public double trackWidthTicks = 7307.066657005069;
+        public double lateralInPerTick = 0.0013478867985877118; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
+        public double trackWidthTicks = 7241.872308147249;
 
         // feedforward parameters (in tick units)
-        public double kS =   1.103096814190744;
-        public double kV = 0.00032811255271594325;
-        public double kA = 0.00006;
+        public double kS =   1.3096027602983749;
+        public double kV = 0.000315;
+        public double kA = 0.000065;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50; //50
@@ -91,13 +91,13 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 17; // 5-10 works pretty much the same
-        public double lateralGain = 14;
-        public double headingGain = 30; // shared with turn
+        public double axialGain = 13; // 5-10 works pretty much the same
+        public double lateralGain = 15;
+        public double headingGain = 5; // shared with turn
 
         public double axialVelGain = 2;
-        public double lateralVelGain = 0.0;
-        public double headingVelGain = 2.3; // shared with turn
+        public double lateralVelGain = 1;
+        public double headingVelGain = 1; // shared with turn
     }
 
     public static Params PARAMS = new Params();
@@ -246,11 +246,9 @@ public final class MecanumDrive {
 
         // TODO: reverse motor directions if needed
         //   leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-//        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-       rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         // TODO: make sure your config has an IMU with this name (can be BNO or BHI)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         lazyImu = new LazyHardwareMapImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
