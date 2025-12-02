@@ -16,7 +16,7 @@ public class BotPositions {
     //public static int SLOT1_FIRE = 360, SLOT2_FIRE = 120, SLOT3_FIRE = 240, SLOT1_LOAD = 180, SLOT2_LOAD = 300, SLOT3_LOAD = 60;
     //public static double TURRET_P = 0.000000, TURRET_I = 0.000, TURRET_D = 0.00000;
     public static double TURRET_TICKS_PER_DEGREE = 104.55 * (180/187) , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
-    public static double TURRET_P = 0.00004, TURRET_I = 0.000, TURRET_D = 0.00000;
+    public static double TURRET_P = 0.0000, TURRET_I = 0.000, TURRET_D = 0.00000;
     //public static double TURRET_TICKS_PER_DEGREE = (8192/360)*(373.6/360)*(358.91083/360) /*1.491851852*/  , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
 
    //PTO Relevant stuff
@@ -27,7 +27,7 @@ public class BotPositions {
     public static double CAMERA_RADIUS = 5.23956, TURRET_OFFSET_X = -2.5590, TURRET_OFFSET_Y = 0;
 
     //positions of servos in StorageSubsystem
-    public static double GATE_OPEN = .205, GATE_CLOSED = .5, KICKER_UP = .55, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .88, BACK_OPEN = .44, BACK_CLOSE = .57;
+    public static double GATE_OPEN = .205, GATE_CLOSED = .5, KICKER_UP = .58, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .88, BACK_OPEN = .44, BACK_CLOSE = .57;
 
     public static long KICKER_WAIT = 500, GATE_WAIT = 500, SWAP_WAIT = 500, INTAKE_WAIT = 1000;
 

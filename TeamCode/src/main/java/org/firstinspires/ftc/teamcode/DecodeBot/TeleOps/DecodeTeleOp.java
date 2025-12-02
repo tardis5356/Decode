@@ -299,6 +299,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
 
 
+
         //Shooter mode
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.START))
                 .toggleWhenActive(new InstantCommand(() -> flyMode = true), new InstantCommand(() -> flyMode = false));
@@ -488,7 +489,12 @@ public class DecodeTeleOp extends CommandOpMode {
     public void run() {
         super.run();
 
-        shooter.setVel(1300);
+        if(gamepad1.dpad_left) {
+            shooter.setVel(1300);
+        }
+        else if(gamepad1.dpad_right){
+            shooter.setVel(0);
+        }
 
         if(autoTarget) {
             turret.updateTurretTracking(drive, telemetry, 200);
