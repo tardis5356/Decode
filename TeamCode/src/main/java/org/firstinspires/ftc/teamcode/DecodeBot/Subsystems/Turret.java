@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.T
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -167,6 +168,8 @@ public class Turret extends SubsystemBase {
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
+        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
+        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
      //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
         telemetry.addData("ZeroedTurretTicks", getCurrentPosition());
 telemetry.addData("TurretRawMotorPower", mT.getPower());

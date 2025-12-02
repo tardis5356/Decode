@@ -59,6 +59,7 @@ public class Shooter extends SubsystemBase {
 
         mSB.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        sH.setPosition(0.05);
 
 
         //prep regression data
@@ -75,7 +76,7 @@ public class Shooter extends SubsystemBase {
         mSB.setPower(calculateFlyWheelPower(flyWheelSpeed));
         mST.setPower(calculateFlyWheelPower(flyWheelSpeed));
 
-        sH.setPosition(0.95);
+
 
 
 //        if (targeting){
