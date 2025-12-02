@@ -166,6 +166,7 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
+        telemetry.addData("TurretError",  (getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
         telemetry.addData("Turret Distance", turretDistance);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);

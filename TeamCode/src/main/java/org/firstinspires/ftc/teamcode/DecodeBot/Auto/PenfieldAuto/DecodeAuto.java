@@ -16,10 +16,12 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.DecodeBot.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
@@ -60,8 +62,9 @@ public class DecodeAuto extends OpMode {
 
     public Pose2d startPos;
 
-    private Camera camera;
+   // private Camera camera;
     private Intake intake;
+    private BellyPan bellyPan;
 
     private Shooter shooter;
 
@@ -80,13 +83,14 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().reset();
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
-        camera = new Camera(hardwareMap);
+        bellyPan = new BellyPan(hardwareMap);
+       // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
         telemetry2.addData("Status", "Initialized");
@@ -114,32 +118,32 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-//                cycleCount = 5;
-//              gateCycleIndex = 1; //default gate cycle after cycle 2
-//                choices = new int[][]{
-//                        {1, 2}, //shoot: audience, intake: audience
-//                        {0, 0}, //shoot: goal, intake: goal
-//                        //gate
-//                        {0, 1}, //shoot: goal, intake: mid
-//                        {1, 4}, //shoot: audience, intake: LZ random
-//                        {1, 4} //shoot: audience, intake: LZ random
-//                };
+                cycleCount = 5;
+              gateCycleIndex = 1; //default gate cycle after cycle 2
+                choices = new int[][]{
+                        {1, 2}, //shoot: audience, intake: audience
+                        {0, 0}, //shoot: goal, intake: goal
+                        //gate
+                        {0, 1}, //shoot: goal, intake: mid
+                        {1, 4}, //shoot: audience, intake: LZ random
+                        {1, 4} //shoot: audience, intake: LZ random
+                };
             } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;
 
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
-//              gateCycleIndex = 1; //default gate cycle after cycle 2
+              gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-//                cycleCount = 5;
-//                choices = new int[][]{
-//                        {1, 0}, //shoot: audience, intake: goal
-//                        {0, 1}, //shoot: goal, intake: mid
-//                        //gate
-//                        {0, 2}, //shoot: goal, intake: audience
-//                        {1, 4}, //shoot: audience, intake: LZ random
-//                        {1, 4} //shoot: audience, intake: LZ random
-//                };
+                cycleCount = 5;
+                choices = new int[][]{
+                        {1, 3}, //shoot: audience, intake: LZ preset
+                        {0, 0}, //shoot: goal, intake: goal
+                        //gate
+                        {0, 1}, //shoot: goal, intake: mid
+                        {0, 2}, //shoot: audience, intake: audience
+                        {1, 4} //shoot: audience, intake: LZ random
+                };
 
             }
         }
@@ -225,7 +229,7 @@ public class DecodeAuto extends OpMode {
             choices[currentCycle][currentColumn] = 2; // intake audience
         if (gamepad1.right_stick_button && currentColumn == 1)
             choices[currentCycle][currentColumn] = 3; // intake LZ preset
-        if (gamepad1.y && currentColumn == 1)
+        if (gamepad1.left_stick_button && currentColumn == 1)
             choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
     private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
@@ -273,7 +277,7 @@ public class DecodeAuto extends OpMode {
         if (currentColumn == 0) {
             telemetry2.addLine("✖️ - Goal, ⭕ - Audience");
         } else if (currentColumn == 1) {
-            telemetry2.addLine("✖️ - Goal, ⭕ - Mid, ⃤ ️ - Audience");
+            telemetry2.addLine("✖️ - Goal, ⭕ - Mid,    ⃤ ️ - Audience");
             telemetry2.addLine("Right Stick - LZ Preset, Left Stick - LZ Random");
         }
         telemetry2.addLine("");

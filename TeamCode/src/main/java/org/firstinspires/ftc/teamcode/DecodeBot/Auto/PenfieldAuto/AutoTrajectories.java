@@ -67,14 +67,14 @@ public class AutoTrajectories {
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
-        goalIntakePos = allianceCoordinate(new Pose2d(-12, 45, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(12, 45, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(35, 45, Math.toRadians(90)));
+        goalIntakePos = allianceCoordinate(new Pose2d(-12, 47, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(12, 47, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(35, 47, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
-        gateReleasePos = allianceCoordinate(new Pose2d(0, 46, Math.toRadians(90)));
-        gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 56, Math.toRadians(90)));
-        presetLZIntakePos = allianceCoordinate(new Pose2d(63,60,90));
+        gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
+        gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
+        presetLZIntakePos = allianceCoordinate(new Pose2d(60,60,90));
         randomLZIntakePos = allianceCoordinate(new Pose2d(58,57,45));
 
 
@@ -96,7 +96,7 @@ public class AutoTrajectories {
      */
     public static void generateTrajectories(MecanumDrive drive, int[][] choices, int cycles, Pose2d startPos) {
         Pose2d[] shootPositions = {goalShootPos, audienceShootPos};
-        Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos};
+        Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, randomLZIntakePos};
 
         Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;
 
@@ -161,7 +161,7 @@ public class AutoTrajectories {
                 .build();
 
         gateExit = drive.actionBuilder(gateReleasePos)
-                .setTangent(allianceTangent(90))
+                .setTangent(allianceTangent(270))
                 .splineToLinearHeading(gateExitWaypointPos, allianceTangent(90))
                 .build();
 

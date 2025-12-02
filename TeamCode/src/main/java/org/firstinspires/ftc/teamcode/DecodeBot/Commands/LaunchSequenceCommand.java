@@ -26,8 +26,8 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 launcOne(storage),
                                 moveOne(intake),
                                 launcOne(storage),
-                                new InstantCommand(()-> GlobalVariables.ballsShot = 0),
-                                moveOne(intake)
+                                new InstantCommand(()-> GlobalVariables.ballsShot = 0)
+                              //  moveOne(intake)
                         )
                 );
             break;

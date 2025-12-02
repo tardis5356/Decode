@@ -167,9 +167,9 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
-            if (savedPos == null) {
+//            if (savedPos == null) {
                 savedPos = new Pose2d(0, 0, Math.toRadians(0));
-            }
+//            }
 
             //init controllers
             driver1 = new GamepadEx(gamepad1);
@@ -418,6 +418,9 @@ public class DecodeTeleOp extends CommandOpMode {
                     ))
             ;
 
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+                    .whenActive(new SequentialCommandGroup(new LaunchSequenceCommand(intake, storage, "Fly")));
+
             // Triple shot modes
             // TODO: Check that these actually launch all 3 or if it just stops at one
 //            {
@@ -489,6 +492,8 @@ public class DecodeTeleOp extends CommandOpMode {
     public void run() {
         super.run();
 
+        drive.localizer.update();
+
         if(gamepad1.dpad_left) {
             shooter.setVel(1300);
         }
@@ -545,6 +550,12 @@ public class DecodeTeleOp extends CommandOpMode {
         mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
         mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
         mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+
+        Pose2d pose = drive.localizer.getPose();
+
+        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("X", pose.position.x);
+        telemetry.addData("Y", pose.position.y);
 
         telemetry.addData("mFLPower", mFLPower);
         telemetry.addData("mFRPower", mFRPower);

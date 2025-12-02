@@ -16,13 +16,16 @@ public class Storage extends SubsystemBase {
         sS = hardwareMap.get(Servo.class,"sS");
         sK = hardwareMap.get(Servo.class,"sK");
         sBG = hardwareMap.get(Servo.class, "sBG");
-
+        openGate();
+returnSlot();
         closeBack();
     }
 
     @Override
     public void periodic(){
-
+//if (GlobalVariables.currentArtifacts.charAt(1) != '_'){
+//    closeGate();
+//}
     }
 
     public void openGate(){

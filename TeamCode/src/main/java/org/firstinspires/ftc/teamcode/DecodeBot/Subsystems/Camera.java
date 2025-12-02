@@ -48,16 +48,16 @@ public class Camera extends SubsystemBase {
 
     PIDController yawController, forwardController;
 
-    private static final int IMG_HEIGHT = 600;//720
-    private static final int IMG_WIDTH = 800;//1280
+    private static final int IMG_HEIGHT = 480; //600
+    private static final int IMG_WIDTH = 640;//800
 
 
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    public double fx = 532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fy = 532.034 * 42.5/52.5;
-    public double cx = 305.714, cy = 221.593;
+    public double fx =  545.605 * 56.5/58;;//532.034 * 42.5/52.5; // actual/roadrunner distance
+    public double fy =  545.605 * 56.5/58;;//532.034 * 42.5/52.5;
+    public double cx = 320, cy = 262.311;
 
     public static boolean manualExposure;
 
@@ -141,10 +141,12 @@ aprilTagProcessor.setDecimation(5);
                 .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
                 .build();
 
+        visionPortal.setProcessorEnabled(aprilTagProcessor, true);
 
 
-
-             switchCamera(ActiveCamera.TURRET);
+        // Disable intake camera processors initially
+        visionPortal.setProcessorEnabled(purpleLocator, false);
+        visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
     public void periodic(){
