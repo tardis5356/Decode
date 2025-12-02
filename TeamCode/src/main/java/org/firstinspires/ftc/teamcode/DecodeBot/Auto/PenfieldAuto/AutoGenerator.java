@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTra
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoCommands.MotifLaunchSequenceCommand;
+import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
 
 
 import com.arcrobotics.ftclib.command.Command;
@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 
+import org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands;
 import org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
@@ -54,7 +55,7 @@ public class AutoGenerator {
             } else if (!gateReleased) {
                 seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
             } else {
-                seq.add(MotifLaunchSequenceCommand(intake, storage));
+                seq.add(new AutoLaunchCommands(intake, storage));
             }
 
             if (i == gateCycleIndex) {

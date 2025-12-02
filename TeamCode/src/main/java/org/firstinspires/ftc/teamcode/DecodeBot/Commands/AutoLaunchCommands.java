@@ -16,17 +16,34 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
+import org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-public class AutoCommands {
-    private Intake intake;
-    private Storage storage;
+public class AutoLaunchCommands extends SequentialCommandGroup {
 
-    public AutoCommands() {
+
+    public AutoLaunchCommands(Intake intake, Storage storage) {
+        switch (DecodeTeleOp.currentShootMode) {
+            case FLY:
+                new LaunchSequenceCommand(intake, storage, "Fly");
+                break;
+            case STORE_MIDDLE:
+                new LaunchSequenceCommand(intake, storage, "Store Middle");
+                break;
+            case STORE_ONE_FOR_LAST:
+                new LaunchSequenceCommand(intake, storage, "Store One For Last");
+                break;
+            case STORE_ONE_FOR_SECOND:
+                new LaunchSequenceCommand(intake, storage, "Store One For Second");
+                break;
+            default:
+                new LaunchSequenceCommand(intake, storage, "Fly");
+                break;
+        }
 
     }
 

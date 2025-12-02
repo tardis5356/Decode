@@ -37,14 +37,15 @@ public class AutoTrajectories {
     public static double[] shootEndTangentDeg = {225, 0}; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
-    public static double[] gateReleaseStartTangentDeg = {0, 180};
-    public static double gateReleaseEndTangentDeg = 270;
+    public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
+    public static double gateReleaseEndTangentDeg = 270; // final heading tangent at gate
 
 
-    public static double[] startPosTangentDeg = {245, 180}; // [goalStart, audienceStart]
+// [goalStart, audienceStart]
+    public static double[] startPosTangentDeg = {245, 180};
 
-    public static double[] intakeStartTangentDeg = {0, 180};    // [goalShoot, audienceShoot]
-
+    // [goalShoot, audienceShoot]
+    public static double[] intakeStartTangentDeg = {0, 180};
 
     // Helper: mirror coordinate if alliance is blue
     public static Pose2d allianceCoordinate(Pose2d coordinate) {

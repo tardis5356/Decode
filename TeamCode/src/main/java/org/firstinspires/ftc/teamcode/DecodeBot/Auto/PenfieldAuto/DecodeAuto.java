@@ -27,6 +27,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.DecodeBot.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
@@ -227,7 +228,8 @@ public class DecodeAuto extends OpMode {
         if (gamepad1.y && currentColumn == 1)
             choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
-
+    private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
+    private static final String ROW_FORMAT    = "%-5d | %-12s | %-12s";
     private void printTelemetryTable() {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         if (motif != null) {
@@ -238,6 +240,7 @@ public class DecodeAuto extends OpMode {
         String gateTxt = (gateCycleIndex == cycleCount)
                 ? "After ALL cycles"
                 : "After cycle " + (gateCycleIndex + 1);
+        telemetry2.addLine("Gamepad 2⬇️");
         telemetry2.addData("Gate Action", gateTxt);
 //
 
@@ -250,13 +253,30 @@ public class DecodeAuto extends OpMode {
         }
 
         String allianceDisplay = (aColor != null) ? aColor : "None";
+        telemetry2.addLine("=== Alliance Selection ===");
+
+        if (aColor == null){
+            telemetry2.addLine("️✖️ - Blue, ⭕ - Red");
+        } else {
+            telemetry2.addLine("Up - Goal Start, Down - Audience Start");
+        }
         telemetry2.addData("Alliance Start", allianceDisplay + " - " + startName);
 
         telemetry2.addLine("=== Cycle Selection ===");
+        telemetry2.addLine("Gamepad 1⬇️");
         telemetry2.addData("Cycle Count", cycleCount);
-        telemetry2.addLine("Use D-Pad to navigate, bumpers to change cycle count");
-        telemetry2.addLine("");
 
+
+        telemetry2.addLine("Use D-Pad to navigate, bumpers to change cycle count");
+
+        telemetry2.addLine("");
+        if (currentColumn == 0) {
+            telemetry2.addLine("✖️ - Goal, ⭕ - Audience");
+        } else if (currentColumn == 1) {
+            telemetry2.addLine("✖️ - Goal, ⭕ - Mid, ⃤ ️ - Audience");
+            telemetry2.addLine("Right Stick - LZ Preset, Left Stick - LZ Random");
+        }
+        telemetry2.addLine("");
         // --- Table header ---
         telemetry2.addLine("Cycle | Shoot  | Intake");
         telemetry2.addLine("-------------------------");
@@ -264,16 +284,19 @@ public class DecodeAuto extends OpMode {
         String[] shootNames = {"Goal", "Audience"};
         String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "LZ Random"};
 
-        for (int i = 0; i < cycleCount; i++) {
-            String shoot = shootNames[choices[i][0]];
-            String intake = intakeNames[choices[i][1]];
 
-            // Single marker for the selected cell
-            String shootCell = (i == currentCycle && currentColumn == 0) ? "*" + shoot : " " + shoot;
-            String intakeCell = (i == currentCycle && currentColumn == 1) ? "*" + intake : " " + intake;
+            telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));
+            telemetry2.addLine("------------------------------------------");
 
-            telemetry2.addLine(String.format(" %d    | %s   | %s", i + 1, shootCell, intakeCell));
-        }
+            for (int i = 0; i < cycleCount; i++) {
+                String shoot = shootNames[choices[i][0]];
+                String intake = intakeNames[choices[i][1]];
+
+                if (i == currentCycle && currentColumn == 0) shoot = "*" + shoot;
+                if (i == currentCycle && currentColumn == 1) intake = "*" + intake;
+
+                telemetry2.addLine(String.format(ROW_FORMAT, i + 1, shoot, intake));
+            }
 
         telemetry2.update();
     }
@@ -293,6 +316,20 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void loop() {
+
+
+        if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
+        } else {
+            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
+        }
+
         CommandScheduler.getInstance().run();
         if (runtime.seconds() > 29.5 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
@@ -300,6 +337,7 @@ public class DecodeAuto extends OpMode {
         }
 
         turret.updateTurretTracking(drive, telemetry2, 200);
+
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
