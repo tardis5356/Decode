@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
@@ -18,6 +19,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +47,9 @@ public class ShooterTesting extends CommandOpMode {
     Servo sH;
     GamepadEx driver1;
 
+    Intake intake;
+    Storage storage;
+
     double hoodPos = 0.95;
     public static double wheelSpeedOne = 1300, wheelSpeedTwo = 1125, wheelSpeed_Three = 800;
     double wheelSpeed;
@@ -55,6 +64,8 @@ public class ShooterTesting extends CommandOpMode {
         m2 = hardwareMap.get(DcMotorEx.class,"mSB");
         sH = hardwareMap.get(Servo.class,"sH");
         driver1 = new GamepadEx(gamepad1);
+        intake = new Intake(hardwareMap);
+        storage = new Storage(hardwareMap);
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -114,6 +125,20 @@ public class ShooterTesting extends CommandOpMode {
                 .whileActiveOnce(
                         new InstantCommand(()-> e1 = mW.getCurrentPosition())
                 );
+
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.START))
+                .toggleWhenActive(intake::in, intake::stop);
+
+
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                .whenActive(
+                        new SequentialCommandGroup(
+                                new InstantCommand(storage::raiseKicker),
+                                new WaitCommand(BotPositions.KICKER_WAIT),
+                                new InstantCommand(storage::lowerKicker)
+                        )
+                );
+
     }
 
     public void run() {
@@ -126,6 +151,7 @@ public class ShooterTesting extends CommandOpMode {
         mW.setPower(calculateFlyWheelPower(wheelSpeed));
         m2.setPower(calculateFlyWheelPower(wheelSpeed));
         sH.setPosition(Math.abs(hoodPos));
+
 
 
         t = myTimer.time(TimeUnit.SECONDS);
