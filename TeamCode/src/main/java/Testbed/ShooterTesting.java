@@ -69,7 +69,7 @@ public class ShooterTesting extends CommandOpMode {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        mW.setDirection(DcMotorSimple.Direction.REVERSE);
+        m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
