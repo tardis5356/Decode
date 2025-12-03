@@ -6,7 +6,7 @@ import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTra
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
 import static org.firstinspires.ftc.teamcode.DecodeBot.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
-import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
+//import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
 
 
 import com.arcrobotics.ftclib.command.Command;

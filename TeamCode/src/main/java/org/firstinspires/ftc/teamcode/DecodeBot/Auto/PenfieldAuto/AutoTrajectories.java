@@ -74,7 +74,7 @@ public class AutoTrajectories {
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
         gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
-        presetLZIntakePos = allianceCoordinate(new Pose2d(60,60,90));
+        presetLZIntakePos = allianceCoordinate(new Pose2d(58,57,90));
         randomLZIntakePos = allianceCoordinate(new Pose2d(58,57,45));
 
 

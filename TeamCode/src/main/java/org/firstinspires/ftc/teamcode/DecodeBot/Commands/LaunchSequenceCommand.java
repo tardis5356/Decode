@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
 import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -21,11 +20,9 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 addCommands(
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
-                                launcOne(storage),
-                                moveOne(intake),
-                                launcOne(storage),
-                                moveOne(intake),
-                                launcOne(storage),
+                                new IntakeLaunchCommand(storage, intake),
+                                new IntakeLaunchCommand(storage, intake),
+                                new IntakeLaunchCommand(storage, intake),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0)
                               //  moveOne(intake)
                         )
@@ -174,7 +171,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
         }
 
     }
-    public Command launcOne(Storage s){
+    public static Command launcOne(Storage s){
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                 new InstantCommand(s::raiseKicker),
@@ -187,7 +184,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 
     }
 
-    public Command moveOne(Intake i){
+    public static Command moveOne(Intake i){
         return new SequentialCommandGroup(
                 new InstantCommand(i::in),
                 new WaitCommand(BotPositions.INTAKE_WAIT),
@@ -195,17 +192,17 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
         );
     }
 
-    public Command openGate(Storage s){
+    public static Command openGate(Storage s){
         return new SequentialCommandGroup(new InstantCommand(s::openGate),
                 new WaitCommand(BotPositions.GATE_WAIT));
     }
 
-    public Command closeGate(Storage s){
+    public static Command closeGate(Storage s){
         return new SequentialCommandGroup(new InstantCommand(s::closeGate),
                 new WaitCommand(BotPositions.GATE_WAIT));
     }
 
-    public Command unstore(Storage s){
+    public static Command unstore(Storage s){
 
         return new SequentialCommandGroup(
                 new InstantCommand(s::returnSlot),
@@ -217,7 +214,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 
 
 
-    public Command store(Storage s){
+    public static Command store(Storage s){
         return new SequentialCommandGroup(
                 new InstantCommand(s::storeSlot),
                 new WaitCommand(BotPositions.SWAP_WAIT)
