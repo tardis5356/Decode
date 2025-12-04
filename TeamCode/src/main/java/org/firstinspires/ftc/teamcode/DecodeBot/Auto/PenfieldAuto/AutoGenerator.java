@@ -37,7 +37,7 @@ public class AutoGenerator {
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage) {
         List<Command> seq = new ArrayList<>();
 
-        //seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+        seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
 
         for (int i = 0; i < cycleCount; i++) {
 //

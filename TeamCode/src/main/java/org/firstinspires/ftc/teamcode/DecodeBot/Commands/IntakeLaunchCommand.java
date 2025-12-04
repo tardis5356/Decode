@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.DecodeBot.Commands;
 
 import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.LaunchSequenceCommand.launcOne;
 
+import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Storage;
 
 
-public class IntakeLaunchCommand extends ParallelCommandGroup {//This is a separate command used to actually set the target position of the lift for the PID
+public class IntakeLaunchCommand extends CommandBase {//This is a separate command used to actually set the target position of the lift for the PID
     private Storage storage;//create a lift object. It will have all the associated code of the lift file since that file outlines a class
     private Intake intake;
     private ElapsedTime runtime = new ElapsedTime();
@@ -31,9 +32,9 @@ public class IntakeLaunchCommand extends ParallelCommandGroup {//This is a separ
     public void initialize() { // runs once
 
         //TODO Test run this
-addCommands(
-        new InstantCommand(intake::in)
-);
+
+                new InstantCommand(intake::in);
+
 
         runtime.reset();
 //        lift.setTargetPosition(targetPosition);
@@ -62,12 +63,12 @@ addCommands(
 
     @Override
     public void end(boolean interrupted) {
-        addCommands(
+
                 new SequentialCommandGroup(
                         new InstantCommand(intake::stop),
                         launcOne(storage)
-                )
-        );
+                );
+
 
 
     }
