@@ -1,0 +1,18 @@
+package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
+
+public class GlobalVariables {
+
+    //These are variables used throughout the code that may change.
+
+    public static String motif = new String();
+
+    public static int ballsShot;
+
+    public static String currentArtifacts = new String("____");
+    public static String aColor = new String();
+
+    public static double currentTPS;
+
+
+
+}
