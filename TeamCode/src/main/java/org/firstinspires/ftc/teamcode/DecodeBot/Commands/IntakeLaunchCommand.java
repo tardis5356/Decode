@@ -20,10 +20,8 @@ public class IntakeLaunchCommand extends CommandBase {//This is a separate comma
     private Double timeout = 2.0;
 
     public IntakeLaunchCommand(Storage storage, Intake intake) {
-        // this is the actual method itself. It takes a lift as an input to associate with its own, that way it can change the target position value of the lift.
-        // Does the same thing with the target position, taking a double in as an input
-        // and same thing with the tolerance
-
+        // this is the actual method itself
+this.intake = intake;
         this.storage = storage;
 
     }
