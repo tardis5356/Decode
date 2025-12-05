@@ -522,9 +522,9 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("preview on/off", "... Camera Stream\n");
 
 
-        Rotation = cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
-        FB = cubicScaling(gamepad1.left_stick_y);
-        LR = cubicScaling(-gamepad1.left_stick_x) * 1.2;
+        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
+        FB = -cubicScaling(gamepad1.left_stick_y);
+        LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
 
