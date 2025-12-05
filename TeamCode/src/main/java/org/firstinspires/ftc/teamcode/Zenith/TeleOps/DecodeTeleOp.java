@@ -494,6 +494,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
         drive.localizer.update();
 
+        intake.setCurrentArtifacts();
+
         if(gamepad1.dpad_left) {
             shooter.setVel(1300);
         }
@@ -557,11 +559,6 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
 
-        telemetry.addData("mFLPower", mFLPower);
-        telemetry.addData("mFRPower", mFRPower);
-        telemetry.addData("mBLPower", mBLPower);
-        telemetry.addData("mBRPower", mBRPower);
-        telemetry.addData("FB", FB);
         telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 
         telemetry.addData("currentArtifacts",GlobalVariables.currentArtifacts);

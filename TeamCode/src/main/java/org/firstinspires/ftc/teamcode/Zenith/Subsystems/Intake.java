@@ -87,20 +87,20 @@ public class Intake extends SubsystemBase {
 
     public String greenOrPurple(ColorRangeSensor cs) {
 //Normalized colors return values from 1 to 0
-if (cs.getDistance(DistanceUnit.CM) <7){
-    if (cs == cSSt && slotFly) {
-        return "_";
-    }
-    if (cs.getNormalizedColors().red < 3) {
-        return "P";
-    } else if (cs.getNormalizedColors().red > 10) {
-        return "G";
-    } else {
-        return "_";
-    }
-} else return "_";
+    if (cs.getDistance(DistanceUnit.CM) <7){
+        if (cs == cSSt && slotFly) {
+            return "_";
+        }
+        if (cs.getNormalizedColors().red < 3) {
+            return "P";
+        } else if (cs.getNormalizedColors().red > 10) {
+            return "G";
+        } else {
+            return "_";
+        }
+    } else return "_";
 
-    }
+        }
 
     public void setCurrentArtifacts() {
         currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
