@@ -204,8 +204,8 @@ public class DecodeTeleOp extends CommandOpMode {
             //this motor physically runs opposite. For convenience, reverse direction.
             //mBL.setDirection(DcMotorSimple.Direction.REVERSE);
             //mFL.setDirection(DcMotorSimple.Direction.REVERSE);
-            mBR.setDirection(DcMotorSimple.Direction.REVERSE);
-            mFR.setDirection(DcMotorSimple.Direction.REVERSE);
+            //mBR.setDirection(DcMotorSimple.Direction.REVERSE);
+            //mFR.setDirection(DcMotorSimple.Direction.REVERSE);
 
             //makes the motors brake when power = zero. Is better for driver precision
             mFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
