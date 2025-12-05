@@ -60,7 +60,7 @@ public class DecodeAuto extends OpMode {
 
     public Pose2d startPos;
 
-   // private Camera camera;
+    // private Camera camera;
 //    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
@@ -82,7 +82,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-       // camera = new Camera(hardwareMap);
+        // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -120,7 +120,7 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
                 cycleCount = 5;
-              gateCycleIndex = 1; //default gate cycle after cycle 2
+                gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
                         {0, 0}, //shoot: goal, intake: goal
@@ -134,7 +134,7 @@ public class DecodeAuto extends OpMode {
 
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
-              gateCycleIndex = 1; //default gate cycle after cycle 2
+                gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
                 cycleCount = 5;
                 choices = new int[][]{
@@ -290,18 +290,18 @@ public class DecodeAuto extends OpMode {
         String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "LZ Random"};
 
 
-            telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));
-            telemetry2.addLine("------------------------------------------");
+        telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));
+        telemetry2.addLine("------------------------------------------");
 
-            for (int i = 0; i < cycleCount; i++) {
-                String shoot = shootNames[choices[i][0]];
-                String intake = intakeNames[choices[i][1]];
+        for (int i = 0; i < cycleCount; i++) {
+            String shoot = shootNames[choices[i][0]];
+            String intake = intakeNames[choices[i][1]];
 
-                if (i == currentCycle && currentColumn == 0) shoot = "*" + shoot;
-                if (i == currentCycle && currentColumn == 1) intake = "*" + intake;
+            if (i == currentCycle && currentColumn == 0) shoot = "*" + shoot;
+            if (i == currentCycle && currentColumn == 1) intake = "*" + intake;
 
-                telemetry2.addLine(String.format(ROW_FORMAT, i + 1, shoot, intake));
-            }
+            telemetry2.addLine(String.format(ROW_FORMAT, i + 1, shoot, intake));
+        }
 
         telemetry2.update();
     }
