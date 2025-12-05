@@ -132,7 +132,7 @@ public class FieldTurretTest extends CommandOpMode {
        drive.localizer.update();
 
         // === Turret control ===
-       turret.updateTurretTracking(drive, telemetry, 200);
+       turret.updateTurretTracking(drive, telemetry);
 
 
         // === Driving Control ===

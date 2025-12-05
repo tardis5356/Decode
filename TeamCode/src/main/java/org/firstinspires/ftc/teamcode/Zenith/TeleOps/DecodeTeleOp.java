@@ -504,7 +504,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
         if(autoTarget) {
-            turret.updateTurretTracking(drive, telemetry, 200);
+            turret.updateTurretTracking(drive, telemetry);
         }
 
 

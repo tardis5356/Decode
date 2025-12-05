@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_TURRET_ANGLE_DEG;
+
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -31,8 +33,6 @@ public class Turret extends SubsystemBase {
     private boolean PIDDisabled = false;
 
     // === TURRET CONSTANTS ===
-
-    private static final double MAX_ANGLE_DEG = 200; // Flip threshold
 
     private double lastTurretAngle = 0.0; // radians
 
@@ -103,9 +103,7 @@ public class Turret extends SubsystemBase {
     }
 
     // === TRACKING TO APRILTAG (with offset) ===
-    public void updateTurretTracking(MecanumDrive drive, Telemetry telemetry, double maxAngleDeg) {
-
-
+    public void updateTurretTracking(MecanumDrive drive, Telemetry telemetry) {
 
 
         // Select tag based on alliance color
@@ -135,7 +133,7 @@ public class Turret extends SubsystemBase {
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 //This makes sure that the turret is never pointed at angle past the maxAngle
         //Avoids cable wrapping
-        if (desiredTurretOnBotAngleRAD > Math.toRadians(maxAngleDeg)){
+        if (desiredTurretOnBotAngleRAD > Math.toRadians(MAX_TURRET_ANGLE_DEG)){
             desiredTurretOnBotAngleRAD -= 2 * Math.PI;
         }
 

@@ -47,7 +47,7 @@ public class DecodeAuto extends OpMode {
     // --- Cycle selection ---
     public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static final int MAX_CYCLES = 5;
-    private int cycleCount = 5;   // default 5 cycles
+    private int cycleCount = 3;   //5 // default 5 cycles
     private int currentCycle = 0;  // row selector
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
 
@@ -61,11 +61,11 @@ public class DecodeAuto extends OpMode {
     public Pose2d startPos;
 
    // private Camera camera;
+//    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
 
     private Shooter shooter;
-
     private String aColor = null;
 
     public static Pose2d savedPos;
@@ -86,10 +86,13 @@ public class DecodeAuto extends OpMode {
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
+
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
+        bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
+        turret.updateTurretTracking(drive, telemetry);
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
@@ -338,7 +341,7 @@ public class DecodeAuto extends OpMode {
             auto = null;
         }
 
-        turret.updateTurretTracking(drive, telemetry2, 200);
+        turret.updateTurretTracking(drive, telemetry2);
 
 
         if (drive != null) drive.updatePoseEstimate();
