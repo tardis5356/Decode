@@ -4,15 +4,18 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_S;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_TURRET_ANGLE_DEG;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_V;
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -25,6 +28,7 @@ public class Turret extends SubsystemBase {
     public static DcMotorEx mT;
     //public static TouchSensor lT;
     private PIDController controller;
+    private SimpleMotorFeedforward feedforward;
 
 
     private static double targetPositionTicks;
@@ -42,13 +46,15 @@ public class Turret extends SubsystemBase {
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//        mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
         //Run without encoder because we don't want to use the firmware PID controller
         mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
         controller = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+       // feedforward = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+//        controller.setTolerance(BotPositions.TURRET_TOLERANCE);
     }
 
     @Override

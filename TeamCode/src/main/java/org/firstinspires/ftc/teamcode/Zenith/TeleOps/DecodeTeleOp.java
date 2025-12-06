@@ -249,7 +249,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
         //Granny Mode
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
         //red vs blue alliance
@@ -420,6 +420,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
                     .whenActive(new SequentialCommandGroup(new LaunchSequenceCommand(intake, storage, "Fly")));
+
+            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
+                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y,0)));
+
 
             // Triple shot modes
             // TODO: Check that these actually launch all 3 or if it just stops at one
