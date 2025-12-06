@@ -30,7 +30,7 @@ this.intake = intake;
 
         //TODO Test run this
 
-                new InstantCommand(intake::in);
+                new InstantCommand(intake::in).schedule();
 
 
         runtime.reset();
@@ -64,7 +64,7 @@ this.intake = intake;
                 new SequentialCommandGroup(
                         new InstantCommand(intake::stop),
                         launcOne(storage)
-                );
+                ).schedule();
 
 
 
