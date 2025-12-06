@@ -321,7 +321,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void loop() {
-
+intake.setCurrentArtifacts();
 
         if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
             DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;

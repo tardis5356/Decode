@@ -19,6 +19,7 @@ import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
@@ -27,12 +28,20 @@ public class Turret extends SubsystemBase {
 
     public static DcMotorEx mT;
     //public static TouchSensor lT;
-    private PIDController controller;
-    private SimpleMotorFeedforward feedforward;
+    private PIDController pidController;
+    private SimpleMotorFeedforward feedforwardController;
+
+    private double kF = 0.0;   // velocity gain
+    private double kS = 0.0;   // static gain
 
 
+    private double lastTicks = 0;
+    private double lastTime = 0;
+    private double turretVelocityTicksPerSec = 0;
+    private final VoltageSensor voltageSensor;
     private static double targetPositionTicks;
     private double motorPower;
+    private double pidPower;
     public static double turretOffset = 0;
     private boolean PIDDisabled = false;
 
@@ -50,38 +59,51 @@ public class Turret extends SubsystemBase {
 
         //Run without encoder because we don't want to use the firmware PID controller
         mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
 
-        controller = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-       // feedforward = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+        feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
 //        controller.setTolerance(BotPositions.TURRET_TOLERANCE);
     }
 
     @Override
     public void periodic() {
         // Run PID control if enabled
-        controller.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-       // if (!PIDDisabled) {
-            motorPower = controller.calculate(getCurrentPosition(), targetPositionTicks);
-//        } else {
-//            motorPower = 0.0;
-//        }
-
-
-        // zeros the turret readings when the magnetic sensor is pressed
-//        if (lT.isPressed()) {
+        //if (lT.isPressed()) {
 //            turretOffset += mT.getCurrentPosition();
 //        }
 
-      mT.setPower(motorPower);
 
-        // Always manage turret flip automatically
+        double currentTime = System.nanoTime() / 1e9;
+
+        turretVelocityTicksPerSec = (getCurrentPosition() - lastTicks) / (currentTime - lastTime);
+
+        lastTicks = getCurrentPosition();
+        lastTime = currentTime;
+
+        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+
+        pidPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+
+// The multiplier is for extra responsiveness
+        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) * 6.0;
+
+        double ffPower = feedforwardController.calculate(desiredVelocityTicks);
+
+        ffPower = ffPower / voltageSensor.getVoltage();
+        // zeros the turret readings when the magnetic sensor is pressed
+//
+        motorPower = pidPower + ffPower;
+
+        mT.setPower(motorPower);
+
 
     }
 
     // === BASIC CONTROLS ===
     public static double getCurrentPosition() {
-        return  -( mT.getCurrentPosition() - turretOffset);
+        return -(mT.getCurrentPosition() - turretOffset);
     }
 
     public double getCurrentMotorPower() {
@@ -97,7 +119,7 @@ public class Turret extends SubsystemBase {
     }
 
     public static double getTargetPosition() {
-       return targetPositionTicks;
+        return targetPositionTicks;
     }
 
     public void disablePID() {
@@ -129,26 +151,20 @@ public class Turret extends SubsystemBase {
         double robotY = drive.localizer.getPose().position.y;
         double robotHeadingRad = drive.localizer.getPose().heading.toDouble();
 
-        double turretFieldX = robotX + Math.cos(robotHeadingRad) * TURRET_OFFSET_X
-                - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y;
-        double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X
-                + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
+        double turretFieldX = robotX + Math.cos(robotHeadingRad) * TURRET_OFFSET_X - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y;
+        double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
 
         double desiredFieldTurretAngleRAD = Math.atan2(goalY - turretFieldY, goalX - turretFieldX) + Math.PI;
 //The following makes sures that the target angle are always between (0, 2PI)
         double desiredTurretOnBotAngleRAD = (desiredFieldTurretAngleRAD - robotHeadingRad) % (2 * Math.PI);
 //This makes sure that the turret is never pointed at angle past the maxAngle
         //Avoids cable wrapping
-        if (desiredTurretOnBotAngleRAD > Math.toRadians(MAX_TURRET_ANGLE_DEG)){
+        if (desiredTurretOnBotAngleRAD > Math.toRadians(MAX_TURRET_ANGLE_DEG)) {
             desiredTurretOnBotAngleRAD -= 2 * Math.PI;
         }
 
 
-
-
-
         int desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK);
-
 
 
         setTargetPosition(desiredTicks);
@@ -166,14 +182,14 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-        telemetry.addData("TurretError",  (getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
+        telemetry.addData("TurretError", (getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
         telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
         telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
-     //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
+        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
         telemetry.addData("ZeroedTurretTicks", getCurrentPosition());
-telemetry.addData("TurretRawMotorPower", mT.getPower());
+        telemetry.addData("TurretRawMotorPower", mT.getPower());
     }
 
     // === FLIP MANAGEMENT ===
