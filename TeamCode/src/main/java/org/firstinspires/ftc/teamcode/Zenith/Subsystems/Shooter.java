@@ -61,9 +61,14 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-        LDRegression.put(1.,1.);
+        LDRegression.put(131.,.05);
+        LDRegression.put(139.,.05);
+        LDRegression.put(145.,.05);
 
-        SDRegression.put(1.,1.);
+        SDRegression.put(113.,.05);
+        SDRegression.put(101.,.2);
+        SDRegression.put(88.,.55);
+
 
         targeting = true;
     }
