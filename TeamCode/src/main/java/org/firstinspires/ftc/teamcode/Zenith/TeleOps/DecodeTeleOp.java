@@ -512,17 +512,15 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
 
-//        if (flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
+        if (flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
             currentShootMode = shootModes.FLY;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
-//            currentShootMode = shootModes.STORE_MIDDLE;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
-//            currentShootMode = shootModes.STORE_ONE_FOR_LAST;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
-//            currentShootMode = shootModes.STORE_ONE_FOR_SECOND;
-//        } else {
-//            currentShootMode = shootModes.MANUAL;
-//        }
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
+            currentShootMode = shootModes.STORE_MIDDLE;
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
+            currentShootMode = shootModes.STORE_ONE_FOR_LAST;
+        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
+            currentShootMode = shootModes.STORE_ONE_FOR_SECOND;
+        }
 
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
