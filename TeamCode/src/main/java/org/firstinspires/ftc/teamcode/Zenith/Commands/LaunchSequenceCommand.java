@@ -24,7 +24,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new IntakeLaunchCommand(storage, intake),
                                 new IntakeLaunchCommand(storage, intake),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0)
-                              //  moveOne(intake)
+                              //  new MoveInArtifactCommand(intake)
                         )
                 );
             break;
@@ -38,7 +38,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 launcOne(storage),
 
                                 //pull in
-                                moveOne(intake),
+                                new MoveInArtifactCommand(intake),
                                 //store second
                                 //new InstantCommand(storage::closeGate),
                                 new InstantCommand(storage::storeSlot),
@@ -46,7 +46,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 //pull in
                                 //new InstantCommand(storage::openGate),
                                 //new WaitCommand(500),
-                                moveOne(intake),
+                                new MoveInArtifactCommand(intake),
                                 //launch third
                                 launcOne(storage),
 
@@ -68,12 +68,12 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 //store first
                                 store(storage),
                                 //pull in
-                                moveOne(intake),
+                                new MoveInArtifactCommand(intake),
                                 //launch second
                                 launcOne(storage),
 
                                 //pull in
-                                moveOne(intake),
+                                new MoveInArtifactCommand(intake),
                                 //launch third
                                 launcOne(storage),
 
@@ -93,7 +93,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                         //store the first
                         store(storage),
                         //pull in
-                        moveOne(intake),
+                        new MoveInArtifactCommand(intake),
                         closeGate(storage),
                         //launch the second
                         launcOne(storage),
@@ -105,7 +105,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 
                         openGate(storage),
                         //pull in
-                        moveOne(intake),
+                        new MoveInArtifactCommand(intake),
                         //launch the third
                         launcOne(storage),
                         new InstantCommand(()-> GlobalVariables.ballsShot = 0)
@@ -117,8 +117,8 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 addCommands(
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
-                                new WaitCommand(BotPositions.GATE_WAIT),
-                                moveOne(intake),
+                                //new WaitCommand(BotPositions.GATE_WAIT),
+                                new MoveInArtifactCommand(intake),
                                 new InstantCommand(storage::openGate)
                         )
                 );
