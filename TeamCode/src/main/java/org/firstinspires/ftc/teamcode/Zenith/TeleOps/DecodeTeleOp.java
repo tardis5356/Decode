@@ -183,8 +183,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
             bellyPan = new BellyPan(hardwareMap);
 
-
             shooter = new Shooter(hardwareMap);
+            shooter.spinning = true;
 
             breakPad = new BreakPad(hardwareMap);
 
@@ -501,10 +501,10 @@ public class DecodeTeleOp extends CommandOpMode {
         intake.setCurrentArtifacts();
 
         if(gamepad1.dpad_left) {
-            shooter.setVel(1300);
+            shooter.spinning = true;
         }
         else if(gamepad1.dpad_right){
-            shooter.setVel(0);
+            shooter.spinning = false;
         }
 
         if(autoTarget) {
@@ -545,7 +545,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mFRPower = Math.abs(FB);
             mBLPower = Math.abs(FB);
             mBRPower = Math.abs(FB);
-
+            shooter.spinning = false;
         }
 
 

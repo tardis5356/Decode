@@ -35,11 +35,13 @@ public class Shooter extends SubsystemBase {
     public Servo sH;
 
     InterpolatingDoubleTreeMap LDRegression = new InterpolatingDoubleTreeMap();
-    InterpolatingDoubleTreeMap SDRegression = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap MDRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
 
     boolean targeting;
+
+    public boolean spinning;
 
     double distanceFromTarget;
 
@@ -61,13 +63,13 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-        LDRegression.put(131.,.05);
-        LDRegression.put(139.,.05);
-        LDRegression.put(145.,.05);
+        LDRegression.put(133.,.05);
+        LDRegression.put(142.,.05);
+        LDRegression.put(147.,.05);
 
-        SDRegression.put(113.,.05);
-        SDRegression.put(101.,.2);
-        SDRegression.put(88.,.55);
+        MDRegression.put(115.,.05);
+        MDRegression.put(103.,.2);
+        MDRegression.put(90.,.55);
 
 
         targeting = true;
@@ -82,16 +84,28 @@ public class Shooter extends SubsystemBase {
 
 
 
-//        if (targeting){
-//
-//            if( mST.getVelocity() > (BotPositions.LONG_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.LONG_DISTANCE_TPS+50)){
-//                sH.setPosition(LDRegression.get(distanceFromTarget));
-//            }
-//            else if (mST.getVelocity() > (BotPositions.SHORT_DISTANCE_TPS-50) && mST.getVelocity() < (BotPositions.SHORT_DISTANCE_TPS+50)){
-//                sH.setPosition(SDRegression.get(distanceFromTarget));
-//            }
-//
-//        }
+        if (targeting){
+
+            if(GlobalVariables.distanceFromTarget>125){
+                sH.setPosition(LDRegression.get(distanceFromTarget));
+            }
+            else if(GlobalVariables.distanceFromTarget<=125){
+                sH.setPosition(MDRegression.get(distanceFromTarget));
+            }
+
+        }
+
+        if(spinning){
+            if(GlobalVariables.distanceFromTarget>125){
+                setVel(1300);
+            }
+            else if(GlobalVariables.distanceFromTarget<=125){
+                setVel(1125);
+            }
+        }
+        else{
+            setVel(0);
+        }
 
 
     }

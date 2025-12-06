@@ -23,9 +23,12 @@ public class Storage extends SubsystemBase {
 
     @Override
     public void periodic(){
-//if (GlobalVariables.currentArtifacts.charAt(1) != '_'){
-//    closeGate();
-//}
+        if (GlobalVariables.currentArtifacts.charAt(1) != '_'){
+            closeGate();
+        }
+        else{
+            openGate();
+        }
     }
 
     public void openGate(){
