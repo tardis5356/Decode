@@ -44,15 +44,8 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         mI.setPower(intakePower);
         //mP.setPower(pathPower);
-        if (GlobalVariables.currentArtifacts.substring(1) == "PPG" || GlobalVariables.currentArtifacts.substring(1) == "PGP" || GlobalVariables.currentArtifacts.substring(1) == "GPP") {
-            currentArtifactsEstablished = true;
-        } else {
-            currentArtifactsEstablished = false;
-        }
 
-        if (!currentArtifactsEstablished) {
-            setCurrentArtifacts();
-        }
+        setCurrentArtifacts();
 
 
 //        long emptySlots = GlobalVariables.currentArtifacts.chars()
