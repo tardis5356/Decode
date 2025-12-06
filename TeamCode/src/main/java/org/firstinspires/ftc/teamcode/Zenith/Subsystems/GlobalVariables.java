@@ -11,6 +11,8 @@ public class GlobalVariables {
     public static String currentArtifacts = new String("____");
     public static String aColor = new String();
 
+    public static double distanceFromTarget;
+
     public static double currentTPS;
 
 

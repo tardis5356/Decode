@@ -147,7 +147,7 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        double turretDistance = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
+        GlobalVariables.distanceFromTarget = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
 
 
         // Telemetry
@@ -161,7 +161,7 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
         telemetry.addData("TurretError",  (getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
-        telemetry.addData("Turret Distance", turretDistance);
+        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
         telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
