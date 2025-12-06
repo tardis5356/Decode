@@ -28,7 +28,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
         //TODO Test run this
 
-        new InstantCommand(intake::in);
+        new InstantCommand(intake::in).schedule();
 
         runtime.reset();
 //        lift.setTargetPosition(targetPosition);
@@ -58,7 +58,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
         new SequentialCommandGroup(
                 new InstantCommand(intake::stop)
-        );
+        ).schedule();
 
     }
 

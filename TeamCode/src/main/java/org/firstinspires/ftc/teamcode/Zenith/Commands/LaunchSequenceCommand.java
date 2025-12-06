@@ -184,13 +184,13 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 
     }
 
-    public static Command moveOne(Intake i){
-        return new SequentialCommandGroup(
-                new InstantCommand(i::in),
-                new WaitCommand(BotPositions.INTAKE_WAIT),
-                new InstantCommand(i::stop)
-        );
-    }
+//    public static Command moveOne(Intake i){
+//        return new SequentialCommandGroup(
+//                new InstantCommand(i::in),
+//                new WaitCommand(BotPositions.INTAKE_WAIT),
+//                new InstantCommand(i::stop)
+//        );
+//    }
 
     public static Command openGate(Storage s){
         return new SequentialCommandGroup(new InstantCommand(s::openGate),
