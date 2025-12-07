@@ -243,7 +243,7 @@ public class DecodeAuto extends OpMode {
 
 
         String gateTxt = (gateCycleIndex == cycleCount)
-                ? "After ALL cycles"
+                ? "No Gate Cycle"
                 : "After cycle " + (gateCycleIndex + 1);
         telemetry2.addLine("Gamepad 2⬇️");
         telemetry2.addData("Gate Action", gateTxt);
