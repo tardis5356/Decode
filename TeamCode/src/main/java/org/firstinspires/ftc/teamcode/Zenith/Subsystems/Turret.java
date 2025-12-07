@@ -8,7 +8,8 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_TURRET_ANGLE_DEG;
 
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_V;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TOLERANCE_DEG;
+
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -45,6 +46,8 @@ public class Turret extends SubsystemBase {
     public static double turretOffset = 0;
     private boolean PIDDisabled = false;
 
+    public static int desiredTicks;
+
     // === TURRET CONSTANTS ===
 
     private double lastTurretAngle = 0.0; // radians
@@ -63,8 +66,8 @@ public class Turret extends SubsystemBase {
 
 
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-        feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
-//        controller.setTolerance(BotPositions.TURRET_TOLERANCE);
+        // feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+        // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
     }
 
     @Override
@@ -75,21 +78,15 @@ public class Turret extends SubsystemBase {
 //        }
 
 
-
-
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
-        pidPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+        if ((Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE) > TURRET_TOLERANCE_DEG) {
+            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks) + Math.signum(desiredTicks - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
 
-// The multiplier is for extra responsiveness you don't want it too high or it will fight the feedback controller
-        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) * 2.0;
+        } else {
+            motorPower = 0;
+        }
 
-        double ffPower = feedforwardController.calculate(desiredVelocityTicks);
-
-        ffPower = ffPower / voltageSensor.getVoltage();
-        // zeros the turret readings when the magnetic sensor is pressed
-//
-        motorPower = pidPower + ffPower;
 
         mT.setPower(motorPower);
 
@@ -159,7 +156,7 @@ public class Turret extends SubsystemBase {
         }
 
 
-        int desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK);
+        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK);
 
 
         setTargetPosition(desiredTicks);
@@ -177,7 +174,7 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-        telemetry.addData("TurretError", (getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
+        telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
         telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);

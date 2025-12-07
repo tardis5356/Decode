@@ -96,7 +96,7 @@ public class DecodeAuto extends OpMode {
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
-        turret.updateTurretTracking(drive, telemetry);
+       // turret.updateTurretTracking(drive, telemetry);
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();

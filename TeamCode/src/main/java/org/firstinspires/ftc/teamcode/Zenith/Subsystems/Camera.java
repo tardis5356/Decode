@@ -118,7 +118,7 @@ public class Camera extends SubsystemBase {
 
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
-        intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
+        //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
         turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
         aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();

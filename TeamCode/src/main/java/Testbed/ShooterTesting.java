@@ -48,7 +48,7 @@ public class ShooterTesting extends CommandOpMode {
     Intake intake;
     Storage storage;
 
-    double hoodPos = 0.95;
+    double hoodPos = 0.5;
     public static double wheelSpeedOne = 1300, wheelSpeedTwo = 1125, wheelSpeed_Three = 800;
     double wheelSpeed;
 

@@ -108,6 +108,7 @@ public class DecodeTeleOp extends CommandOpMode {
     static int imgHeight = 896;
     static int imgWidth = 1600;
 
+    double hoodPos;
 
     //below we create a new object instance of all the subsystem classes
 
@@ -178,7 +179,8 @@ public class DecodeTeleOp extends CommandOpMode {
             driver2 = new GamepadEx(gamepad2);
 
             turret = new Turret(hardwareMap);
-
+            turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
             storage = new Storage(hardwareMap);
 
             intake = new Intake(hardwareMap);
@@ -262,14 +264,14 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "blue"));
 
         //Intake
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.X) && intake.intakePower == 0)
-                .whenActive(new InstantCommand(intake::in));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
+                .toggleWhenActive(new InstantCommand(intake::in), new InstantCommand(intake::stop));
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y) && intake.intakePower == 0)
-                .whenActive(new InstantCommand(intake::out));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y))
+                .toggleWhenActive(new InstantCommand(intake::out), new InstantCommand(intake::stop));
 
-        new Trigger(() -> (driver1.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) && intake.intakePower != 0)
-                .whenActive(new InstantCommand(intake::stop));
+        //new Trigger(() -> (driver1.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) && intake.intakePower != 0)
+        //        .whenActive(new InstantCommand(intake::stop));
 
         //move all in by 1
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.A))
@@ -443,6 +445,16 @@ public class DecodeTeleOp extends CommandOpMode {
                     .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
 
 
+            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_UP))
+                    .whenInactive(new InstantCommand(()->
+                            hoodPos += .05)
+                    );
+
+            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
+                    .whenInactive(new InstantCommand(()->
+                            hoodPos -= .05)
+                    );
+
             // Triple shot modes
             // TODO: Check that these actually launch all 3 or if it just stops at one
 //            {
@@ -518,6 +530,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
+        shooter.sH.setPosition(hoodPos);
+
         if (gamepad1.dpad_left) {
             shooter.spinning = true;
         } else if (gamepad1.dpad_right) {
@@ -556,10 +570,10 @@ public class DecodeTeleOp extends CommandOpMode {
             mBLPower = FB - LR + Rotation;
             mBRPower = FB + LR - Rotation;
         } else {
-            mFLPower = Math.abs(FB);
-            mFRPower = Math.abs(FB);
-            mBLPower = Math.abs(FB);
-            mBRPower = Math.abs(FB);
+            mFLPower = -Math.abs(FB);
+            mFRPower = -Math.abs(FB);
+            mBLPower = -Math.abs(FB);
+            mBRPower = -Math.abs(FB);
             shooter.spinning = false;
         }
 
@@ -582,6 +596,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
         telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
         telemetry.addData("currentShootmode", currentShootMode);
+        telemetry.addData("hoodPos", shooter.sH.getPosition());
+        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+        telemetry.addData("targetSpeed",shooter.flyWheelSpeed);
+        telemetry.addData("motorPower",shooter.mST.getPower());
 
 
         telemetry.update();

@@ -88,8 +88,8 @@ public class FieldTurretTest extends CommandOpMode {
         driver2 = new GamepadEx(gamepad2);
 
         turret = new Turret(hardwareMap);
-//        turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-//        turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.mT.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
 
         drive = new MecanumDrive(hardwareMap, savedPos);
@@ -174,9 +174,12 @@ public class FieldTurretTest extends CommandOpMode {
         boolean seesTag = !camera.getCurrentAprilTagDetections().isEmpty();
 
 //        if (slowEnough && timeElapsed && seesTag) {
-//            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
-//            drive.localizer.setPose(relocalizedPose);
-//            relocalizeTimer.reset();
+        if (seesTag && timeElapsed){
+            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
+            drive.localizer.setPose(relocalizedPose);
+            relocalizeTimer.reset();
+        }
+
 //        }
 
 

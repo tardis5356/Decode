@@ -16,7 +16,7 @@ public class BotPositions {
     //public static int SLOT1_FIRE = 360, SLOT2_FIRE = 120, SLOT3_FIRE = 240, SLOT1_LOAD = 180, SLOT2_LOAD = 300, SLOT3_LOAD = 60;
     //public static double TURRET_P = 0.000000, TURRET_I = 0.000, TURRET_D = 0.00000;
     public static double TURRET_TICKS_PER_DEGREE = 104.55 * (187.0/180.0) , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
-    public static double TURRET_P = 0.0/*0.0004*/ , TURRET_I = 0.000, TURRET_D =0.0/* 0.000035*/, TURRET_S = 0.0, TURRET_V = 0.0;
+    public static double TURRET_P = 0.0001, TURRET_I = 0.000, TURRET_D =0.000012, TURRET_S = 1.5, TURRET_TOLERANCE_DEG = 1;
     public static double MAX_TURRET_ANGLE_DEG = 200; // Flip threshold
 
     public static double MID_RANGE_AUTO_HOOD_POS, MID_RANGE_AUTO_FLYWHEEL_TPS;
@@ -24,7 +24,7 @@ public class BotPositions {
     //public static double TURRET_TICKS_PER_DEGREE = (8192/360)*(373.6/360)*(358.91083/360) /*1.491851852*/  , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
 
    //PTO Relevant stuff
-    public static double PTO_ENGAGED = 0.3, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0.27, BELLYPAN_RIGHT_LATCHED = 0.5, BELLYPAN_LEFT_UNLATCHED = 0., BELLYPAN_RIGHT_UNLATCHED = 0.2;
+    public static double PTO_ENGAGED = 0.3, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0.27, BELLYPAN_RIGHT_LATCHED = 0.6, BELLYPAN_LEFT_UNLATCHED = 0., BELLYPAN_RIGHT_UNLATCHED = 0.2;
 
     public static double BREAKPAD_ACTIVE = 0, BREAKPAD_INACTIVE = 1;
 

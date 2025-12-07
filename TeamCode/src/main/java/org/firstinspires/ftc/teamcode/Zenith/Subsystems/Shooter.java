@@ -86,9 +86,9 @@ public class Shooter extends SubsystemBase {
             if (targeting) {
 
                 if (GlobalVariables.distanceFromTarget > 125) {
-                    sH.setPosition(LDRegression.get(distanceFromTarget));
+                    //sH.setPosition(LDRegression.get(distanceFromTarget));
                 } else if (GlobalVariables.distanceFromTarget <= 125) {
-                    sH.setPosition(MDRegression.get(distanceFromTarget));
+                    //sH.setPosition(MDRegression.get(distanceFromTarget));
                 }
 
             }
@@ -103,7 +103,7 @@ public class Shooter extends SubsystemBase {
         if (!inAuto) {
             if (spinning) {
                 if (GlobalVariables.distanceFromTarget > 125) {
-                    setVel(1300);
+                    setVel(1350);
                 } else if (GlobalVariables.distanceFromTarget <= 125) {
                     setVel(1125);
                 }
