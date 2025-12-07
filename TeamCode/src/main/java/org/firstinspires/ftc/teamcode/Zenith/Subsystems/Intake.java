@@ -12,7 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Intake extends SubsystemBase {
 
-    DcMotorEx mI;
+    public DcMotorEx mI;
 
     public ColorRangeSensor cSI;
     public ColorRangeSensor cSM;
@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
 
     public boolean currentArtifactsEstablished;
 
-    double intakePower = 0;
+    public double intakePower = 0;
 
 
     public Intake(HardwareMap hardwareMap) {
