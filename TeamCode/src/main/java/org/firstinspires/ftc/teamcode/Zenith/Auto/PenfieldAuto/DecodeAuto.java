@@ -336,10 +336,7 @@ intake.setCurrentArtifacts();
         }
 
         CommandScheduler.getInstance().run();
-        if (runtime.seconds() > 29.5 && auto != null) {
-            CommandScheduler.getInstance().cancel(auto);
-            auto = null;
-        }
+
 
         turret.updateTurretTracking(drive, telemetry2);
 
