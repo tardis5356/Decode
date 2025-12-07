@@ -75,19 +75,14 @@ public class Turret extends SubsystemBase {
 //        }
 
 
-        double currentTime = System.nanoTime() / 1e9;
 
-        turretVelocityTicksPerSec = (getCurrentPosition() - lastTicks) / (currentTime - lastTime);
-
-        lastTicks = getCurrentPosition();
-        lastTime = currentTime;
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
         pidPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
 
-// The multiplier is for extra responsiveness
-        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) * 6.0;
+// The multiplier is for extra responsiveness you don't want it too high or it will fight the feedback controller
+        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) * 2.0;
 
         double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
