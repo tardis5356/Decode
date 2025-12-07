@@ -27,6 +27,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BreakPad;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
@@ -129,7 +130,7 @@ public class DecodeTeleOp extends CommandOpMode {
     private BreakPad breakPad;
 
     //Cameras
-    //private Camera camera;
+    private Camera camera;
 
     //Roadrunner
     private RRSubsystem rrSubsystem;
@@ -188,7 +189,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             breakPad = new BreakPad(hardwareMap);
 
-            //camera = new Camera(hardwareMap);
+            camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 

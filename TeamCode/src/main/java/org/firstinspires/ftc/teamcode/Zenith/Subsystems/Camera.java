@@ -125,12 +125,12 @@ public class Camera extends SubsystemBase {
 
 aprilTagProcessor.setDecimation(5);
         // Start with the turret camera
-        switchableCamera = ClassFactory.getInstance()
-                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;
+//        switchableCamera = ClassFactory.getInstance()
+//                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;
 
         visionPortal = new VisionPortal.Builder()
                 //.setCamera(switchableCamera)
-                .setCamera(switchableCamera)
+                .setCamera(turretWebcam)
                 .addProcessor(aprilTagProcessor)
                 .addProcessor(purpleLocator)
                 .addProcessor(greenLocator)

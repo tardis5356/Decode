@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
@@ -65,6 +66,8 @@ public class DecodeAuto extends OpMode {
     private Intake intake;
     private BellyPan bellyPan;
 
+    private Camera camera;
+
     private Shooter shooter;
     private String aColor = null;
 
@@ -82,7 +85,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-        // camera = new Camera(hardwareMap);
+         camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -151,9 +154,9 @@ public class DecodeAuto extends OpMode {
 
         // --- Handle user input for cycles ---
         handleInput();
-//        if (aColor != null){
-//            camera.setObeliskMotif();
-//        }
+        if (aColor != null){
+            camera.setObeliskMotif();
+        }
 
 
         // --- Display telemetry table and alliance/start ---
