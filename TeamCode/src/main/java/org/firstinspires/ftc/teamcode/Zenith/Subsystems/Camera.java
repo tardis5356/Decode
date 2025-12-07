@@ -123,7 +123,7 @@ public class Camera extends SubsystemBase {
 
         aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
 
-aprilTagProcessor.setDecimation(5);
+aprilTagProcessor.setDecimation(4);
         // Start with the turret camera
 //        switchableCamera = ClassFactory.getInstance()
 //                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;

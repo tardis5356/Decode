@@ -78,6 +78,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void init() {
+        GlobalVariables.inAuto = true;
         dashboard = FtcDashboard.getInstance();
         telemetry2 = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 

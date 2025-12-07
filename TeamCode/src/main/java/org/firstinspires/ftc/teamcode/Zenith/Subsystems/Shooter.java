@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -27,7 +29,6 @@ public class Shooter extends SubsystemBase {
     private final VoltageSensor voltageSensor;
 
 
-
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
 
@@ -45,15 +46,15 @@ public class Shooter extends SubsystemBase {
 
     double distanceFromTarget;
 
-    public Shooter(HardwareMap hardwareMap){
+    public Shooter(HardwareMap hardwareMap) {
         //map subsystems
-        mST = hardwareMap.get(DcMotorEx.class,"mST");
+        mST = hardwareMap.get(DcMotorEx.class, "mST");
         mSB = hardwareMap.get(DcMotorEx.class, "mSB");
 
         mST.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         mSB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        sH = hardwareMap.get(Servo.class,"sH");
+        sH = hardwareMap.get(Servo.class, "sH");
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -63,72 +64,85 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-        LDRegression.put(133.,.05);
-        LDRegression.put(142.,.05);
-        LDRegression.put(147.,.05);
+        LDRegression.put(133., .05);
+        LDRegression.put(142., .05);
+        LDRegression.put(147., .05);
 
-        MDRegression.put(115.,.05);
-        MDRegression.put(103.,.2);
-        MDRegression.put(90.,.55);
+        MDRegression.put(115., .05);
+        MDRegression.put(103., .2);
+        MDRegression.put(90., .55);
 
 
         targeting = true;
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
 
         mSB.setPower(calculateFlyWheelPower(flyWheelSpeed));
         mST.setPower(calculateFlyWheelPower(flyWheelSpeed));
 
+        if (!inAuto) {
+            if (targeting) {
 
+                if (GlobalVariables.distanceFromTarget > 125) {
+                    sH.setPosition(LDRegression.get(distanceFromTarget));
+                } else if (GlobalVariables.distanceFromTarget <= 125) {
+                    sH.setPosition(MDRegression.get(distanceFromTarget));
+                }
 
-
-        if (targeting){
-
-            if(GlobalVariables.distanceFromTarget>125){
+            }
+        } else {
+            if (GlobalVariables.distanceFromTarget > 125) {
                 sH.setPosition(LDRegression.get(distanceFromTarget));
+            } else if (GlobalVariables.distanceFromTarget <= 100) {
+                sH.setPosition(.05);
             }
-            else if(GlobalVariables.distanceFromTarget<=125){
-                sH.setPosition(MDRegression.get(distanceFromTarget));
-            }
-
         }
 
-        if(spinning){
-            if(GlobalVariables.distanceFromTarget>125){
+        if (!inAuto) {
+            if (spinning) {
+                if (GlobalVariables.distanceFromTarget > 125) {
+                    setVel(1300);
+                } else if (GlobalVariables.distanceFromTarget <= 125) {
+                    setVel(1125);
+                }
+            } else {
+                setVel(0);
+            }
+        } else {
+            if (GlobalVariables.distanceFromTarget > 125) {
                 setVel(1300);
+            } else if (GlobalVariables.distanceFromTarget <= 100) {
+                setVel(1000);
             }
-            else if(GlobalVariables.distanceFromTarget<=125){
-                setVel(1125);
-            }
-        }
-        else{
-            setVel(0);
         }
 
 
     }
 
 
-    public void setVel(double tps){
+    public void setVel(double tps) {
         flyWheelSpeed = tps;
     }
 
-    public double calculateFlyWheelPower(double tps){
+    public double calculateFlyWheelPower(double tps) {
         return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) / voltageSensor.getVoltage();
     }
 
-    public double getFlyWheelSpeed(){
+    public double getFlyWheelSpeed() {
         return mST.getVelocity();
     }
 
     //place this in the run loop in teleop with the input being some math calc finding the distance between the odo listed coordinate and the coordinate of the target
-    public void setTargetDistance(double d){
+    public void setTargetDistance(double d) {
         distanceFromTarget = d;
     }
 
-
-
+    public void setMidRangeAutoShooterPos() {
+        targeting = false;
+        sH.setPosition(BotPositions.MID_RANGE_AUTO_HOOD_POS);
+        setVel(BotPositions.MID_RANGE_AUTO_FLYWHEEL_TPS);
+    }
 
 }

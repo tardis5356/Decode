@@ -8,6 +8,8 @@ public class GlobalVariables {
 
     public static int ballsShot;
 
+    public static boolean inAuto;
+
     public static String currentArtifacts = new String("____");
     public static String aColor = new String();
 

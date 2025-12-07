@@ -19,6 +19,8 @@ public class BotPositions {
     public static double TURRET_P = 0.0/*0.0004*/ , TURRET_I = 0.000, TURRET_D =0.0/* 0.000035*/, TURRET_S = 0.0, TURRET_V = 0.0;
     public static double MAX_TURRET_ANGLE_DEG = 200; // Flip threshold
 
+    public static double MID_RANGE_AUTO_HOOD_POS, MID_RANGE_AUTO_FLYWHEEL_TPS;
+
     //public static double TURRET_TICKS_PER_DEGREE = (8192/360)*(373.6/360)*(358.91083/360) /*1.491851852*/  , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
 
    //PTO Relevant stuff
