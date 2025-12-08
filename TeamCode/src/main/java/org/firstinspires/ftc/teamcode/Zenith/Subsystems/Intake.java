@@ -77,10 +77,9 @@ public class Intake extends SubsystemBase {
     }
 
 
-
     public String greenOrPurple(ColorRangeSensor cs) {
         //Normalized colors return values from 1 to 0
-        if (cs.getDistance(DistanceUnit.CM) <7){
+        if (cs.getDistance(DistanceUnit.CM) < 7) {
             if (cs == cSSt && slotFly) {
                 return "_";
             }

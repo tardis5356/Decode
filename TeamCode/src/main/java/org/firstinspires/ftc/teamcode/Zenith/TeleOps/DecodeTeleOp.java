@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Zenith.TeleOps;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.savedPos;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -42,119 +43,75 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 @TeleOp(name = "DecodeTeleop", group = "AGen1")
 
 public class DecodeTeleOp extends CommandOpMode {
-    //gamepads
-    //GamepadEx is an extended object version of gamepads that has more organized input checks that we use in triggers.
-    private GamepadEx driver1, driver2;
+    public static boolean flyMode = true;
     //private DcMotorEx liftEncoder;
 
     //This is just a boolean used for telemetry to see if we took in the incorrect sample color
 
     //TODO:
-
+    public static shootModes currentShootMode;
+    //multipliers applied to the sum of the above variables to evenly change the speed of the drivetrain
+    static double FAST_SPEED_MULTIPLIER = 1;
+    static double SLOW_SPEED_MULTIPLIER = 0.4;
+    //resolution of camera view
+    static int imgHeight = 896;
+    static int imgWidth = 1600;
+    public double turretBearing;
     //
     int desiredTagID;
-
-
-    public double turretBearing;
-
-
-    PDController controller;
-
-
-    boolean targetFound = false;
-    public static boolean flyMode = true;
-
-    public static enum shootModes {
-        FLY,
-        STORE_MIDDLE,
-        STORE_ONE_FOR_LAST,
-        STORE_ONE_FOR_SECOND,
-        MANUAL
-    }
-
-    public static shootModes currentShootMode;
     //String shootMode;
-
+    PDController controller;
+    boolean targetFound = false;
     boolean autoTarget = true;
 
-    boolean firing;
-
-    AprilTagDetection detectedTag;
-
     //private IntakeInCommand intakeInCommand;
-
-    //drivetrain motors and variables
-    //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
-    //For example, stop and reset encoder.
-    private DcMotorEx mFL, mFR, mBL, mBR;
-
+    boolean firing;
+    AprilTagDetection detectedTag;
     double mFLPower;
     double mFRPower;
     double mBLPower;
     double mBRPower;
-
     //Forward and back power, Left and right power, rotation power.
     //All are then added and subtracted in different ways for each drive motor
     double FB, LR, Rotation;
-
-    //multipliers applied to the sum of the above variables to evenly change the speed of the drivetrain
-    static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.4;
-
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
     double CURRENT_SPEED_MULTIPLIER;
-
-    //resolution of camera view
-    static int imgHeight = 896;
-    static int imgWidth = 1600;
-
     double hoodPos;
-
-    //below we create a new object instance of all the subsystem classes
-
-    //intake
-    private Intake intake;
-
-    //lift
-    private BellyPan bellyPan;
-
-    //turret
-    private Turret turret;
-
-    //storage
-    private Storage storage;
-
-    //shooter
-    private Shooter shooter;
-
-    //breakpad
-    private BreakPad breakPad;
-
-    //Cameras
-    private Camera camera;
-
-    //Roadrunner
-    private RRSubsystem rrSubsystem;
-
-    private RecoveryBuilder recoveryBuilder;
-
-    private MecanumDrive drive;
-
     double LeftTrigger;
     double RightTrigger;
-
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+    //below we create a new object instance of all the subsystem classes
     int visionOutputPosition = 1;
-
-
     LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, pullInAgain, launch, store, unStore, scram;
-
-
     FtcDashboard dashboard = FtcDashboard.getInstance();
-
+    //gamepads
+    //GamepadEx is an extended object version of gamepads that has more organized input checks that we use in triggers.
+    private GamepadEx driver1, driver2;
+    //drivetrain motors and variables
+    //DcMotorEx is an expanded version of the DcMotor variable that gives us more methods.
+    //For example, stop and reset encoder.
+    private DcMotorEx mFL, mFR, mBL, mBR;
+    //intake
+    private Intake intake;
+    //lift
+    private BellyPan bellyPan;
+    //turret
+    private Turret turret;
+    //storage
+    private Storage storage;
+    //shooter
+    private Shooter shooter;
+    //breakpad
+    private BreakPad breakPad;
+    //Cameras
+    private Camera camera;
+    //Roadrunner
+    private RRSubsystem rrSubsystem;
+    private RecoveryBuilder recoveryBuilder;
+    private MecanumDrive drive;
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
 
     @Override
     //stuff that is ran when you click init at the start of teleop.
@@ -258,10 +215,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //red vs blue alliance
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
-                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "red"));
+                .whenActive(new InstantCommand(() -> aColor = "red"));
 
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
-                .whenActive(new InstantCommand(() -> GlobalVariables.aColor = "blue"));
+                .whenActive(new InstantCommand(() -> aColor = "blue"));
 
         //Intake
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
@@ -445,13 +402,22 @@ public class DecodeTeleOp extends CommandOpMode {
                     .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
 
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenInactive(new InstantCommand(()->
+            //Relocalize in Alliance Corner
+            //In red LZ Corner
+//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON) && aColor == "red")
+//                    .whenActive(() -> drive.localizer.setPose(new Pose2d(64, -63.25, 0)));
+//          //In blue LZ Corner
+//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON) && aColor == "blue")
+//                    .whenActive(() -> drive.localizer.setPose(new Pose2d(64, 63.25, 0)));
+
+
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
+                    .whenInactive(new InstantCommand(() ->
                             hoodPos += .05)
                     );
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                    .whenInactive(new InstantCommand(()->
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
+                    .whenInactive(new InstantCommand(() ->
                             hoodPos -= .05)
                     );
 
@@ -575,6 +541,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mBLPower = -Math.abs(FB);
             mBRPower = -Math.abs(FB);
             shooter.spinning = false;
+            autoTarget = false;
         }
 
 
@@ -598,8 +565,8 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("currentShootmode", currentShootMode);
         telemetry.addData("hoodPos", shooter.sH.getPosition());
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-        telemetry.addData("targetSpeed",shooter.flyWheelSpeed);
-        telemetry.addData("motorPower",shooter.mST.getPower());
+        telemetry.addData("targetSpeed", shooter.flyWheelSpeed);
+        telemetry.addData("motorPower", shooter.mST.getPower());
 
 
         telemetry.update();
@@ -627,6 +594,14 @@ public class DecodeTeleOp extends CommandOpMode {
         } else {
             return 0;
         }
+    }
+
+    public static enum shootModes {
+        FLY,
+        STORE_MIDDLE,
+        STORE_ONE_FOR_LAST,
+        STORE_ONE_FOR_SECOND,
+        MANUAL
     }
 
 

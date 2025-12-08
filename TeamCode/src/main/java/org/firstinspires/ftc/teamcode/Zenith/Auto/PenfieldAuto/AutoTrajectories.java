@@ -41,7 +41,7 @@ public class AutoTrajectories {
     public static double gateReleaseEndTangentDeg = 270; // final heading tangent at gate
 
 
-// [goalStart, audienceStart]
+    // [goalStart, audienceStart]
     public static double[] startPosTangentDeg = {245, 180};
 
     // [goalShoot, audienceShoot]
@@ -74,8 +74,8 @@ public class AutoTrajectories {
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
         gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
-        presetLZIntakePos = allianceCoordinate(new Pose2d(58,57,90));
-        randomLZIntakePos = allianceCoordinate(new Pose2d(58,57,45));
+        presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
+        randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
 
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, 180));
@@ -112,9 +112,7 @@ public class AutoTrajectories {
             double intakeStartDeg;
             if (i == 0) {
                 // first cycle: based on start position
-                intakeStartDeg = currentStart.equals(goalStartPos)
-                        ? startPosTangentDeg[0]
-                        : startPosTangentDeg[1];
+                intakeStartDeg = currentStart.equals(goalStartPos) ? startPosTangentDeg[0] : startPosTangentDeg[1];
             } else if (i - 1 == gateCycleIndex) {
                 intakeStartDeg = allianceTangent(270);
                 currentStart = gateExitWaypointPos;
@@ -129,45 +127,29 @@ public class AutoTrajectories {
             double intakeStartRad = allianceTangent(intakeStartDeg);
 
             // === START → INTAKE POS ===
-            startToIntake[i] = drive.actionBuilder(currentStart)
-                    .setTangent(intakeStartRad)
-                    .splineToLinearHeading(intakePose, intakeEndRad)
-                    .build();
+            startToIntake[i] = drive.actionBuilder(currentStart).setTangent(intakeStartRad).splineToLinearHeading(intakePose, intakeEndRad).build();
 
             // === INTAKE POS → SHOOT ===
             double shootStartRad = allianceTangent(shootStartTangentDeg[shootChoice]);
             double shootEndRad = allianceTangent(shootEndTangentDeg[shootChoice]);
 
-            intakeToShoot[i] = drive.actionBuilder(intakePose)
-                    .setTangent(shootStartRad)
-                    .splineToLinearHeading(shootPose, shootEndRad)
-                    .build();
+            intakeToShoot[i] = drive.actionBuilder(intakePose).setTangent(shootStartRad).splineToLinearHeading(shootPose, shootEndRad).build();
 
             // Next cycle starts from the shoot pose
             currentStart = shootPose;
 
 
         }
-        int gateShootChoice = (gateCycleIndex < cycles)
-                ? choices[gateCycleIndex][0]
-                : choices[cycles - 1][0];   // last cycle shoot option
+        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
 
         double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
         double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
 
-        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]])
-                .setTangent(gateStartRad)
-                .splineToLinearHeading(gateReleasePos, gateEndRad)
-                .build();
+        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
 
-        gateExit = drive.actionBuilder(gateReleasePos)
-                .setTangent(allianceTangent(270))
-                .splineToLinearHeading(gateExitWaypointPos, allianceTangent(90))
-                .build();
+        gateExit = drive.actionBuilder(gateReleasePos).setTangent(allianceTangent(270)).splineToLinearHeading(gateExitWaypointPos, allianceTangent(90)).build();
 
-        park = drive.actionBuilder(drive.localizer.getPose())
-                .splineToLinearHeading(parkPos, allianceTangent(0))
-                .build();
+        park = drive.actionBuilder(drive.localizer.getPose()).splineToLinearHeading(parkPos, allianceTangent(0)).build();
     }
 
 }

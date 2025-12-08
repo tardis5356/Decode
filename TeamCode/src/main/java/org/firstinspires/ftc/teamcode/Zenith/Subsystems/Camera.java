@@ -43,38 +43,22 @@ import java.util.stream.Collectors;
 
 public class Camera extends SubsystemBase {
 
-    PIDController yawController, forwardController;
-
     private static final int IMG_HEIGHT = 480; //600
     private static final int IMG_WIDTH = 640;//800
-
-
     public static double yawPower, forwardPower;
-
-    List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    public double fx = 545.605 * 56.5 / 58;
-    ;//532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fy = 545.605 * 56.5 / 58;
-    ;//532.034 * 42.5/52.5;
-    public double cx = 320, cy = 262.311;
-
     public static boolean manualExposure;
-
-
-    // === CAMERA ENUM ===
-    public enum ActiveCamera {
-        INTAKE_GREEN,
-        INTAKE_PURPLE,
-        TURRET
-    }
-
     // === HARDWARE AND PROCESSORS ===
     public static VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
-    private AprilTagDetection desiredTag = null;
-    private WebcamName intakeWebcam, turretWebcam;
-    private CameraName switchableCamera;
-
+    private final AprilTagDetection desiredTag = null;
+    private final WebcamName turretWebcam;
+    //532.034 * 42.5/52.5; // actual/roadrunner distance
+    public double fx = 545.605 * 56.5 / 58;
+    //532.034 * 42.5/52.5;
+    public double fy = 545.605 * 56.5 / 58;
+    public double cx = 320, cy = 262.311;
+    PIDController yawController, forwardController;
+    List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
     ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
             .setTargetColorRange(ColorRange.ARTIFACT_GREEN
 //                    new ColorRange(
@@ -93,7 +77,6 @@ public class Camera extends SubsystemBase {
             .setErodeSize(50)        // Shrink blobs so blobs become separated and you can see individual balls
             .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
             .build();
-
     ColorBlobLocatorProcessor purpleLocator = new ColorBlobLocatorProcessor.Builder()
             .setTargetColorRange(ColorRange.ARTIFACT_PURPLE
 //                    new ColorRange(
@@ -113,10 +96,9 @@ public class Camera extends SubsystemBase {
             .setDilateSize(15)       // Expand blobs to fill any divots on the edges
             .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
             .build();
-
+    private WebcamName intakeWebcam;
+    private CameraName switchableCamera;
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
-
-    // === CONSTANTS (adjust for your bot) ===
 
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
@@ -150,63 +132,7 @@ public class Camera extends SubsystemBase {
         visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
-    public void periodic() {
-//        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
-//
-//            if(visionPortal.getProcessorEnabled(greenLocator)){
-//                blobs = greenLocator.getBlobs();
-//            }
-//            else if (visionPortal.getProcessorEnabled(purpleLocator)){
-//                blobs = purpleLocator.getBlobs();
-//            }
-//
-//
-//            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
-//            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
-//        }
-//        else{
-//            yawPower = 0;
-//            forwardPower = 0;
-//        }
-        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
-            setManualExposure(3, 90);//2,80
-            manualExposure = true;
-        }
-
-
-    }
-
-    // === CAMERA SWITCHING ===
-    public void switchCamera(ActiveCamera camera) {
-        currentCamera = camera;
-
-        switch (camera) {
-            case INTAKE_GREEN:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, true);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
-
-            case INTAKE_PURPLE:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, true);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
-
-            case TURRET:
-                visionPortal.setActiveCamera(turretWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, true);
-                break;
-        }
-    }
-
-    public ActiveCamera getCurrentCamera() {
-        return currentCamera;
-    }
+    // === CONSTANTS (adjust for your bot) ===
 
     // === RELOCALIZATION ===
     public static Pose2d getRelocalizedPose(MecanumDrive drive, Telemetry telemetry) {
@@ -280,6 +206,63 @@ public class Camera extends SubsystemBase {
         return new Pose2d(finalX / aTagAmount, finalY / aTagAmount, drive.localizer.getPose().heading.toDouble());
     }
 
+    public void periodic() {
+//        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
+//
+//            if(visionPortal.getProcessorEnabled(greenLocator)){
+//                blobs = greenLocator.getBlobs();
+//            }
+//            else if (visionPortal.getProcessorEnabled(purpleLocator)){
+//                blobs = purpleLocator.getBlobs();
+//            }
+//
+//
+//            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
+//            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
+//        }
+//        else{
+//            yawPower = 0;
+//            forwardPower = 0;
+//        }
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
+            setManualExposure(3, 90);//2,80
+            manualExposure = true;
+        }
+
+
+    }
+
+    // === CAMERA SWITCHING ===
+    public void switchCamera(ActiveCamera camera) {
+        currentCamera = camera;
+
+        switch (camera) {
+            case INTAKE_GREEN:
+                visionPortal.setActiveCamera(intakeWebcam);
+                visionPortal.setProcessorEnabled(greenLocator, true);
+                visionPortal.setProcessorEnabled(purpleLocator, false);
+                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
+                break;
+
+            case INTAKE_PURPLE:
+                visionPortal.setActiveCamera(intakeWebcam);
+                visionPortal.setProcessorEnabled(greenLocator, false);
+                visionPortal.setProcessorEnabled(purpleLocator, true);
+                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
+                break;
+
+            case TURRET:
+                visionPortal.setActiveCamera(turretWebcam);
+                visionPortal.setProcessorEnabled(greenLocator, false);
+                visionPortal.setProcessorEnabled(purpleLocator, false);
+                visionPortal.setProcessorEnabled(aprilTagProcessor, true);
+                break;
+        }
+    }
+
+    public ActiveCamera getCurrentCamera() {
+        return currentCamera;
+    }
 
     public List<AprilTagDetection> getCurrentAprilTagDetections() {
         return aprilTagProcessor.getDetections();
@@ -355,7 +338,7 @@ public class Camera extends SubsystemBase {
                 exposureControl.setMode(ExposureControl.Mode.Manual);
 
             }
-            exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure(exposureMS, TimeUnit.MILLISECONDS);
 
 
             // Set Gain.
@@ -365,12 +348,6 @@ public class Camera extends SubsystemBase {
 
         }
     }
-
-    /*
-        Read this camera's minimum and maximum Exposure and Gain settings.
-        Can only be called AFTER calling initAprilTag();
-     */
-
 
     public double getBlobCenterX() {
         double cx;
@@ -387,6 +364,11 @@ public class Camera extends SubsystemBase {
         return cx;
     }
 
+    /*
+        Read this camera's minimum and maximum Exposure and Gain settings.
+        Can only be called AFTER calling initAprilTag();
+     */
+
     public double getBlobCenterY() {
         double cy;
 
@@ -400,6 +382,13 @@ public class Camera extends SubsystemBase {
         }
 
         return cy;
+    }
+
+    // === CAMERA ENUM ===
+    public enum ActiveCamera {
+        INTAKE_GREEN,
+        INTAKE_PURPLE,
+        TURRET
     }
 
 }

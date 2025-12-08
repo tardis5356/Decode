@@ -48,7 +48,7 @@ public class DecodeAuto extends OpMode {
     // --- Cycle selection ---
     public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static final int MAX_CYCLES = 5;
-    private int cycleCount = 3;   //5 // default 5 cycles
+    private int cycleCount = 2;   //5 // default 2 cycles
     private int currentCycle = 0;  // row selector
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
 
@@ -86,7 +86,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-         camera = new Camera(hardwareMap);
+        camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -96,7 +96,7 @@ public class DecodeAuto extends OpMode {
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
-       // turret.updateTurretTracking(drive, telemetry);
+
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
@@ -123,11 +123,11 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 5;
+                cycleCount = 2;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
-                        {0, 0}, //shoot: goal, intake: goal
+                        {1, 1}, //shoot: goal, intake: goal
                         //gate
                         {0, 1}, //shoot: goal, intake: mid
                         {1, 4}, //shoot: audience, intake: LZ random
@@ -140,10 +140,10 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 5;
+                cycleCount = 2;
                 choices = new int[][]{
-                        {1, 3}, //shoot: audience, intake: LZ preset
-                        {0, 0}, //shoot: goal, intake: goal
+                        {1, 2}, //shoot: audience, intake: audience
+                        {1, 1}, //shoot: audience, intake: mid
                         //gate
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 2}, //shoot: audience, intake: audience
@@ -155,7 +155,9 @@ public class DecodeAuto extends OpMode {
 
         // --- Handle user input for cycles ---
         handleInput();
-        if (aColor != null){
+
+
+        if (aColor != null) {
             camera.setObeliskMotif();
         }
 
@@ -237,8 +239,10 @@ public class DecodeAuto extends OpMode {
         if (gamepad1.left_stick_button && currentColumn == 1)
             choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
+
     private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
-    private static final String ROW_FORMAT    = "%-5d | %-12s | %-12s";
+    private static final String ROW_FORMAT = "%-5d | %-12s | %-12s";
+
     private void printTelemetryTable() {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         if (motif != null) {
@@ -264,7 +268,7 @@ public class DecodeAuto extends OpMode {
         String allianceDisplay = (aColor != null) ? aColor : "None";
         telemetry2.addLine("=== Alliance Selection ===");
 
-        if (aColor == null){
+        if (aColor == null) {
             telemetry2.addLine("️✖️ - Blue, ⭕ - Red");
         } else {
             telemetry2.addLine("Up - Goal Start, Down - Audience Start");
@@ -325,7 +329,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void loop() {
-intake.setCurrentArtifacts();
+        intake.setCurrentArtifacts();
 
         if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
             DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
