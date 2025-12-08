@@ -52,8 +52,10 @@ public class Camera extends SubsystemBase {
     public static double yawPower, forwardPower;
 
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    public double fx =  545.605 * 56.5/58;;//532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fy =  545.605 * 56.5/58;;//532.034 * 42.5/52.5;
+    public double fx = 545.605 * 56.5 / 58;
+    ;//532.034 * 42.5/52.5; // actual/roadrunner distance
+    public double fy = 545.605 * 56.5 / 58;
+    ;//532.034 * 42.5/52.5;
     public double cx = 320, cy = 262.311;
 
     public static boolean manualExposure;
@@ -121,9 +123,11 @@ public class Camera extends SubsystemBase {
         //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
         turretWebcam = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        aprilTagProcessor = new AprilTagProcessor.Builder().setLensIntrinsics(fx, fy, cx, cy).build();
+        aprilTagProcessor = new AprilTagProcessor.Builder()
+                .setLensIntrinsics(fx, fy, cx, cy)
+                .build();
 
-aprilTagProcessor.setDecimation(4);
+        aprilTagProcessor.setDecimation(4);
         // Start with the turret camera
 //        switchableCamera = ClassFactory.getInstance()
 //                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;
@@ -146,7 +150,7 @@ aprilTagProcessor.setDecimation(4);
         visionPortal.setProcessorEnabled(greenLocator, false);
     }
 
-    public void periodic(){
+    public void periodic() {
 //        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
 //
 //            if(visionPortal.getProcessorEnabled(greenLocator)){
@@ -164,7 +168,7 @@ aprilTagProcessor.setDecimation(4);
 //            yawPower = 0;
 //            forwardPower = 0;
 //        }
-        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure){
+        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
             setManualExposure(3, 90);//2,80
             manualExposure = true;
         }
@@ -180,21 +184,21 @@ aprilTagProcessor.setDecimation(4);
             case INTAKE_GREEN:
                 visionPortal.setActiveCamera(intakeWebcam);
                 visionPortal.setProcessorEnabled(greenLocator, true);
-                visionPortal.setProcessorEnabled(purpleLocator,false);
+                visionPortal.setProcessorEnabled(purpleLocator, false);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, false);
                 break;
 
             case INTAKE_PURPLE:
                 visionPortal.setActiveCamera(intakeWebcam);
                 visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator,true);
+                visionPortal.setProcessorEnabled(purpleLocator, true);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, false);
                 break;
 
             case TURRET:
                 visionPortal.setActiveCamera(turretWebcam);
                 visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator,false);
+                visionPortal.setProcessorEnabled(purpleLocator, false);
                 visionPortal.setProcessorEnabled(aprilTagProcessor, true);
                 break;
         }
@@ -260,8 +264,6 @@ aprilTagProcessor.setDecimation(4);
                     + yTagToBot * Math.cos(headingBotOnFieldRad));
 
 
-
-
             xBotOnField += tagPose.position.x;
             yBotOnField += tagPose.position.y;
 
@@ -279,9 +281,7 @@ aprilTagProcessor.setDecimation(4);
     }
 
 
-
-
-    public List<AprilTagDetection> getCurrentAprilTagDetections(){
+    public List<AprilTagDetection> getCurrentAprilTagDetections() {
         return aprilTagProcessor.getDetections();
     }
 
@@ -330,7 +330,7 @@ aprilTagProcessor.setDecimation(4);
         // Assign motif based on AprilTag ID
         switch (motifAprilTag.id) {
             case 21:
-                motif= "GPP";
+                motif = "GPP";
                 break;
             case 22:
                 motif = "PGP";
@@ -343,9 +343,9 @@ aprilTagProcessor.setDecimation(4);
                 break;
         }
     }
-//2, 94
-    private void setManualExposure(int exposureMS, int gain) {
 
+    //2, 94
+    private void setManualExposure(int exposureMS, int gain) {
 
 
         {
@@ -355,7 +355,7 @@ aprilTagProcessor.setDecimation(4);
                 exposureControl.setMode(ExposureControl.Mode.Manual);
 
             }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            exposureControl.setExposure((long) exposureMS, TimeUnit.MILLISECONDS);
 
 
             // Set Gain.
@@ -372,7 +372,7 @@ aprilTagProcessor.setDecimation(4);
      */
 
 
-    public double getBlobCenterX(){
+    public double getBlobCenterX() {
         double cx;
 
         if (!blobs.isEmpty()) {
@@ -380,15 +380,14 @@ aprilTagProcessor.setDecimation(4);
 
             cx = BigBlob.getBoxFit().center.x;
 
-        }
-        else{
-            cx = IMG_WIDTH/2;
+        } else {
+            cx = IMG_WIDTH / 2;
         }
 
         return cx;
     }
 
-    public double getBlobCenterY(){
+    public double getBlobCenterY() {
         double cy;
 
         if (!blobs.isEmpty()) {
@@ -396,9 +395,8 @@ aprilTagProcessor.setDecimation(4);
 
             cy = BigBlob.getBoxFit().center.y;
 
-        }
-        else{
-            cy = IMG_HEIGHT/4;
+        } else {
+            cy = IMG_HEIGHT / 4;
         }
 
         return cy;
