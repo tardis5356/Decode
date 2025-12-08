@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 
+import org.firstinspires.ftc.teamcode.Zenith.Commands.AutoLaunchCommands;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
@@ -36,7 +37,7 @@ public class AutoGenerator {
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage) {
         List<Command> seq = new ArrayList<>();
 
-        seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+        // seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
 
         for (int i = 0; i < cycleCount; i++) {
 //
@@ -46,21 +47,23 @@ public class AutoGenerator {
                 seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToIntake[i], requirements));
                 seq.add(new InstantCommand(intake::stop));
-
             }
+
 
             if (intakeToShoot[i] != null) {
                 seq.add(new ActionCommand(intakeToShoot[i], requirements));
             }
-//            else if (!gateReleased) {
-//                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
-//            } else {
-//                seq.add(new AutoLaunchCommands(intake, storage));
-//            }
+
+            if (!gateReleased) {
+                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+            } else {
+                seq.add(new AutoLaunchCommands(intake, storage));
+            }
 
             if (i == gateCycleIndex) {
                 seq.add(new ActionCommand(gateRelease, requirements));
             }
+
             if (i == gateCycleIndex) {
                 seq.add(new ActionCommand(gateExit, requirements));
                 gateReleased = true;

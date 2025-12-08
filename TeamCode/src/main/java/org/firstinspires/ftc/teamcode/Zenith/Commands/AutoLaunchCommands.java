@@ -13,6 +13,7 @@ public class AutoLaunchCommands extends SequentialCommandGroup {
 
 
     public AutoLaunchCommands(Intake intake, Storage storage) {
+        intake.setCurrentArtifacts();
         switch (DecodeTeleOp.currentShootMode) {
             case FLY:
                 new LaunchSequenceCommand(intake, storage, "Fly");
