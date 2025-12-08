@@ -44,6 +44,7 @@ public class Turret extends SubsystemBase {
     private double motorPower;
     private double pidPower;
     public static double turretOffset = 0;
+    public static int manualOffset;
     private boolean PIDDisabled = false;
 
     public static int desiredTicks;
@@ -81,7 +82,7 @@ public class Turret extends SubsystemBase {
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
         if ((Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE) > TURRET_TOLERANCE_DEG) {
-            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks) + Math.signum(desiredTicks - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
+            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks + manualOffset) + Math.signum((desiredTicks + manualOffset) - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
 
         } else {
             motorPower = 0;

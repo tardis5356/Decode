@@ -244,11 +244,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .toggleWhenActive(storage::storeSlot, storage::returnSlot);
+                .whenActive(()->turret.manualOffset -= 700);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .toggleWhenActive(storage::closeBack, storage::openBack);
+                .whenActive(()->turret.manualOffset += 700);
 
 
         //Engage/Disengage PTO
@@ -256,7 +256,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 .toggleWhenActive(bellyPan::engagePTO, bellyPan::disEngagePTO);
 
         //BreakPad
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.A))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.START))
                 .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
 
 
@@ -273,9 +273,7 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driftLock((float) driver2.getLeftY()) != 0 ||
                 driftLock((float) driver2.getRightY()) != 0 ||
                 driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)) != 0 ||
-                driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0 ||
-                driver2.getButton(GamepadKeys.Button.LEFT_BUMPER) ||
-                driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                driftLock((float) driver2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)) != 0)
                 .whenActive(() -> autoTarget = false);
 
 
@@ -389,7 +387,7 @@ public class DecodeTeleOp extends CommandOpMode {
                     ))
             ;
 
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B))
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B) || driver1.getButton(GamepadKeys.Button.A))
                     .whenActive(
                             new SequentialCommandGroup(
                                     new LaunchSequenceCommand(intake, storage, "Fly"),
