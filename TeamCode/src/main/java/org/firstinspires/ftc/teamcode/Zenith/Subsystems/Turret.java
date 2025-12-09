@@ -10,12 +10,14 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TOLERANCE_DEG;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_V;
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -30,9 +32,11 @@ public class Turret extends SubsystemBase {
     public static DcMotorEx mT;
     //public static TouchSensor lT;
     private PIDController pidController;
+//    private PIDController pidfController;
     private SimpleMotorFeedforward feedforwardController;
 
     private double kF = 0.0;   // velocity gain
+    private double kA = 0.0; //acceleration gain
     private double kS = 0.0;   // static gain
 
 
@@ -65,9 +69,9 @@ public class Turret extends SubsystemBase {
         mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-        // feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+//        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+         feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
     }
 
@@ -78,11 +82,22 @@ public class Turret extends SubsystemBase {
 //            turretOffset += mT.getCurrentPosition();
 //        }
 
+        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) ;
+
+        double ffPower = feedforwardController.calculate(desiredVelocityTicks);
+
+        ffPower = ffPower / voltageSensor.getVoltage();
+        // zeros the turret readings when the magnetic sensor is pressed
+//
+
+
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+//        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
         if ((Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE) > TURRET_TOLERANCE_DEG) {
-            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks + manualOffset) + Math.signum((desiredTicks + manualOffset) - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
+            motorPower = pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ffPower;
+//            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks + manualOffset) + Math.signum((desiredTicks + manualOffset) - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
 
         } else {
             motorPower = 0;

@@ -16,7 +16,7 @@ public class BotPositions {
     //public static int SLOT1_FIRE = 360, SLOT2_FIRE = 120, SLOT3_FIRE = 240, SLOT1_LOAD = 180, SLOT2_LOAD = 300, SLOT3_LOAD = 60;
     //public static double TURRET_P = 0.000000, TURRET_I = 0.000, TURRET_D = 0.00000;
     public static double TURRET_TICKS_PER_DEGREE = 104.55 * (187.0/180.0) , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
-    public static double TURRET_P = 0.0001, TURRET_I = 0.000, TURRET_D =0.000012, TURRET_S = 1.5, TURRET_TOLERANCE_DEG = 1;
+    public static double TURRET_P = 0.00003 , TURRET_I = 0.000, TURRET_D = 0.0000, TURRET_S = 2.7,  TURRET_V = 0.0004, TURRET_TOLERANCE_DEG = 1;
     public static double MAX_TURRET_ANGLE_DEG = 200; // Flip threshold
 
     public static double MID_RANGE_AUTO_HOOD_POS, MID_RANGE_AUTO_FLYWHEEL_TPS;
