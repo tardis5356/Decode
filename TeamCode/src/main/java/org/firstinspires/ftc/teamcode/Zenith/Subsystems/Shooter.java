@@ -39,6 +39,7 @@ public class Shooter extends SubsystemBase {
     InterpolatingDoubleTreeMap MDRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
+    public double offset;
 
     boolean targeting;
 
@@ -86,9 +87,9 @@ public class Shooter extends SubsystemBase {
             if (targeting) {
 
                 if (GlobalVariables.distanceFromTarget > 125) {
-                    //sH.setPosition(LDRegression.get(distanceFromTarget));
+                    //sH.setPosition(LDRegression.get(distanceFromTarget) + offset);
                 } else if (GlobalVariables.distanceFromTarget <= 125) {
-                    //sH.setPosition(MDRegression.get(distanceFromTarget));
+                    //sH.setPosition(MDRegression.get(distanceFromTarget) + offset);
                 }
 
             }
