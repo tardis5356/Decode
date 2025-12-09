@@ -23,7 +23,7 @@ public class BotPositions {
 
     //public static double TURRET_TICKS_PER_DEGREE = (8192/360)*(373.6/360)*(358.91083/360) /*1.491851852*/  , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
 
-   //PTO Relevant stuff
+    //PTO Relevant stuff
     public static double PTO_ENGAGED = 0.3, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0.27, BELLYPAN_RIGHT_LATCHED = 0.6, BELLYPAN_LEFT_UNLATCHED = 0., BELLYPAN_RIGHT_UNLATCHED = 0.2;
 
     public static double BREAKPAD_ACTIVE = 0, BREAKPAD_INACTIVE = 1;
