@@ -86,15 +86,15 @@ public class Shooter extends SubsystemBase {
         if (!inAuto) {
             if (targeting) {
 
-                if (GlobalVariables.distanceFromTarget > 125) {
+                if (GlobalVariables.distanceFromTarget > 112) {
                     //sH.setPosition(LDRegression.get(distanceFromTarget) + offset);
-                } else if (GlobalVariables.distanceFromTarget <= 125) {
+                } else if (GlobalVariables.distanceFromTarget <= 112) {
                     //sH.setPosition(MDRegression.get(distanceFromTarget) + offset);
                 }
 
             }
         } else {
-            if (GlobalVariables.distanceFromTarget > 125) {
+            if (GlobalVariables.distanceFromTarget > 112) {
                 sH.setPosition(LDRegression.get(distanceFromTarget));
             } else if (GlobalVariables.distanceFromTarget <= 100) {
                 sH.setPosition(.05);
@@ -103,17 +103,17 @@ public class Shooter extends SubsystemBase {
 
         if (!inAuto) {
             if (spinning) {
-                if (GlobalVariables.distanceFromTarget > 125) {
-                    setVel(1350);
-                } else if (GlobalVariables.distanceFromTarget <= 125) {
+                if (GlobalVariables.distanceFromTarget > 112) {
+                    setVel(1325);
+                } else if (GlobalVariables.distanceFromTarget <= 112) {
                     setVel(1125);
                 }
             } else {
                 setVel(0);
             }
         } else {
-            if (GlobalVariables.distanceFromTarget > 125) {
-                setVel(1300);
+            if (GlobalVariables.distanceFromTarget > 112) {
+                setVel(1325);
             } else if (GlobalVariables.distanceFromTarget <= 100) {
                 setVel(1000);
             }

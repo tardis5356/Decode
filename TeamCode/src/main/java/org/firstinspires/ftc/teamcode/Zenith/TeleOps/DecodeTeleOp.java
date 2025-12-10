@@ -244,11 +244,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenActive(()->turret.manualOffset -= 700);
+                .whenInactive(()->turret.manualOffset -= 700);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenActive(()->turret.manualOffset += 700);
+                .whenInactive(()->turret.manualOffset += 700);
 
 
         //Engage/Disengage PTO
@@ -396,8 +396,8 @@ public class DecodeTeleOp extends CommandOpMode {
                             )
                     );
 
-            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
-                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
+//            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
+//                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
 
 
             //Relocalize in Alliance Corner
