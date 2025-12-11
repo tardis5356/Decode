@@ -9,20 +9,26 @@ public class Storage extends SubsystemBase {
     public Servo sS;
     public Servo sK;
     public Servo sBG;
+
+
+    //We have booleans for the states of each actuator in the storage system for the recovery builder
     public static boolean gateOpen = true, slotFly = true, kickerDown = true, backOpen = false;
 
+    //The constructor method of the class if you will. you'd write storage = new Storage(hardwaremap);
+    //This will then map all of the variables/objects and run methods as innitial setup
     public Storage(HardwareMap hardwareMap){
         sG = hardwareMap.get(Servo.class,"sG");
         sS = hardwareMap.get(Servo.class,"sS");
         sK = hardwareMap.get(Servo.class,"sK");
         sBG = hardwareMap.get(Servo.class, "sBG");
         openGate();
-        returnSlot();
+        //returnSlot();
         closeBack();
     }
 
     @Override
     public void periodic(){
+        //if the slot underneath the shooter isn't empty, close the gate, otherwise open it
         if (GlobalVariables.currentArtifacts.charAt(1) != '_'){
             closeGate();
         }
@@ -41,6 +47,7 @@ public class Storage extends SubsystemBase {
         gateOpen = false;
     }
 
+    //Open and close Back are referring to the back gate.
     public void openBack(){
         sBG.setPosition(BotPositions.BACK_OPEN);
         backOpen = true;

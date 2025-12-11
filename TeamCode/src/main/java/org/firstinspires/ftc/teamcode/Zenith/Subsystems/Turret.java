@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
 
 
            //This is old code
-            motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ((ffPower)/voltageSensor.getVoltage()));
+            motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks) + ffPower) / voltageSensor.getVoltage();
 
         } else {
             motorPower = 0;
@@ -154,7 +154,7 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 10.5, targetTagYOffset = 12.5;
+        double targetTagXOffset = 0, targetTagYOffset = 0;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 
@@ -180,7 +180,7 @@ public class Turret extends SubsystemBase {
         }
 
 
-        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK);
+        desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK) + manualOffset;
 
 
         setTargetPosition(desiredTicks);

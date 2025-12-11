@@ -28,18 +28,22 @@ public class Shooter extends SubsystemBase {
 
     private final VoltageSensor voltageSensor;
 
-
+    //declare and define controllers
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
 
     public DcMotorEx mST, mSB;
     public Servo sH;
 
+    //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
+    //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
     InterpolatingDoubleTreeMap LDRegression = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap MDRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
-    public double offset;
+    public double hoodOffset;
+
+    public int speedOffset;
 
     boolean targeting;
 
@@ -65,9 +69,10 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-        LDRegression.put(133., .05);
-        LDRegression.put(142., .05);
-        LDRegression.put(147., .05);
+        LDRegression.put(117., .35);
+        LDRegression.put(128., .1);
+        LDRegression.put(134., .05);
+        LDRegression.put(149., .05);
 
         MDRegression.put(115., .05);
         MDRegression.put(103., .2);
@@ -80,14 +85,14 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-        mSB.setPower(calculateFlyWheelPower(flyWheelSpeed));
-        mST.setPower(calculateFlyWheelPower(flyWheelSpeed));
+        mSB.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
+        mST.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
 
         if (!inAuto) {
             if (targeting) {
 
                 if (GlobalVariables.distanceFromTarget > 112) {
-                    //sH.setPosition(LDRegression.get(distanceFromTarget) + offset);
+                    sH.setPosition(LDRegression.get(distanceFromTarget) + hoodOffset);
                 } else if (GlobalVariables.distanceFromTarget <= 112) {
                     //sH.setPosition(MDRegression.get(distanceFromTarget) + offset);
                 }
@@ -104,7 +109,7 @@ public class Shooter extends SubsystemBase {
         if (!inAuto) {
             if (spinning) {
                 if (GlobalVariables.distanceFromTarget > 112) {
-                    setVel(1325);
+                    setVel(1350);
                 } else if (GlobalVariables.distanceFromTarget <= 112) {
                     setVel(1125);
                 }
