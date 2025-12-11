@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.CAMERA_RADIUS;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
@@ -184,7 +185,7 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6;
+        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6 - CAMERA_RADIUS;
 
 
         // Telemetry
