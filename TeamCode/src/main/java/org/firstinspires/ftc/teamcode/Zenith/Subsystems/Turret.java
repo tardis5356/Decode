@@ -86,18 +86,24 @@ public class Turret extends SubsystemBase {
 
         double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
-        ffPower = ffPower / voltageSensor.getVoltage();
+
         // zeros the turret readings when the magnetic sensor is pressed
 //
 
 
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+
 //        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
         if ((Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE) > TURRET_TOLERANCE_DEG) {
-            motorPower = pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ffPower;
-//            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks + manualOffset) + Math.signum((desiredTicks + manualOffset) - getCurrentPosition()) * (TURRET_S / voltageSensor.getVoltage());
+
+           // This is new
+           // motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ffPower)/voltageSensor.getVoltage();
+
+
+           //This is old code
+            motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ((ffPower)/voltageSensor.getVoltage()));
 
         } else {
             motorPower = 0;
@@ -147,9 +153,10 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 0, targetTagYOffset = 0;
+        double targetTagXOffset = 10.5, targetTagYOffset = 12.5;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
+
         // === Apply offset away from origin ===
         double goalX = targetAprilTagPos.position.x + Math.signum(targetAprilTagPos.position.x) * targetTagXOffset;
         double goalY = targetAprilTagPos.position.y + Math.signum(targetAprilTagPos.position.y) * targetTagYOffset;
@@ -177,7 +184,7 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        GlobalVariables.distanceFromTarget = Math.hypot(goalY - turretFieldY, goalX - turretFieldX);
+        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6;
 
 
         // Telemetry
