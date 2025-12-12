@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.CAMERA_RADIUS;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.GOAL_OFFSET;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
@@ -154,7 +155,7 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 0, targetTagYOffset = 0;
+        double targetTagXOffset = 15, targetTagYOffset = 10;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 
@@ -185,8 +186,9 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6 - CAMERA_RADIUS;
-
+        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + GOAL_OFFSET - CAMERA_RADIUS;
+        //six inches into the goal
+        //now testing is based on measurements from the center of the turret to the apriltag, after penfield this should be change
 
         // Telemetry
         telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);

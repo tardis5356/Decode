@@ -128,7 +128,7 @@ public class DecodeTeleOp extends CommandOpMode {
             //sets the digital position of the robot to intake for the deposit to state command
 
 //            if (savedPos == null) {
-            savedPos = new Pose2d(24, 48, Math.toRadians(0));
+            savedPos = new Pose2d(48, 48, Math.toRadians(0));
 //            }
 
             //init controllers
