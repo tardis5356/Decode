@@ -128,7 +128,7 @@ public class DecodeTeleOp extends CommandOpMode {
             //sets the digital position of the robot to intake for the deposit to state command
 
 //            if (savedPos == null) {
-            savedPos = new Pose2d(0, 0, Math.toRadians(0));
+            savedPos = new Pose2d(24, 48, Math.toRadians(0));
 //            }
 
             //init controllers
@@ -417,14 +417,12 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenInactive(new InstantCommand(() ->
-                            shooter.hoodOffset += .05)
-                    );
+                    .whenInactive(()->
+                            shooter.hoodOffset += .025);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                    .whenInactive(new InstantCommand(() ->
-                            shooter.hoodOffset -= .05)
-                    );
+                    .whenInactive(() ->
+                            shooter.hoodOffset -= .025);
 
             // Triple shot modes
             // TODO: Check that these actually launch all 3 or if it just stops at one

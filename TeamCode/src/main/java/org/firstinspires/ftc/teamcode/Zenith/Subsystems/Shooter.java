@@ -73,10 +73,11 @@ public class Shooter extends SubsystemBase {
         LDRegression.put(128., .1);
         LDRegression.put(134., .05);
         LDRegression.put(149., .05);
+        LDRegression.put(100.,.05);
 
         MDRegression.put(115., .05);
-        MDRegression.put(103., .2);
-        MDRegression.put(90., .55);
+        MDRegression.put(70., .05);
+        MDRegression.put(80., .05);
 
 
         targeting = true;
@@ -94,7 +95,7 @@ public class Shooter extends SubsystemBase {
                 if (GlobalVariables.distanceFromTarget > 112) {
                     sH.setPosition(LDRegression.get(distanceFromTarget) + hoodOffset);
                 } else if (GlobalVariables.distanceFromTarget <= 112) {
-                    //sH.setPosition(MDRegression.get(distanceFromTarget) + offset);
+                    sH.setPosition( hoodOffset);
                 }
 
             }
@@ -111,7 +112,7 @@ public class Shooter extends SubsystemBase {
                 if (GlobalVariables.distanceFromTarget > 112) {
                     setVel(1350);
                 } else if (GlobalVariables.distanceFromTarget <= 112) {
-                    setVel(1125);
+                    setVel(1075);
                 }
             } else {
                 setVel(0);
