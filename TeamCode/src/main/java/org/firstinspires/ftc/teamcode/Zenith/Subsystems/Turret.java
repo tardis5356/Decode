@@ -49,7 +49,7 @@ public class Turret extends SubsystemBase {
     private double motorPower;
     private double pidPower;
     public static double turretOffset = 0;
-    public static int manualOffset;
+    public static int manualOffset = 0;
     private boolean PIDDisabled = false;
 
     public static int desiredTicks;
@@ -74,6 +74,8 @@ public class Turret extends SubsystemBase {
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
          feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
+
+        manualOffset = 0;
     }
 
     @Override

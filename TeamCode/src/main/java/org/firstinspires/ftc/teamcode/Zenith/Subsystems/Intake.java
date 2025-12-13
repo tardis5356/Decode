@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.slotFly;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -14,6 +15,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Intake extends SubsystemBase {
 
     public DcMotorEx mI;
+
+    public DigitalChannel redLED;
+    public DigitalChannel greenLED;
 
     public ColorRangeSensor cSI;
     public ColorRangeSensor cSM;
@@ -37,6 +41,9 @@ public class Intake extends SubsystemBase {
         cSM = hardwareMap.get(ColorRangeSensor.class, "cSM");
         cSSh = hardwareMap.get(ColorRangeSensor.class, "cSSh");
         cSSt = hardwareMap.get(ColorRangeSensor.class, "cSSt");
+
+        redLED = hardwareMap.get(DigitalChannel.class, "red");
+        greenLED = hardwareMap.get(DigitalChannel.class,"green");
 
 
     }
@@ -64,17 +71,23 @@ public class Intake extends SubsystemBase {
     public void in() {
         intakePower = 1;
         intakeState = "in";
+        greenLED.setState(true);
+        redLED.setState(false);
     }
 
 
     public void out() {
         intakePower = -1;
         intakeState = "out";
+        greenLED.setState(false);
+        redLED.setState(true);
     }
 
     public void stop() {
         intakePower = 0;
         intakeState = "stop";
+        greenLED.setState(false);
+        redLED.setState(false);
     }
 
 
