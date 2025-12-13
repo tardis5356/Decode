@@ -214,10 +214,10 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
-        new Trigger(()->driver1.getButton(GamepadKeys.Button.LEFT_BUMPER))
+        new Trigger(()->driver2.getRightY()>.1)
                 .whenInactive(()->shooter.speedOffset -= 25);
 
-        new Trigger(()->driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+        new Trigger(()->driver2.getRightY()<.1)
                 .whenInactive(()->shooter.speedOffset += 25);
 
         //red vs blue alliance
@@ -228,11 +228,11 @@ public class DecodeTeleOp extends CommandOpMode {
                 .whenActive(new InstantCommand(() -> aColor = "blue"));
 
         //Intake
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
-                .whenActive(new InstantCommand(intake::in));
-
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y))
-                .toggleWhenActive(new InstantCommand(intake::out), new InstantCommand(intake::stop));
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.X))
+//                .whenActive(new InstantCommand(intake::in));
+//
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.Y))
+//                .toggleWhenActive(new InstantCommand(intake::out), new InstantCommand(intake::stop));
 
         //new Trigger(() -> (driver1.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)) && intake.intakePower != 0)
         //        .whenActive(new InstantCommand(intake::stop));
@@ -501,6 +501,24 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
+        if(intake.mI.getPower() == 0){
+            if(driver1.getButton(GamepadKeys.Button.X)){
+                intake.in();
+            }
+            else if(driver1.getButton(GamepadKeys.Button.Y)){
+                intake.out();
+            }
+        }
+        else{
+            if(driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)){
+                intake.stop();
+            }
+        }
+
+//        if(gamepad1.touchpad){
+//            savedPos = new Pose2d(24, 48,);
+//        }
+
         //shooter.sH.setPosition(hoodPos);
 
         if (gamepad1.dpad_left) {
@@ -572,6 +590,7 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
         telemetry.addData("motorPower", shooter.mST.getPower());
+        telemetry.addData("turretOffset",turret.manualOffset);
 
 
         telemetry.update();
