@@ -32,49 +32,44 @@ import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
-@Autonomous(name = "Decode Auto")
+@Autonomous(name = "Decode Auto"
+//        , group = "Autonomous"
+//        , preselectTeleOp = "Decode TeleOp"
+)
+
 //@Disabled
 
 public class DecodeAuto extends OpMode {
 
+    public static final int MAX_CYCLES = 5;
+    private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
+    private static final String ROW_FORMAT = "%-5d | %-12s | %-12s";
+    public static RRSubsystem rrSubsystem;
+    // --- Cycle selection ---
+    public static int gateCycleIndex = 1; //default gate cycle after cycle 2
+    public static Pose2d savedPos;
+    public Pose2d startPos;
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
-    public static RRSubsystem rrSubsystem;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
     private Turret turret;
     private Storage storage;
-
-    // --- Cycle selection ---
-    public static int gateCycleIndex = 1; //default gate cycle after cycle 2
-    public static final int MAX_CYCLES = 5;
     private int cycleCount = 2;   //5 // default 2 cycles
     private int currentCycle = 0;  // row selector
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
-
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
-
     // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
     private int[][] choices = new int[MAX_CYCLES][2];
-
     private boolean gateCyclePressed;
-
-    public Pose2d startPos;
-
     // private Camera camera;
 //    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
-
     private Camera camera;
-
     private Shooter shooter;
     private String aColor = null;
-
-    public static Pose2d savedPos;
-
     private Command auto;
-
 
     @Override
     public void init() {
@@ -212,7 +207,7 @@ public class DecodeAuto extends OpMode {
         } else if (!gamepad1.left_bumper && !gamepad1.right_bumper) bumperPressed = false;
 
 
-        if ((gamepad2.right_bumper || gamepad2.left_bumper) && !gateCyclePressed) {
+        if ((gamepad2.right_bumper || gamepad2.left_bumper) && !(gateCyclePressed)) {
 
             if (gamepad2.right_bumper) {
                 gateCycleIndex = (gateCycleIndex + 1) % (cycleCount + 1);
@@ -239,9 +234,6 @@ public class DecodeAuto extends OpMode {
         if (gamepad1.left_stick_button && currentColumn == 1)
             choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
-
-    private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
-    private static final String ROW_FORMAT = "%-5d | %-12s | %-12s";
 
     private void printTelemetryTable() {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
@@ -344,6 +336,16 @@ public class DecodeAuto extends OpMode {
         }
 
         CommandScheduler.getInstance().run();
+        if (runtime.seconds() > 29 && auto != null) {
+            CommandScheduler.getInstance().cancel(auto);
+
+            drive.leftBack.setPower(0);
+            drive.leftFront.setPower(0);
+            drive.rightBack.setPower(0);
+            drive.rightFront.setPower(0);
+
+            auto = null;
+        }
 
 
         turret.updateTurretTracking(drive, telemetry2);

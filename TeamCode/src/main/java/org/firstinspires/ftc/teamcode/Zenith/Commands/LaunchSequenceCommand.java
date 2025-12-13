@@ -20,9 +20,12 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 addCommands(
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
-                                new IntakeLaunchCommand(storage, intake),
-                                new IntakeLaunchCommand(storage, intake),
-                                new IntakeLaunchCommand(storage, intake),
+                                new MoveInArtifactCommand(intake),
+                                launcOne(storage),
+                                new MoveInArtifactCommand(intake),
+                                launcOne(storage),
+                                new MoveInArtifactCommand(intake),
+                                launcOne(storage),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0)
                               //  new MoveInArtifactCommand(intake)
                         )

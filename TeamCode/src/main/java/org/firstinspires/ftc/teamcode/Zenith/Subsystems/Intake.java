@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -48,14 +49,14 @@ public class Intake extends SubsystemBase {
         setCurrentArtifacts();
 
 
-//        long emptySlots = GlobalVariables.currentArtifacts.chars()
-//                .filter(c -> c == '_')
-//                .count();
-//
-//        // If less than 2 empty slots → STOP the intake
-//        if (emptySlots < 2) {
-//            stop();
-//        }
+        long emptySlots = GlobalVariables.currentArtifacts.chars()
+                .filter(c -> c == '_')
+                .count();
+
+        // If less than 2 empty slots → STOP the intake
+        if (emptySlots < 2 && inAuto) {
+            stop();
+        }
 
 
     }

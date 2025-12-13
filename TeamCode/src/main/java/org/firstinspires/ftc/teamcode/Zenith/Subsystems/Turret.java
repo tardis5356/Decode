@@ -154,13 +154,13 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 0, targetTagYOffset = 0;
+        double targetTagXOffset = 12, targetTagYOffset = 12;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 
         // === Apply offset away from origin ===
-        double goalX = targetAprilTagPos.position.x + Math.signum(targetAprilTagPos.position.x) * targetTagXOffset;
-        double goalY = targetAprilTagPos.position.y + Math.signum(targetAprilTagPos.position.y) * targetTagYOffset;
+        double goalX = targetAprilTagPos.position.x + (Math.signum(targetAprilTagPos.position.x) * targetTagXOffset);
+        double goalY = targetAprilTagPos.position.y + (Math.signum(targetAprilTagPos.position.y) * targetTagYOffset);
 
         // === Compute turret tracking ===
         double robotX = drive.localizer.getPose().position.x;
