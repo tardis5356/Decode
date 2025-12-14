@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
 
     public int speedOffset;
 
-    boolean targeting;
+    public boolean targeting;
 
     public boolean spinning;
 
@@ -97,34 +97,36 @@ public class Shooter extends SubsystemBase {
         mSB.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
         mST.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
 
-        if (!inAuto) {
+//        if (!inAuto) {
             if (targeting) {
                 sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
             }
             else{
                 sH.setPosition(hoodOffset);
             }
-        } else {
-            if (GlobalVariables.distanceFromTarget > 112) {
-                sH.setPosition(HoodRegression.get(distanceFromTarget));
-            } else if (GlobalVariables.distanceFromTarget <= 100) {
-                sH.setPosition(.05);
-            }
-        }
+//        } else {
+//            if (GlobalVariables.distanceFromTarget > 112) {
+//                sH.setPosition(HoodRegression.get(distanceFromTarget));
+//            } else if (GlobalVariables.distanceFromTarget <= 100) {
+//                sH.setPosition(.05);
+//            }
+//        }
 
-        if (!inAuto) {
+//        if (!inAuto) {
             if (spinning) {
                 setVel(WheelRegression.get(distanceFromTarget));
             } else {
                 setVel(0);
             }
-        } else {
-            if (GlobalVariables.distanceFromTarget > 112) {
-                setVel(1325);
-            } else if (GlobalVariables.distanceFromTarget <= 100) {
-                setVel(1000);
-            }
-        }
+//        }
+
+//        else {
+//            if (GlobalVariables.distanceFromTarget > 112) {
+//                setVel(1325);
+//            } else if (GlobalVariables.distanceFromTarget <= 100) {
+//                setVel(1000);
+//            }
+//        }
 
 
     }
