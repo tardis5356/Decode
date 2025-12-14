@@ -202,12 +202,13 @@ public class Turret extends SubsystemBase {
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
         telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
-        telemetry.addData("Target Pos (ticks)", desiredTicks);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
         telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
         //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
-        telemetry.addData("ZeroedTurretTicks", getCurrentPosition());
         telemetry.addData("TurretRawMotorPower", mT.getPower());
+        //check THESE when tuning turret
+        telemetry.addData("TurretTicks", getCurrentPosition());
+        telemetry.addData("Target Pos (ticks)", desiredTicks);
     }
 
     // === FLIP MANAGEMENT ===
