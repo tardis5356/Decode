@@ -87,8 +87,9 @@ public class DecodeAuto extends OpMode {
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
 
-shooter.targeting = true;
+
         shooter.spinning = true;
+        shooter.targeting = true;
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
