@@ -403,6 +403,19 @@ public class DecodeTeleOp extends CommandOpMode {
                             )
                     );
 
+            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+                    .whenActive(
+                            new InstantCommand(storage::storeSlot)
+                    );
+
+            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
+                    .whenActive(
+                            new InstantCommand(storage::returnSlot)
+                    );
+
+            new Trigger(()-> gamepad2.ps)
+                    .toggleWhenActive(storage::closeGate,storage::openGate);
+
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
 //                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
 
