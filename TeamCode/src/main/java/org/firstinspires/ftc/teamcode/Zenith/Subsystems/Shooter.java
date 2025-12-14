@@ -104,7 +104,8 @@ public class Shooter extends SubsystemBase {
             else{
                 sH.setPosition(hoodOffset);
             }
-//        } else {
+
+//        else {
 //            if (GlobalVariables.distanceFromTarget > 112) {
 //                sH.setPosition(HoodRegression.get(distanceFromTarget));
 //            } else if (GlobalVariables.distanceFromTarget <= 100) {
@@ -119,7 +120,6 @@ public class Shooter extends SubsystemBase {
                 setVel(0);
             }
 //        }
-
 //        else {
 //            if (GlobalVariables.distanceFromTarget > 112) {
 //                setVel(1325);
