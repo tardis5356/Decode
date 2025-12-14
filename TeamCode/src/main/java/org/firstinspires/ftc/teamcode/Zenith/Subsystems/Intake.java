@@ -64,9 +64,9 @@ public class Intake extends SubsystemBase {
                 .count();
 
         // If less than 2 empty slots → STOP the intake
-        if (emptySlots < 2 && inAuto) {
-            stop();
-        }
+//        if (emptySlots < 2 && inAuto) {
+//            stop();
+//        }
 
 
     }

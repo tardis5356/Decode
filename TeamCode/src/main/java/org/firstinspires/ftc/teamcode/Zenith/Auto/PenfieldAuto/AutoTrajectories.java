@@ -35,7 +35,7 @@ public class AutoTrajectories {
 
 
     // Intake tangents: [goal, mid, audience, LZ preset, LZ random]
-    public static double[] intakeEndTangentDeg = {90, 90, 90, 90 /*check*/, 45};
+    public static double[] intakeEndTangentDeg = {90, 90, 85, 90 /*check*/, 45};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
@@ -55,16 +55,18 @@ public class AutoTrajectories {
     public static MinVelConstraint BaseConstraint = new MinVelConstraint(
             Arrays.asList(
                     new TranslationalVelConstraint(50),//inches per second
-                    new AngularVelConstraint(6.689) // remember the units you're working in, especially for angular constraints!
+                    new AngularVelConstraint(Math.PI) // remember the units you're working in, especially for angular constraints!
             )
     );
 
     public static MinVelConstraint SlowConstraint = new MinVelConstraint(
             Arrays.asList(
-                    new TranslationalVelConstraint(40),//inches per second
-                    new AngularVelConstraint(6.689) // remember the units you're working in, especially for angular constraints!
+                    new TranslationalVelConstraint(30),//inches per second
+                    new AngularVelConstraint(Math.PI) // remember the units you're working in, especially for angular constraints!
             )
     );
+
+
 
     // Helper: mirror coordinate if alliance is blue
     public static Pose2d allianceCoordinate(Pose2d coordinate) {
@@ -84,11 +86,11 @@ public class AutoTrajectories {
 
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
-        audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
+        audienceStartPos = allianceCoordinate(new Pose2d(62.75, 12, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 51, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(9, 51, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(33, 51, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(12, 51, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(32, 51, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
