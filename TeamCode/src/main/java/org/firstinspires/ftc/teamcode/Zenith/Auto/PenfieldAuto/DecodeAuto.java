@@ -143,9 +143,9 @@ public class DecodeAuto extends OpMode {
                 cycleCount = 2;
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
-                        {1, 1}, //shoot: audience, intake: mid
-                        //gate
                         {0, 1}, //shoot: goal, intake: mid
+                        //gate
+                        {0, 0}, //shoot: goal, intake: goal
                         {0, 2}, //shoot: audience, intake: audience
                         {1, 4} //shoot: audience, intake: LZ random
                 };
@@ -163,10 +163,14 @@ public class DecodeAuto extends OpMode {
 
 
         // --- Display telemetry table and alliance/start ---
-        printTelemetryTable();
+        printEASITelemetry();
+
+        //EASI - Easy Autonomous Selectable Interface
+         //
 
 
-        // --- Dashboard visualization (optional) ---
+
+
         TelemetryPacket packet = new TelemetryPacket();
         Canvas field = packet.fieldOverlay();
         if (startPos != null) {
@@ -240,12 +244,15 @@ public class DecodeAuto extends OpMode {
             choices[currentCycle][currentColumn] = 4; // intake LZ random
     }
 
-    private void printTelemetryTable() {
+    private void printEASITelemetry() {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         if (motif != null) {
             telemetry2.addData("Motif", motif);
         }
 
+        telemetry2.addLine("");
+        telemetry2.addLine("=== EASI Selection ===");
+        telemetry2.addLine("");
 
         String gateTxt = (gateCycleIndex == cycleCount)
                 ? "No Gate Cycle"
@@ -354,7 +361,7 @@ public class DecodeAuto extends OpMode {
 
 
         turret.updateTurretTracking(drive, telemetry2);
-
+shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
