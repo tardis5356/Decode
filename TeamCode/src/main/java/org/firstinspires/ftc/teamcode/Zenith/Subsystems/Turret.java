@@ -156,7 +156,7 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 12, targetTagYOffset = 12;
+        double targetTagXOffset = 8, targetTagYOffset = 7;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 

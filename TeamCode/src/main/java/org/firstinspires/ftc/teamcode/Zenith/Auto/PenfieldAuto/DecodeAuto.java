@@ -74,6 +74,7 @@ public class DecodeAuto extends OpMode {
     @Override
     public void init() {
         GlobalVariables.inAuto = true;
+
         dashboard = FtcDashboard.getInstance();
         telemetry2 = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
@@ -85,6 +86,9 @@ public class DecodeAuto extends OpMode {
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
+
+shooter.targeting = true;
+        shooter.spinning = true;
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -290,8 +294,8 @@ public class DecodeAuto extends OpMode {
         String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "LZ Random"};
 
 
-        telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));
-        telemetry2.addLine("------------------------------------------");
+        //telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));
+//        telemetry2.addLine("------------------------------------------");
 
         for (int i = 0; i < cycleCount; i++) {
             String shoot = shootNames[choices[i][0]];
