@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -13,6 +15,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Intake extends SubsystemBase {
 
     public DcMotorEx mI;
+
+    public DigitalChannel redLED;
+    public DigitalChannel greenLED;
 
     public ColorRangeSensor cSI;
     public ColorRangeSensor cSM;
@@ -37,6 +42,9 @@ public class Intake extends SubsystemBase {
         cSSh = hardwareMap.get(ColorRangeSensor.class, "cSSh");
         cSSt = hardwareMap.get(ColorRangeSensor.class, "cSSt");
 
+        redLED = hardwareMap.get(DigitalChannel.class, "red");
+        greenLED = hardwareMap.get(DigitalChannel.class,"green");
+
 
     }
 
@@ -48,14 +56,14 @@ public class Intake extends SubsystemBase {
         setCurrentArtifacts();
 
 
-//        long emptySlots = GlobalVariables.currentArtifacts.chars()
-//                .filter(c -> c == '_')
-//                .count();
-//
-//        // If less than 2 empty slots → STOP the intake
-//        if (emptySlots < 2) {
-//            stop();
-//        }
+        long emptySlots = GlobalVariables.currentArtifacts.chars()
+                .filter(c -> c == '_')
+                .count();
+
+        // If less than 2 empty slots → STOP the intake
+        if (emptySlots < 2 && inAuto) {
+            stop();
+        }
 
 
     }
@@ -63,17 +71,23 @@ public class Intake extends SubsystemBase {
     public void in() {
         intakePower = 1;
         intakeState = "in";
+        greenLED.setState(true);
+        redLED.setState(false);
     }
 
 
     public void out() {
         intakePower = -1;
         intakeState = "out";
+        greenLED.setState(false);
+        redLED.setState(true);
     }
 
     public void stop() {
         intakePower = 0;
         intakeState = "stop";
+        greenLED.setState(false);
+        redLED.setState(false);
     }
 
 

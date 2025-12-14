@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.CAMERA_RADIUS;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.GOAL_OFFSET;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
@@ -50,7 +49,7 @@ public class Turret extends SubsystemBase {
     private double motorPower;
     private double pidPower;
     public static double turretOffset = 0;
-    public static int manualOffset;
+    public static int manualOffset = 0;
     private boolean PIDDisabled = false;
 
     public static int desiredTicks;
@@ -75,6 +74,8 @@ public class Turret extends SubsystemBase {
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
          feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
+
+        manualOffset = 0;
     }
 
     @Override
@@ -155,13 +156,13 @@ public class Turret extends SubsystemBase {
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
-        double targetTagXOffset = 15, targetTagYOffset = 10;
+        double targetTagXOffset = 12, targetTagYOffset = 12;
 
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 
         // === Apply offset away from origin ===
-        double goalX = targetAprilTagPos.position.x + Math.signum(targetAprilTagPos.position.x) * targetTagXOffset;
-        double goalY = targetAprilTagPos.position.y + Math.signum(targetAprilTagPos.position.y) * targetTagYOffset;
+        double goalX = targetAprilTagPos.position.x + (Math.signum(targetAprilTagPos.position.x) * targetTagXOffset);
+        double goalY = targetAprilTagPos.position.y + (Math.signum(targetAprilTagPos.position.y) * targetTagYOffset);
 
         // === Compute turret tracking ===
         double robotX = drive.localizer.getPose().position.x;
@@ -186,9 +187,8 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + GOAL_OFFSET - CAMERA_RADIUS;
-        //six inches into the goal
-        //now testing is based on measurements from the center of the turret to the apriltag, after penfield this should be change
+        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6 - CAMERA_RADIUS;
+
 
         // Telemetry
         telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);

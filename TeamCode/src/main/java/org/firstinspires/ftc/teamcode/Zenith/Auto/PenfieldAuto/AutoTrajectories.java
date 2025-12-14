@@ -113,10 +113,12 @@ public class AutoTrajectories {
             if (i == 0) {
                 // first cycle: based on start position
                 intakeStartDeg = currentStart.equals(goalStartPos) ? startPosTangentDeg[0] : startPosTangentDeg[1];
-            } else if (i - 1 == gateCycleIndex) {
-                intakeStartDeg = allianceTangent(270);
-                currentStart = gateExitWaypointPos;
-            } else {
+            }
+//            else if (i - 1 == gateCycleIndex) {
+//                intakeStartDeg = allianceTangent(270);
+//                currentStart = gateExitWaypointPos;
+//            }
+            else {
                 // later cycles: based on previous shoot position
                 intakeStartDeg = intakeStartTangentDeg[choices[i - 1][0]];
             }
@@ -140,16 +142,19 @@ public class AutoTrajectories {
 
 
         }
-        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
 
-        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
-        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
-
-        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
-
-        gateExit = drive.actionBuilder(gateReleasePos).setTangent(allianceTangent(270)).splineToLinearHeading(gateExitWaypointPos, allianceTangent(90)).build();
+//        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
+//
+//        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
+//        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
+//
+//        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
+//
+//        gateExit = drive.actionBuilder(gateReleasePos).setTangent(allianceTangent(270)).splineToLinearHeading(gateExitWaypointPos, allianceTangent(90)).build();
 
         park = drive.actionBuilder(drive.localizer.getPose()).splineToLinearHeading(parkPos, allianceTangent(0)).build();
+
+
     }
 
 }

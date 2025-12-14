@@ -31,6 +31,8 @@
             <Servo name="sBG" port="1"/>
             <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
+            <DigitalDevice name="green" port="6"/>
+            <DigitalDevice name="red" port="7"/>
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

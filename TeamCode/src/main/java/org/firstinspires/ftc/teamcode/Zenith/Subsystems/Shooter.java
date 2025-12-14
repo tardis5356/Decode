@@ -37,8 +37,8 @@ public class Shooter extends SubsystemBase {
 
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
-    InterpolatingDoubleTreeMap LDRegression = new InterpolatingDoubleTreeMap();
-    InterpolatingDoubleTreeMap MDRegression = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap WheelRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
     public double hoodOffset;
@@ -69,15 +69,23 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-        LDRegression.put(117., .35);
-        LDRegression.put(128., .1);
-        LDRegression.put(134., .05);
-        LDRegression.put(149., .05);
-        LDRegression.put(100.,.05);
+        //small triangle
+        HoodRegression.put(152., .05);
+        HoodRegression.put(126.7, .078);
+        HoodRegression.put(96.6, .05);
+        HoodRegression.put(75.7, .071);
+        HoodRegression.put(54.5,.1);
+        HoodRegression.put(34.5,.1);
+        HoodRegression.put(18.,.85);
 
-        MDRegression.put(115., .05);
-        MDRegression.put(70., .05);
-        MDRegression.put(80., .05);
+        //MDRegression.put(115., .05);
+        WheelRegression.put(152., 1450.);
+        WheelRegression.put(126.7, 1325.);
+        WheelRegression.put(96.6,1100.);
+        WheelRegression.put(75.7,1075.);
+        WheelRegression.put(54.5,975.);
+        WheelRegression.put(34.5,975.);
+        WheelRegression.put(18.,850.);
 
 
         targeting = true;
@@ -91,17 +99,14 @@ public class Shooter extends SubsystemBase {
 
         if (!inAuto) {
             if (targeting) {
-
-                if (GlobalVariables.distanceFromTarget > 112) {
-                    sH.setPosition(LDRegression.get(distanceFromTarget) + hoodOffset);
-                } else if (GlobalVariables.distanceFromTarget <= 112) {
-                    sH.setPosition( hoodOffset);
-                }
-
+                sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
+            }
+            else{
+                sH.setPosition(hoodOffset);
             }
         } else {
             if (GlobalVariables.distanceFromTarget > 112) {
-                sH.setPosition(LDRegression.get(distanceFromTarget));
+                sH.setPosition(HoodRegression.get(distanceFromTarget));
             } else if (GlobalVariables.distanceFromTarget <= 100) {
                 sH.setPosition(.05);
             }
@@ -109,11 +114,7 @@ public class Shooter extends SubsystemBase {
 
         if (!inAuto) {
             if (spinning) {
-                if (GlobalVariables.distanceFromTarget > 112) {
-                    setVel(1350);
-                } else if (GlobalVariables.distanceFromTarget <= 112) {
-                    setVel(1075);
-                }
+                setVel(WheelRegression.get(distanceFromTarget));
             } else {
                 setVel(0);
             }
