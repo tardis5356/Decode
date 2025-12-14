@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 
@@ -35,7 +36,7 @@ public class AutoTrajectories {
 
 
     // Intake tangents: [goal, mid, audience, LZ preset, LZ random]
-    public static double[] intakeEndTangentDeg = {90, 90, 85, 90 /*check*/, 45};
+    public static double[] intakeEndTangentDeg = {90, 90, 90, 90 /*check*/, 45};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
@@ -151,7 +152,8 @@ public class AutoTrajectories {
 
             // === START → INTAKE POS ===
             startToIntake[i] = drive.actionBuilder(currentStart)
-                    .setTangent(intakeStartRad)
+                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, audienceShootPos.position.y), allianceTangent(90))
+                    .setTangent(allianceTangent(270))
                     .splineToLinearHeading(intakePose, intakeEndRad, SlowConstraint)
                     .build();
 
