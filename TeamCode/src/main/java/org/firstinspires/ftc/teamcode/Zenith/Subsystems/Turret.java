@@ -18,12 +18,12 @@ import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurr
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
@@ -31,31 +31,32 @@ import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 public class Turret extends SubsystemBase {
 
     public static DcMotorEx mT;
+    public static double turretOffset = 0;
+    public static int manualOffset = 0;
+    public static double turretError;
+
+    public static double lastTurretError;
+
+    public static int desiredTicks;
+    private static double targetPositionTicks;
+    private final VoltageSensor voltageSensor;
     //public static TouchSensor lT;
     private PIDController pidController;
-//    private PIDController pidfController;
+    //    private PIDController pidfController;
     private SimpleMotorFeedforward feedforwardController;
-
     private double kF = 0.0;   // velocity gain
     private double kA = 0.0; //acceleration gain
     private double kS = 0.0;   // static gain
-
-
     private double lastTicks = 0;
     private double lastTime = 0;
     private double turretVelocityTicksPerSec = 0;
-    private final VoltageSensor voltageSensor;
-    private static double targetPositionTicks;
+    private ElapsedTime elapsedTime = new ElapsedTime();
     private double motorPower;
     private double pidPower;
-    public static double turretOffset = 0;
-    public static int manualOffset = 0;
+    private double powerAdded;
     private boolean PIDDisabled = false;
 
-    public static int desiredTicks;
-
     // === TURRET CONSTANTS ===
-
     private double lastTurretAngle = 0.0; // radians
 
     public Turret(HardwareMap hardwareMap) {
@@ -72,26 +73,46 @@ public class Turret extends SubsystemBase {
 
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-         feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+        feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
 
         manualOffset = 0;
     }
 
+    // === BASIC CONTROLS ===
+    public static double getCurrentPosition() {
+        return -(mT.getCurrentPosition() - turretOffset);
+    }
+
+    public static double getTargetPosition() {
+        return targetPositionTicks;
+    }
+
+    public static void setTargetPosition(double ticks) {
+        targetPositionTicks = ticks;
+    }
+
     @Override
     public void periodic() {
+
         // Run PID control if enabled
+
         //if (lT.isPressed()) {
 //            turretOffset += mT.getCurrentPosition();
 //        }
 
-        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition()) ;
+        turretError = (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
+
+        double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition());
 
         double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
-
-        // zeros the turret readings when the magnetic sensor is pressed
-//
+        if (lastTurretError >= turretError-50 && lastTurretError <= turretError+50){
+            powerAdded = .2;
+        }
+        else {
+            powerAdded = 0;
+        }
 
 
 
@@ -99,14 +120,9 @@ public class Turret extends SubsystemBase {
 
 //        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
-        if ((Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE) > TURRET_TOLERANCE_DEG) {
+        if (turretError > TURRET_TOLERANCE_DEG) {
 
-           // This is new
-           // motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks + manualOffset) + ffPower)/voltageSensor.getVoltage();
-
-
-           //This is old code
-            motorPower = (pidController.calculate(getCurrentPosition(),targetPositionTicks) + ffPower) / voltageSensor.getVoltage();
+            motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / voltageSensor.getVoltage()) + powerAdded;
 
         } else {
             motorPower = 0;
@@ -115,12 +131,13 @@ public class Turret extends SubsystemBase {
 
         mT.setPower(motorPower);
 
+if (elapsedTime.seconds() > .2){
+    lastTurretError = turretError;
+        elapsedTime.reset();
+}
 
-    }
 
-    // === BASIC CONTROLS ===
-    public static double getCurrentPosition() {
-        return -(mT.getCurrentPosition() - turretOffset);
+
     }
 
     public double getCurrentMotorPower() {
@@ -129,14 +146,6 @@ public class Turret extends SubsystemBase {
 
     public double getTurretThetaRAD() {
         return (getCurrentPosition() * TURRET_RADIANS_PER_TICK);
-    }
-
-    public static void setTargetPosition(double ticks) {
-        targetPositionTicks = ticks;
-    }
-
-    public static double getTargetPosition() {
-        return targetPositionTicks;
     }
 
     public void disablePID() {
@@ -200,7 +209,7 @@ public class Turret extends SubsystemBase {
         telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
         telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-        telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+        // telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
         telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
         telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
