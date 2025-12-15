@@ -107,8 +107,8 @@ public class Turret extends SubsystemBase {
 
         double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
-        if (lastTurretError >= turretError-50 && lastTurretError <= turretError+50){
-            powerAdded = .2;
+        if (lastTurretError >= turretError-150 && lastTurretError <= turretError+150){
+            powerAdded = Math.signum(ffPower) * .05;
         }
         else {
             powerAdded = 0;
