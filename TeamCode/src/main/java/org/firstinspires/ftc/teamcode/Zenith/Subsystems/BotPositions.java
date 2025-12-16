@@ -39,3 +39,6 @@ public class BotPositions {
     public static double LONG_DISTANCE_TPS = 1400, SHORT_DISTANCE_TPS;
 
 }
+
+
+
