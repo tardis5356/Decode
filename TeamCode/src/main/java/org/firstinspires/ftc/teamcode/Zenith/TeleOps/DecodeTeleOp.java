@@ -5,6 +5,7 @@ package org.firstinspires.ftc.teamcode.Zenith.TeleOps;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -118,6 +119,11 @@ public class DecodeTeleOp extends CommandOpMode {
     public void initialize() {
 
         {
+            if (!inAuto) {
+                turret = new Turret(hardwareMap);
+                turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                savedPos = new Pose2d(0, 0, Math.toRadians(0));
+            }
             GlobalVariables.inAuto = false;
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
             //Removes previous Commands from scheduler
@@ -128,15 +134,14 @@ public class DecodeTeleOp extends CommandOpMode {
             //sets the digital position of the robot to intake for the deposit to state command
 
             if (savedPos == null) {
-            savedPos = new Pose2d(0, 0, Math.toRadians(0));
+                savedPos = new Pose2d(0, 0, Math.toRadians(0));
             }
 
             //init controllers
             driver1 = new GamepadEx(gamepad1);
             driver2 = new GamepadEx(gamepad2);
 
-            turret = new Turret(hardwareMap);
-//            turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+
             turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
             storage = new Storage(hardwareMap);
@@ -214,11 +219,11 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
-        new Trigger(()->driver2.getRightY()>.1)
-                .whenInactive(()->shooter.speedOffset -= 25);
+        new Trigger(() -> driver2.getRightY() > .1)
+                .whenInactive(() -> shooter.speedOffset -= 25);
 
-        new Trigger(()->driver2.getRightY()<.1)
-                .whenInactive(()->shooter.speedOffset += 25);
+        new Trigger(() -> driver2.getRightY() < .1)
+                .whenInactive(() -> shooter.speedOffset += 25);
 
         //red vs blue alliance
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
@@ -251,11 +256,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(()->turret.manualOffset -= 350);
+                .whenInactive(() -> turret.manualOffset -= 350);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(()->turret.manualOffset += 350);
+                .whenInactive(() -> turret.manualOffset += 350);
 
 
         //Engage/Disengage PTO
@@ -403,18 +408,18 @@ public class DecodeTeleOp extends CommandOpMode {
                             )
                     );
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
                     .whenActive(
                             new InstantCommand(storage::storeSlot)
                     );
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
                     .whenActive(
                             new InstantCommand(storage::returnSlot)
                     );
 
-            new Trigger(()-> gamepad2.ps)
-                    .toggleWhenActive(storage::closeGate,storage::openGate);
+            new Trigger(() -> gamepad2.ps)
+                    .toggleWhenActive(storage::closeGate, storage::openGate);
 
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
 //                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
@@ -430,7 +435,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenInactive(()->
+                    .whenInactive(() ->
                             shooter.hoodOffset += .025);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
@@ -514,16 +519,14 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
-        if(intake.mI.getPower() == 0){
-            if(driver1.getButton(GamepadKeys.Button.X)){
+        if (intake.mI.getPower() == 0) {
+            if (driver1.getButton(GamepadKeys.Button.X)) {
                 intake.in();
-            }
-            else if(driver1.getButton(GamepadKeys.Button.Y)){
+            } else if (driver1.getButton(GamepadKeys.Button.Y)) {
                 intake.out();
             }
-        }
-        else{
-            if(driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)){
+        } else {
+            if (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) {
                 intake.stop();
             }
         }
@@ -603,7 +606,7 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
         telemetry.addData("motorPower", shooter.mST.getPower());
-        telemetry.addData("turretOffset",turret.manualOffset);
+        telemetry.addData("turretOffset", turret.manualOffset);
 
 
         telemetry.update();
