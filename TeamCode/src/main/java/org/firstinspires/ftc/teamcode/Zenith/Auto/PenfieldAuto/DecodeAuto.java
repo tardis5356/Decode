@@ -357,11 +357,14 @@ public class DecodeAuto extends OpMode {
             drive.rightFront.setPower(0);
 
             auto = null;
+        }else{
+            turret.updateTurretTracking(drive, telemetry2);
+            shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
         }
 
 
-        turret.updateTurretTracking(drive, telemetry2);
-shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
+
+
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
