@@ -40,6 +40,7 @@ public class Turret extends SubsystemBase {
     public static int desiredTicks;
     private static double targetPositionTicks;
     private final VoltageSensor voltageSensor;
+    public static double startingvoltage;
     //public static TouchSensor lT;
     private PIDController pidController;
     //    private PIDController pidfController;
@@ -74,6 +75,7 @@ public class Turret extends SubsystemBase {
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+        startingvoltage = voltageSensor.getVoltage();
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
 
         manualOffset = 0;
@@ -122,7 +124,7 @@ public class Turret extends SubsystemBase {
 
         if (turretError > TURRET_TOLERANCE_DEG) {
 
-            motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / voltageSensor.getVoltage()) + powerAdded;
+            motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded;
 
         } else {
             motorPower = 0;

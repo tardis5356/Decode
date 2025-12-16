@@ -24,6 +24,8 @@ public class Shooter extends SubsystemBase {
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
     public static float vP = 0.0095f, vI = 0, vD = 0.0005f, vV = 0.007f, vS = 0;
 
+    public static double hardWheelOffset = 10;
+
     public static double neededVoltage, dutyCycle, batteryVoltage;
 
     private final VoltageSensor voltageSensor;
@@ -79,13 +81,13 @@ public class Shooter extends SubsystemBase {
         HoodRegression.put(18.,.85);
 
         //MDRegression.put(115., .05);
-        WheelRegression.put(152., 1450.);
-        WheelRegression.put(126.7, 1325.);
-        WheelRegression.put(96.6,1100.);
-        WheelRegression.put(75.7,1075.);
-        WheelRegression.put(54.5,975.);
-        WheelRegression.put(34.5,975.);
-        WheelRegression.put(18.,850.);
+        WheelRegression.put(152., 1450.-hardWheelOffset);
+        WheelRegression.put(126.7, 1325.-hardWheelOffset);
+        WheelRegression.put(96.6,1100.-hardWheelOffset);
+        WheelRegression.put(75.7,1075.-hardWheelOffset);
+        WheelRegression.put(54.5,975.-hardWheelOffset);
+        WheelRegression.put(34.5,975.-hardWheelOffset);
+        WheelRegression.put(18.,850.-hardWheelOffset);
 
 
         targeting = true;

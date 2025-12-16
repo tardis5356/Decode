@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.MAX_CYCLES;
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.roadrunner.Action;
@@ -28,7 +27,8 @@ public class AutoTrajectories {
     public static Pose2d parkPos;
 
     // Actions: for each cycle index we create startToIntake and intakeToShoot actions
-    public static Action[] startToIntake = new Action[MAX_CYCLES];
+    public static Action[] startToIntakeWaypoint = new Action[MAX_CYCLES];
+    public static Action[] intakeWaypointToIntake = new Action[MAX_CYCLES];
     public static Action[] intakeToShoot = new Action[MAX_CYCLES];
     public static Action gateRelease, gateExit;
 
@@ -87,11 +87,11 @@ public class AutoTrajectories {
 
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
-        audienceStartPos = allianceCoordinate(new Pose2d(62.75, 12, Math.toRadians(90)));
+        audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
-        goalIntakePos = allianceCoordinate(new Pose2d(-12, 51, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(12, 51, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(32, 51, Math.toRadians(90)));
+        goalIntakePos = allianceCoordinate(new Pose2d(-12, 63, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(12, 63, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
@@ -151,9 +151,11 @@ public class AutoTrajectories {
             double intakeStartRad = allianceTangent(intakeStartDeg);
 
             // === START → INTAKE POS ===
-            startToIntake[i] = drive.actionBuilder(currentStart)
-                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, audienceShootPos.position.y), allianceTangent(90))
-                    .setTangent(allianceTangent(270))
+            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
+                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, goalShootPos.position.y), allianceTangent(90))
+                    .build();
+
+            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, goalShootPos.position.y), allianceTangent(90)))
                     .splineToLinearHeading(intakePose, intakeEndRad, SlowConstraint)
                     .build();
 

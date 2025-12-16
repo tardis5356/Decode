@@ -127,16 +127,16 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
-//            if (savedPos == null) {
+            if (savedPos == null) {
             savedPos = new Pose2d(0, 0, Math.toRadians(0));
-//            }
+            }
 
             //init controllers
             driver1 = new GamepadEx(gamepad1);
             driver2 = new GamepadEx(gamepad2);
 
             turret = new Turret(hardwareMap);
-            turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+//            turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
             storage = new Storage(hardwareMap);

@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.gateExit;
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.gateRelease;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeWaypointToIntake;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntakeWaypoint;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
 
 
@@ -15,7 +13,6 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.Zenith.Commands.AutoLaunchCommands;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
@@ -45,10 +42,10 @@ public class AutoGenerator {
 //
 
 
-            if (startToIntake[i] != null) {
+            if (startToIntakeWaypoint[i] != null) {
                 seq.add(new InstantCommand(intake::in));
-                seq.add(new ActionCommand(startToIntake[i], requirements));
-
+                seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
+                seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
             }
 
 
