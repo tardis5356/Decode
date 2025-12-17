@@ -54,7 +54,7 @@ public class Turret extends SubsystemBase {
     private ElapsedTime elapsedTime = new ElapsedTime();
     private double motorPower;
     private double pidPower;
-    private double powerAdded;
+    private double powerAdded = 0;
     private boolean PIDDisabled = false;
 
     // === TURRET CONSTANTS ===
@@ -109,12 +109,7 @@ public class Turret extends SubsystemBase {
 
         double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
-        if (lastTurretError >= turretError-150 && lastTurretError <= turretError+150){
-            powerAdded = Math.signum(ffPower) * .05;
-        }
-        else {
-            powerAdded = 0;
-        }
+
 
 
 
@@ -133,7 +128,14 @@ public class Turret extends SubsystemBase {
 
         mT.setPower(motorPower);
 
-if (elapsedTime.seconds() > .2){
+if (elapsedTime.seconds() > .05){
+    if (lastTurretError >= turretError - 200 && lastTurretError <= turretError + 200){
+
+        powerAdded += Math.signum(ffPower) * .05;
+    }
+    else {
+        powerAdded = 0;
+    }
     lastTurretError = turretError;
         elapsedTime.reset();
 }
