@@ -131,7 +131,7 @@ public class Turret extends SubsystemBase {
 if (elapsedTime.seconds() > .05){
     if (lastTurretError >= turretError - 200 && lastTurretError <= turretError + 200){
 
-        powerAdded += Math.signum(ffPower) * .05;
+        powerAdded += Math.signum(motorPower) * .05;
     }
     else {
         powerAdded = 0;
