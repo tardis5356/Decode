@@ -34,6 +34,7 @@ public class Turret extends SubsystemBase {
     public static double turretOffset = 0;
     public static int manualOffset = 0;
     public static double turretError;
+    public boolean mustWrap;
 
     public static double lastTurretError;
 
@@ -52,6 +53,8 @@ public class Turret extends SubsystemBase {
     private double lastTime = 0;
     private double turretVelocityTicksPerSec = 0;
     private ElapsedTime elapsedTime = new ElapsedTime();
+    private ElapsedTime timeSinceWrapped = new ElapsedTime();
+    private ElapsedTime timeFromLastTurretError = new ElapsedTime();
     private double motorPower;
     private double pidPower;
     private double powerAdded = 0;
@@ -111,34 +114,44 @@ public class Turret extends SubsystemBase {
 
 
 
-
+        if(Math.abs(targetPositionTicks-getCurrentPosition())> (300 * TURRET_TICKS_PER_DEGREE)){
+            mustWrap = true;
+            timeSinceWrapped.reset();
+        }
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
 //        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 
         if (turretError > TURRET_TOLERANCE_DEG) {
-
-            motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded;
+            if(mustWrap){
+                motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded)/2.5;
+            }else{
+                motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded;
+            }
 
         } else {
             motorPower = 0;
         }
 
+        if(timeSinceWrapped.seconds()>1){
+            mustWrap = false;
+        }
 
         mT.setPower(motorPower);
 
-if (elapsedTime.seconds() > .05){
-    if (lastTurretError >= turretError - 200 && lastTurretError <= turretError + 200){
-
-        powerAdded += Math.signum(motorPower) * .05;
-    }
-    else {
-        powerAdded = 0;
-    }
-    lastTurretError = turretError;
-        elapsedTime.reset();
-}
+//        if (elapsedTime.seconds() > .05) {
+//
+//            if (lastTurretError >= turretError - 200 && lastTurretError <= turretError + 200) {
+//                powerAdded += Math.signum(motorPower) * .05;
+//            } else {
+//                powerAdded = 0;
+//            }
+//
+//            lastTurretError = turretError;
+//            elapsedTime.reset();
+//        }
+//
 
 
 
@@ -194,9 +207,7 @@ if (elapsedTime.seconds() > .05){
             desiredTurretOnBotAngleRAD -= 2 * Math.PI;
         }
 
-
         desiredTicks = (int) Math.round(desiredTurretOnBotAngleRAD / TURRET_RADIANS_PER_TICK) + manualOffset;
-
 
         setTargetPosition(desiredTicks);
 
