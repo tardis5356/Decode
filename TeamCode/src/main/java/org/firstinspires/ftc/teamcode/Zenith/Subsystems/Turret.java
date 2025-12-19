@@ -125,9 +125,9 @@ public class Turret extends SubsystemBase {
 
         if (turretError > TURRET_TOLERANCE_DEG) {
             if(mustWrap){
-                motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded)/2.5;
+                motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded);
             }else{
-                motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / startingvoltage) + powerAdded;
+                motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded;
             }
 
         } else {

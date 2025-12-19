@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.allianceValue;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
@@ -95,6 +96,8 @@ public class DecodeAuto extends OpMode {
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
+      //  turret.setTargetPosition(allianceValue(-12000));
+
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
 
 
@@ -104,6 +107,12 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void init_loop() {
+
+
+     //   turret.periodic();
+
+
+
         // --- Alliance selection ---
         if (gamepad2.a) {
             aColor = "blue";
@@ -325,7 +334,7 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage, turret);
         CommandScheduler.getInstance().schedule(
                 auto
         );
@@ -348,16 +357,16 @@ public class DecodeAuto extends OpMode {
         }
 
         CommandScheduler.getInstance().run();
-        if (runtime.seconds() > 29 && auto != null) {
-            CommandScheduler.getInstance().cancel(auto);
-
-            drive.leftBack.setPower(0);
-            drive.leftFront.setPower(0);
-            drive.rightBack.setPower(0);
-            drive.rightFront.setPower(0);
-
-            auto = null;
-        }
+//        if (runtime.seconds() > 29 && auto != null) {
+//            CommandScheduler.getInstance().cancel(auto);
+//
+//            drive.leftBack.setPower(0);
+//            drive.leftFront.setPower(0);
+//            drive.rightBack.setPower(0);
+//            drive.rightFront.setPower(0);
+//
+//            auto = null;
+//        }
 
             turret.updateTurretTracking(drive, telemetry2);
             shooter.setTargetDistance(GlobalVariables.distanceFromTarget);

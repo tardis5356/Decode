@@ -85,10 +85,17 @@ public class AutoTrajectories {
         return Math.toRadians(degrees);
     }
 
+    public static double allianceValue(double value) {
+        if ("blue".equals(aColor)) {
+            return -value;
+        }
+        return value;
+    }
+
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
-        goalStartPos = allianceCoordinate(new Pose2d(-48, 52, Math.toRadians(308)));
+        goalStartPos = allianceCoordinate(new Pose2d(-49.5, 52.5, Math.toRadians(308)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 63, Math.toRadians(90)));
         midIntakePos = allianceCoordinate(new Pose2d(12, 63, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
@@ -152,10 +159,10 @@ public class AutoTrajectories {
 
             // === START → INTAKE POS ===
             startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, goalShootPos.position.y), allianceTangent(90))
+                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90))
                     .build();
 
-            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, goalShootPos.position.y), allianceTangent(90)))
+            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90)))
                     .splineToLinearHeading(intakePose, intakeEndRad, SlowConstraint)
                     .build();
 

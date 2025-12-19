@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.allianceValue;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeWaypointToIntake;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntakeWaypoint;
@@ -16,6 +17,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +34,12 @@ public class AutoGenerator {
      * - runs intakeToShootActions[i]
      * after all cycles: runs gateAction
      */
-    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage) {
+    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
         List<Command> seq = new ArrayList<>();
 
-        seq.add(new WaitCommand(1000));
+        seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-300))));
+
+        seq.add(new WaitCommand(3000));
          seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
 
         for (int i = 0; i < cycleCount; i++) {
@@ -50,6 +54,7 @@ public class AutoGenerator {
 
 
             if (intakeToShoot[i] != null) {
+                seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-500))));
                 seq.add(new ActionCommand(intakeToShoot[i], requirements));
                 seq.add(new InstantCommand(intake::stop));
             }
