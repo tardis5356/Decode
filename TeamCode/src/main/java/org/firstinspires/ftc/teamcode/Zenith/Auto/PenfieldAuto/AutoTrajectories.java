@@ -101,7 +101,8 @@ public class AutoTrajectories {
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 63, Math.toRadians(90)));
         midIntakePos = allianceCoordinate(new Pose2d(13, 63, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
-        goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
+        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90))); //-32，10
+//        goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
         gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
@@ -158,12 +159,13 @@ public class AutoTrajectories {
 
             if (startPos == goalStartPos && i == 0){
                 goalStartToGoalShoot = drive.actionBuilder(currentStart)
-                        .strafeToLinearHeading(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90))
+                        .strafeToLinearHeading(new Vector2d(-12, allianceValue(17)), allianceTangent(90))
 
-                        .strafeToLinearHeading(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90))
+//                        .strafeToLinearHeading(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90))
                         .build();
+                currentStart = new Pose2d(new Vector2d(-12, allianceValue(17)), allianceTangent(90));
 
-                currentStart = new Pose2d(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90));
+//                currentStart = new Pose2d(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90));
             }
 
 

@@ -160,7 +160,8 @@ startPos = null;
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 3;
+                cycleCount = 2;
+//                cycleCount = 3;
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: goal
                         {0, 1}, //shoot: goal, intake: mid
