@@ -66,6 +66,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
     //private IntakeInCommand intakeInCommand;
     boolean firing;
+    boolean turretLocalized = true;
     AprilTagDetection detectedTag;
     double mFLPower;
     double mFRPower;
@@ -117,7 +118,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
 
-        //aColor = "blue";
+
 
 
         {
@@ -424,8 +425,11 @@ public class DecodeTeleOp extends CommandOpMode {
                             new InstantCommand(storage::returnSlot)
                     );
 
-            new Trigger(()-> gamepad2.ps)
+            new Trigger(()-> gamepad2.touchpad)
                     .toggleWhenActive(storage::closeBack,storage::openBack);
+
+            new Trigger(()-> gamepad2.ps)
+                    .toggleWhenActive(new InstantCommand(()->aColor = "red"), new InstantCommand(()->aColor = "blue"));
 
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
 //                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
@@ -434,10 +438,16 @@ public class DecodeTeleOp extends CommandOpMode {
             //Relocalize in Alliance Corner
             //In red LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "red")
-                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0))));
+                    .whenActive(new SequentialCommandGroup(
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0) ) ) ),
+                            new InstantCommand(()-> turretLocalized = false)
+                    ));
           //In blue LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "blue")
-                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0))));
+                    .whenActive(new SequentialCommandGroup(
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0) ) ) ),
+                            new InstantCommand(()-> turretLocalized = false)
+                    ));
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
@@ -556,6 +566,14 @@ public class DecodeTeleOp extends CommandOpMode {
             turret.updateTurretTracking(drive, telemetry);
         }
 
+        if(!turretLocalized){
+            if(turret.lT.isPressed()){
+                turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+                turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+                turretLocalized = true;
+            }
+        }
+
 
         if (flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
             currentShootMode = shootModes.FLY;
@@ -617,9 +635,14 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
         telemetry.addData("motorPower", shooter.mST.getPower());
+        telemetry.addLine();
         telemetry.addData("turretOffset",turret.manualOffset);
+        telemetry.addLine();
+        telemetry.addData("aColor", aColor);
 
-        telemetry2.addData("position",drive.localizer.getPose());
+        
+
+        telemetry.addData("position",drive.localizer.getPose());
 
 
         telemetry.update();

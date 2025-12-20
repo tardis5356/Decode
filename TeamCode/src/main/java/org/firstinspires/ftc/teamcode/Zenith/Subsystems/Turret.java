@@ -22,6 +22,7 @@ import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -42,7 +43,7 @@ public class Turret extends SubsystemBase {
     private static double targetPositionTicks;
     private final VoltageSensor voltageSensor;
     public static double startingvoltage;
-    //public static TouchSensor lT;
+    public static TouchSensor lT;
     private PIDController pidController;
     //    private PIDController pidfController;
     private SimpleMotorFeedforward feedforwardController;
@@ -65,7 +66,7 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
-        //lT = hardwareMap.get(TouchSensor.class, "lT");
+        lT = hardwareMap.get(TouchSensor.class, "lT");
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
