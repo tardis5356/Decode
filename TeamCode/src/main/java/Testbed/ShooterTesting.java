@@ -26,7 +26,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import java.util.concurrent.TimeUnit;
 
 @Config
-@TeleOp(name="10.2.25_Shooter_Test")
+//@TeleOp(name="10.2.25_Shooter_Test")
 public class ShooterTesting extends CommandOpMode {
 
     public static float vP = 0.0095f, vI = 0, vD = 0.0005f, vV = 0.007f, vS = 0;
