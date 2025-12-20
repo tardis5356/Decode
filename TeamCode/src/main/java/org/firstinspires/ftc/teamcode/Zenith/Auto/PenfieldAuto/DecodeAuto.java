@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.allianceValue;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.motif;
 
@@ -49,7 +50,7 @@ public class DecodeAuto extends OpMode {
     // --- Cycle selection ---
     public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static Pose2d savedPos;
-    public Pose2d startPos;
+    public static Pose2d startPos;
     private ElapsedTime runtime = new ElapsedTime();
     private MecanumDrive drive;
     private FtcDashboard dashboard;
@@ -89,17 +90,18 @@ public class DecodeAuto extends OpMode {
         shooter = new Shooter(hardwareMap);
 
 
-        shooter.spinning = true;
-        shooter.targeting = true;
+
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
+        CommandScheduler.getInstance().registerSubsystem(turret);
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
-      //  turret.setTargetPosition(allianceValue(-12000));
+
 
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
-
+startPos = null;
+        turret.setTargetPosition(allianceValue(0));
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
@@ -107,11 +109,20 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void init_loop() {
+        CommandScheduler.getInstance().run();
+
+        shooter.spinning = false;
+        shooter.targeting = false;
 
 
-     //   turret.periodic();
+        if (startPos == AutoTrajectories.audienceStartPos){
+            turret.setTargetPosition(allianceValue(-12000));
+        }else if (startPos == AutoTrajectories.goalStartPos){
+            turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
 
+        }
 
+      //  turret.periodic();
 
         // --- Alliance selection ---
         if (gamepad2.a) {
@@ -132,13 +143,13 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 2;
+                cycleCount = 3;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
-                        {1, 2}, //shoot: audience, intake: audience
-                        {1, 1}, //shoot: goal, intake: goal
-                        //gate
+                        {0, 0}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
+                        //gate
+                        {1, 2}, //shoot: goal, intake: Goal
                         {1, 4}, //shoot: audience, intake: LZ random
                         {1, 4} //shoot: audience, intake: LZ random
                 };
@@ -149,26 +160,27 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 2;
+                cycleCount = 3;
                 choices = new int[][]{
-                        {1, 2}, //shoot: audience, intake: audience
+                        {1, 2}, //shoot: audience, intake: goal
                         {0, 1}, //shoot: goal, intake: mid
                         //gate
-                        {0, 0}, //shoot: goal, intake: goal
+                        {0, 0}, //shoot: goal, intake: audience
                         {0, 2}, //shoot: audience, intake: audience
                         {1, 4} //shoot: audience, intake: LZ random
                 };
 
             }
+
         }
 
         // --- Handle user input for cycles ---
         handleInput();
 
 
-        if (aColor != null) {
-            camera.setObeliskMotif();
-        }
+//        if (aColor != null) {
+//            camera.setObeliskMotif();
+//        }
 
 
         // --- Display telemetry table and alliance/start ---
@@ -329,6 +341,10 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void start() {
+
+        shooter.spinning = true;
+        shooter.targeting = true;
+
         runtime.reset();
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);

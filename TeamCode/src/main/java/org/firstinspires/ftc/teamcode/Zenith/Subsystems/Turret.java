@@ -86,7 +86,7 @@ public class Turret extends SubsystemBase {
 
     // === BASIC CONTROLS ===
     public static double getCurrentPosition() {
-        return -(mT.getCurrentPosition() - turretOffset);
+        return -mT.getCurrentPosition() + turretOffset;
     }
 
     public static double getTargetPosition() {
@@ -106,7 +106,7 @@ public class Turret extends SubsystemBase {
 //            turretOffset += mT.getCurrentPosition();
 //        }
 
-        turretError = (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE);
+        turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
 
         double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition());
 

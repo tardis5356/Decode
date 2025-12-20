@@ -32,6 +32,8 @@ public class AutoTrajectories {
     public static Action[] intakeToShoot = new Action[MAX_CYCLES];
     public static Action gateRelease, gateExit;
 
+    public static Action goalStartToGoalShoot;
+
     public static Action park;
 
 
@@ -40,7 +42,7 @@ public class AutoTrajectories {
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg = {225, 0}; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg = {225, 315}; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
@@ -55,7 +57,7 @@ public class AutoTrajectories {
 
     public static MinVelConstraint BaseConstraint = new MinVelConstraint(
             Arrays.asList(
-                    new TranslationalVelConstraint(50),//inches per second
+                    new TranslationalVelConstraint(55),//inches per second
                     new AngularVelConstraint(Math.PI) // remember the units you're working in, especially for angular constraints!
             )
     );
@@ -95,9 +97,9 @@ public class AutoTrajectories {
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
-        goalStartPos = allianceCoordinate(new Pose2d(-49.5, 52.5, Math.toRadians(308)));
+        goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 63, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(12, 63, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(13, 63, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
@@ -142,6 +144,8 @@ public class AutoTrajectories {
             if (i == 0) {
                 // first cycle: based on start position
                 intakeStartDeg = currentStart.equals(goalStartPos) ? startPosTangentDeg[0] : startPosTangentDeg[1];
+
+
             }
 //            else if (i - 1 == gateCycleIndex) {
 //                intakeStartDeg = allianceTangent(270);
@@ -151,6 +155,16 @@ public class AutoTrajectories {
                 // later cycles: based on previous shoot position
                 intakeStartDeg = intakeStartTangentDeg[choices[i - 1][0]];
             }
+
+            if (startPos == goalStartPos && i == 0){
+                goalStartToGoalShoot = drive.actionBuilder(currentStart)
+                        .strafeToLinearHeading(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90))
+                        .build();
+
+                currentStart = new Pose2d(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90));
+            }
+
+
 
 
             // End tangent for intake
@@ -163,7 +177,7 @@ public class AutoTrajectories {
                     .build();
 
             intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90)))
-                    .splineToLinearHeading(intakePose, intakeEndRad, SlowConstraint)
+                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
                     .build();
 
             // === INTAKE POS → SHOOT ===

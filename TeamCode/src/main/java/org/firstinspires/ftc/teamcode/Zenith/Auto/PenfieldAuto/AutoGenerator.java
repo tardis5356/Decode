@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.allianceValue;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.goalStartToGoalShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeWaypointToIntake;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntakeWaypoint;
@@ -37,10 +38,22 @@ public class AutoGenerator {
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
         List<Command> seq = new ArrayList<>();
 
-        seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-300))));
 
-        seq.add(new WaitCommand(3000));
-         seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+        if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos){
+
+            seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-300))));
+
+            seq.add(new WaitCommand(1000));
+            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+        }
+
+        if (DecodeAuto.startPos == AutoTrajectories.goalStartPos){
+            seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-500))));
+
+            seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
+            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+        }
+
 
         for (int i = 0; i < cycleCount; i++) {
 //
