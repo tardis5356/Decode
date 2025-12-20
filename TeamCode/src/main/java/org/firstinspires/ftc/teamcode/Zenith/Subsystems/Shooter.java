@@ -82,8 +82,13 @@ public class Shooter extends SubsystemBase {
 
         //MDRegression.put(115., .05);
         WheelRegression.put(152., 1450.-hardWheelOffset);
+        WheelRegression.put(149.,1450.-hardWheelOffset);
         //WheelRegression.put(126.7, 1325.-hardWheelOffset);
         WheelRegression.put(126.7, 1350.-hardWheelOffset);
+
+        //TODO:Check this point
+        WheelRegression.put(120.,1350-hardWheelOffset);
+
         WheelRegression.put(96.6,1100.-hardWheelOffset);
         WheelRegression.put(75.7,1075.-hardWheelOffset);
         WheelRegression.put(54.5,975.-hardWheelOffset);
