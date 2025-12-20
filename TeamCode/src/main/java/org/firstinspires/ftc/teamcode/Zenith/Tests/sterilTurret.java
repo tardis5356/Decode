@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.Zenith.Tests;
 
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 
-//@TeleOp(name = "steril_Turret")
-
+@TeleOp(name = "steril_Turret")
+@Disabled
 public class sterilTurret extends CommandOpMode {
 
     double motorPower;

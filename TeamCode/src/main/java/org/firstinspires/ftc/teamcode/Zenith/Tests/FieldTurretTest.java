@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -36,7 +37,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 //https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
 
 @Config
-//@TeleOp(name = "FieldTurretTest", group = "AGen1")
+@TeleOp(name = "FieldTurretTest", group = "AGen1")
+@Disabled
 public class FieldTurretTest extends CommandOpMode {
 
     private GamepadEx driver1, driver2;

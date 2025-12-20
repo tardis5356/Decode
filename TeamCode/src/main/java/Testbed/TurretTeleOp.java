@@ -4,6 +4,7 @@ package Testbed;
 import android.util.Size;
 
 import com.arcrobotics.ftclib.controller.PDController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @TeleOp(name="Turret_POC_ONLY", group = "Testbed")
+@Disabled
 public class TurretTeleOp extends LinearOpMode {
 
     private static final Logger log = LoggerFactory.getLogger(TurretTeleOp.class);
