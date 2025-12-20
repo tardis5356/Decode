@@ -637,10 +637,11 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("motorPower", shooter.mST.getPower());
         telemetry.addLine();
         telemetry.addData("turretOffset",turret.manualOffset);
+        telemetry.addData("WheelOffset", shooter.speedOffset);
         telemetry.addLine();
         telemetry.addData("aColor", aColor);
 
-        
+
 
         telemetry.addData("position",drive.localizer.getPose());
 

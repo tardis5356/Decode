@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
 
-@TeleOp(name="TurretTuner")
+//@TeleOp(name="TurretTuner")
 @Config
 public class TuneTurretPID extends CommandOpMode {
 

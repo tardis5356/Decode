@@ -36,7 +36,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 //https://ftc-docs.firstinspires.org/en/latest/apriltag/vision_portal/apriltag_intro/apriltag-intro.html
 
 @Config
-@TeleOp(name = "FieldTurretTest", group = "AGen1")
+//@TeleOp(name = "FieldTurretTest", group = "AGen1")
 public class FieldTurretTest extends CommandOpMode {
 
     private GamepadEx driver1, driver2;

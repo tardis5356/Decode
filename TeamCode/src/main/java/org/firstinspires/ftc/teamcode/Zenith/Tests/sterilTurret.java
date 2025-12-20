@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 
-@TeleOp(name = "steril_Turret")
+//@TeleOp(name = "steril_Turret")
 
 public class sterilTurret extends CommandOpMode {
 

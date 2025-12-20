@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="Hood_Test")
+//@TeleOp(name="Hood_Test")
 public class HoodTesting extends CommandOpMode {
 
     private ElapsedTime myTimer = new ElapsedTime();

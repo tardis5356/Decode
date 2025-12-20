@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 
-@TeleOp(name="TuneFlyWheel")
+//@TeleOp(name="TuneFlyWheel")
 public class TuneFlyWheel extends CommandOpMode {
 
     private Shooter shooter;
