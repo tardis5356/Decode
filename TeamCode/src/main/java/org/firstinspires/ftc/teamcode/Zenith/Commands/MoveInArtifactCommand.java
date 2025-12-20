@@ -15,7 +15,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
     private Intake intake;
     private ElapsedTime runtime = new ElapsedTime();
-    private Double timeout = 2.0;
+    private Double timeout = 1.2;
 
     public MoveInArtifactCommand(Intake intake) {
         // this is the actual method itself
