@@ -433,11 +433,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //Relocalize in Alliance Corner
             //In red LZ Corner
-//            new Trigger(() -> gamepad1.touchpad && aColor == "red")
-//                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0))));
-//          //In blue LZ Corner
-//            new Trigger(() -> gamepad1.touchpad && aColor == "blue")
-//                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0))));
+            new Trigger(() -> gamepad1.touchpad && aColor == "red")
+                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0))));
+          //In blue LZ Corner
+            new Trigger(() -> gamepad1.touchpad && aColor == "blue")
+                    .whenActive(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0))));
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
@@ -618,6 +618,8 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
         telemetry.addData("motorPower", shooter.mST.getPower());
         telemetry.addData("turretOffset",turret.manualOffset);
+
+        telemetry2.addData("position",drive.localizer.getPose());
 
 
         telemetry.update();
