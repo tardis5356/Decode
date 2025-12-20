@@ -36,7 +36,7 @@ import java.util.Set;
 
 @Autonomous(name = "Decode Auto"
 //        , group = "Autonomous"
-//        , preselectTeleOp = "Decode TeleOp"
+//        , preselectTeleOp = "Decode TeleOp" // TODO: readd preselect
 )
 
 //@Disabled
@@ -93,14 +93,14 @@ public class DecodeAuto extends OpMode {
 
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
-        CommandScheduler.getInstance().registerSubsystem(turret);
+        CommandScheduler.getInstance().registerSubsystem(turret); //TODO: comment out
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
-startPos = null;
+        startPos = null;
         turret.setTargetPosition(allianceValue(0));
 
         telemetry2.addData("Status", "Initialized");
@@ -121,6 +121,9 @@ startPos = null;
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
 
         }
+        /* else {
+            turret.setTargetPosition(0);
+        } */ //TODO: test this
 
       //  turret.periodic();
 
@@ -345,6 +348,8 @@ startPos = null;
 
         shooter.spinning = true;
         shooter.targeting = true;
+
+        // TODO: potentially add a command scheduler reset here
 
         runtime.reset();
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
