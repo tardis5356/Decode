@@ -48,7 +48,7 @@ public class AutoGenerator {
         }
 
         if (DecodeAuto.startPos == AutoTrajectories.goalStartPos){
-            seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-500))));
+            seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-700))));//-500 on blue
 
             seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
             seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
