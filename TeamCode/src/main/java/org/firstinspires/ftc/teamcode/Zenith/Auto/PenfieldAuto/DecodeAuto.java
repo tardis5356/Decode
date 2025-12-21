@@ -35,8 +35,8 @@ import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 import java.util.Set;
 
 @Autonomous(name = "Decode Auto"
-//        , group = "Autonomous"
-//        , preselectTeleOp = "Decode TeleOp" // TODO: readd preselect
+        , group = "Autonomous"
+        , preselectTeleOp = "Decode Teleop" // TODO: readd preselect
 )
 
 //@Disabled
@@ -90,13 +90,10 @@ public class DecodeAuto extends OpMode {
         shooter = new Shooter(hardwareMap);
 
 
-
-
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
-        CommandScheduler.getInstance().registerSubsystem(turret); //TODO: comment out
+      //  CommandScheduler.getInstance().registerSubsystem(turret); //TODO: comment out
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
 
 
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
@@ -115,9 +112,9 @@ public class DecodeAuto extends OpMode {
         shooter.targeting = false;
 
 
-        if (startPos == AutoTrajectories.audienceStartPos){
+        if (startPos == AutoTrajectories.audienceStartPos) {
             turret.setTargetPosition(allianceValue(-12000));
-        }else if (startPos == AutoTrajectories.goalStartPos){
+        } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
 
         }
@@ -125,7 +122,7 @@ public class DecodeAuto extends OpMode {
             turret.setTargetPosition(0);
         } */ //TODO: test this
 
-      //  turret.periodic();
+        //  turret.periodic();
 
         // --- Alliance selection ---
         if (gamepad2.a) {
@@ -146,7 +143,7 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 3;
+                cycleCount = 2;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
                         {0, 0}, //shoot: audience, intake: audience
@@ -192,8 +189,6 @@ public class DecodeAuto extends OpMode {
 
         //EASI - Easy Autonomous Selectable Interface
          //
-
-
 
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -351,6 +346,9 @@ public class DecodeAuto extends OpMode {
 
         // TODO: potentially add a command scheduler reset here
 
+//        CommandScheduler.getInstance().cancelAll();
+//        CommandScheduler.getInstance().reset();
+
         runtime.reset();
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
@@ -390,12 +388,8 @@ public class DecodeAuto extends OpMode {
 //            auto = null;
 //        }
 
-            turret.updateTurretTracking(drive, telemetry2);
-            shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
-
-
-
-
+        turret.updateTurretTracking(drive, telemetry2);
+        shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 
 
         if (drive != null) drive.updatePoseEstimate();
@@ -404,4 +398,10 @@ public class DecodeAuto extends OpMode {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
 
     }
+
+//    @Override
+//    public void stop() {// TODO Test
+//        CommandScheduler.getInstance().cancelAll();
+//        CommandScheduler.getInstance().reset();
+//    }
 }
