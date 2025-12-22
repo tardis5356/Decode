@@ -29,7 +29,7 @@ public class Storage extends SubsystemBase {
     @Override
     public void periodic(){
         //if the slot underneath the shooter isn't empty, close the gate, otherwise open it
-        if (GlobalVariables.currentArtifacts.charAt(1) != '_'){
+        if (GlobalVariables.currentArtifacts.charAt(1) != '_' || !kickerDown){
             closeGate();
         }
         else{
