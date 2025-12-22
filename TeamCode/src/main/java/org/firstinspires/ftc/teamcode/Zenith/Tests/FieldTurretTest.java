@@ -46,7 +46,7 @@ public class FieldTurretTest extends CommandOpMode {
 
     private Turret turret;
     private MecanumDrive drive;
-    private Camera camera;
+    //private Camera camera;
 
     private ElapsedTime relocalizeTimer = new ElapsedTime();  // timer for relocalization
 
@@ -95,7 +95,7 @@ public class FieldTurretTest extends CommandOpMode {
 
 
         drive = new MecanumDrive(hardwareMap, savedPos);
-        camera = new Camera(hardwareMap);
+      //  camera = new Camera(hardwareMap);
 
 
 
@@ -114,11 +114,11 @@ public class FieldTurretTest extends CommandOpMode {
 
 
 
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenActive(() -> camera.setObeliskMotif());
-        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
-        telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
-        telemetry.addLine("Initialized — ready to start!");
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+//                .whenActive(() -> camera.setObeliskMotif());
+//        telemetry.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
+//        telemetry.addData("DetectAprilTag?", !camera.getCurrentAprilTagDetections().isEmpty());
+//        telemetry.addLine("Initialized — ready to start!");
         telemetry.update();
 
 
@@ -171,18 +171,18 @@ public class FieldTurretTest extends CommandOpMode {
 
         // === Conditional relocalization ===
 
-        boolean slowEnough = speedInPerSec < MAX_RELOCALIZE_SPEED_IN_PER_SEC;
-        boolean timeElapsed = relocalizeTimer.seconds() > RELOCALIZE_INTERVAL_SEC;
-        boolean seesTag = !camera.getCurrentAprilTagDetections().isEmpty();
-
-//        if (slowEnough && timeElapsed && seesTag) {
-        if (seesTag && timeElapsed){
-            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
-            drive.localizer.setPose(relocalizedPose);
-            relocalizeTimer.reset();
-        }
-
+//        boolean slowEnough = speedInPerSec < MAX_RELOCALIZE_SPEED_IN_PER_SEC;
+//        boolean timeElapsed = relocalizeTimer.seconds() > RELOCALIZE_INTERVAL_SEC;
+//        boolean seesTag = !camera.getCurrentAprilTagDetections().isEmpty();
+//
+////        if (slowEnough && timeElapsed && seesTag) {
+//        if (seesTag && timeElapsed){
+//            Pose2d relocalizedPose = camera.getRelocalizedPose(drive, telemetry);
+//            drive.localizer.setPose(relocalizedPose);
+//            relocalizeTimer.reset();
 //        }
+//
+////        }
 
 
         // === Telemetry ===
@@ -200,20 +200,20 @@ public class FieldTurretTest extends CommandOpMode {
 
        // telemetry.addData("ActualTurretPos (DEG)", Math.toDegrees(mT.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         telemetry.addData("targetPosition (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
-
-        telemetry.addData("Alliance", GlobalVariables.aColor);
-        telemetry.addData("FPS", camera.visionPortal.getFps());
-        telemetry.addData("Turret Motor Power", turret.getCurrentMotorPower());
-//        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(de
-//        siredTurretAngleRobot));
-
-        telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
-        telemetry.addData("manualExposure", manualExposure);
-
-        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()) {
-            telemetry.addData("xCameraToTag", detection.ftcPose.x);
-            telemetry.addData("yCameraToTag", detection.ftcPose.y + CAMERA_RADIUS);
-        }
+//
+//        telemetry.addData("Alliance", GlobalVariables.aColor);
+//        telemetry.addData("FPS", camera.visionPortal.getFps());
+//        telemetry.addData("Turret Motor Power", turret.getCurrentMotorPower());
+////        telemetry.addData("Target Turret Angle (deg)", Math.toDegrees(de
+////        siredTurretAngleRobot));
+//
+//        telemetry.addData("Relocalize Timer", relocalizeTimer.seconds());
+//        telemetry.addData("manualExposure", manualExposure);
+//
+//        for (AprilTagDetection detection : camera.getCurrentAprilTagDetections()) {
+//            telemetry.addData("xCameraToTag", detection.ftcPose.x);
+//            telemetry.addData("yCameraToTag", detection.ftcPose.y + CAMERA_RADIUS);
+//        }
 
         telemetry.update();
     }

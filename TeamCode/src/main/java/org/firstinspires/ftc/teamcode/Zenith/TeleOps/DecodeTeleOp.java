@@ -106,7 +106,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //breakpad
     private BreakPad breakPad;
     //Cameras
-    private Camera camera;
+   // private Camera camera;
     //Roadrunner
     private RRSubsystem rrSubsystem;
     private RecoveryBuilder recoveryBuilder;
@@ -157,7 +157,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             breakPad = new BreakPad(hardwareMap);
 
-            camera = new Camera(hardwareMap);
+           // camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 
@@ -224,10 +224,10 @@ public class DecodeTeleOp extends CommandOpMode {
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
         new Trigger(()->driver2.getRightY()>.1)
-                .whenInactive(()->shooter.speedOffset -= 25);
+                .whileActiveOnce(new InstantCommand(()->shooter.speedOffset -= 25));
 
-        new Trigger(()->driver2.getRightY()<.1)
-                .whenInactive(()->shooter.speedOffset += 25);
+        new Trigger(()->driver2.getRightY()<-.1)
+                .whileActiveOnce(new InstantCommand(()->shooter.speedOffset += 25));
 
         //red vs blue alliance
 //        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
@@ -262,11 +262,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(()->turret.manualOffset -= 350);
+                .whenInactive(()->turret.manualOffset -= 550);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(()->turret.manualOffset += 350);
+                .whenInactive(()->turret.manualOffset += 550);
 
 
         //Engage/Disengage PTO
@@ -447,6 +447,11 @@ public class DecodeTeleOp extends CommandOpMode {
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0) ) ) ),
                             new InstantCommand(()-> turretLocalized = false)
+                    ));
+
+            new Trigger(() -> gamepad1.ps)
+                    .whenActive(new SequentialCommandGroup(
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0) ) ) )
                     ));
 
 

@@ -68,7 +68,7 @@ public class DecodeAuto extends OpMode {
 //    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
-    private Camera camera;
+    //private Camera camera;
     private Shooter shooter;
     private String aColor = null;
     private Command auto;
@@ -84,7 +84,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-        camera = new Camera(hardwareMap);
+       // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -113,7 +113,7 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-12000));
+            turret.setTargetPosition(allianceValue(-12100));
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
 
@@ -163,7 +163,7 @@ public class DecodeAuto extends OpMode {
                 cycleCount = 2;
 //                cycleCount = 3;
                 choices = new int[][]{
-                        {1, 2}, //shoot: audience, intake: goal
+                        {0, 2}, //shoot: goal, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
                         //gate
                         {0, 0}, //shoot: goal, intake: audience

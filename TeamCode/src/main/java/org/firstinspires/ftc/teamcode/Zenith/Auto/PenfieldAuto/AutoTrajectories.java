@@ -42,7 +42,7 @@ public class AutoTrajectories {
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg = {225, 315}; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg = {180, 315}; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
@@ -98,7 +98,7 @@ public class AutoTrajectories {
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
-        goalIntakePos = allianceCoordinate(new Pose2d(-12, 63, Math.toRadians(90)));
+        goalIntakePos = allianceCoordinate(new Pose2d(-12, 50, Math.toRadians(90)));
         midIntakePos = allianceCoordinate(new Pose2d(13, 63, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90))); //-32，10
