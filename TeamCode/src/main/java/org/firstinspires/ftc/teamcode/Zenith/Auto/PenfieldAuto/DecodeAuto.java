@@ -113,7 +113,8 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-11700));
+            turret.setTargetPosition(allianceValue(-12000));
+            //sometimes turn before setting configs
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
 
@@ -396,7 +397,8 @@ public class DecodeAuto extends OpMode {
         savedPos = drive.localizer.getPose();
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
-
+        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+        telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
     }
 
 //    @Override

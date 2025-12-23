@@ -20,6 +20,7 @@ import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -27,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
@@ -115,6 +117,8 @@ public class DecodeTeleOp extends CommandOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
+
+    public GoBildaPinpointDriver driver;
     @Override
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
@@ -154,7 +158,7 @@ public class DecodeTeleOp extends CommandOpMode {
             bellyPan = new BellyPan(hardwareMap);
 
             shooter = new Shooter(hardwareMap);
-            shooter.spinning = false;
+            shooter.spinning = true;
 
             breakPad = new BreakPad(hardwareMap);
 
@@ -169,6 +173,8 @@ public class DecodeTeleOp extends CommandOpMode {
             mFR = hardwareMap.get(DcMotorEx.class, "mFR");
             mBL = hardwareMap.get(DcMotorEx.class, "mBL");
             mBR = hardwareMap.get(DcMotorEx.class, "mBR");
+
+            driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
             shooter.hoodOffset = 0;
             shooter.speedOffset = 0;
@@ -286,7 +292,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //automated targetting on/off
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
-                .whenActive(() -> autoTarget = true);
+                //TODO: swap this back to true after testing
+                .toggleWhenActive(new InstantCommand(turret::disablePID), new InstantCommand(()-> turret.enablePID()));
 
         //if driver 2 stickY's or triggers are used the autotarget is turned off
 //        new Trigger(() -> driftLock((float) driver2.getLeftY()) != 0 ||
@@ -568,9 +575,9 @@ public class DecodeTeleOp extends CommandOpMode {
             shooter.spinning = false;
         }
 
-        if (autoTarget) {
+
             turret.updateTurretTracking(drive, telemetry);
-        }
+
 
         if(!turretLocalized){
             if(turret.lT.isPressed()){
@@ -648,6 +655,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //        telemetry.addData("aColor", aColor);
 
         telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("pinpointYawScalar", driver.getYawScalar());
 
 
 

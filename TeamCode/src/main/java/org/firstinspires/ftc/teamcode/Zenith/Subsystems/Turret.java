@@ -150,15 +150,17 @@ public class Turret extends SubsystemBase {
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
+if (!PIDDisabled){
+    if (turretError > TURRET_TOLERANCE_DEG) {
+        motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+    } else {
+        motorPower = 0;
+    }
+} else motorPower = 0;
 
-        if (turretError > TURRET_TOLERANCE_DEG) {
-            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);// + ffPower) * (12/voltageSensor.getVoltage());
-        } else {
-            motorPower = 0;
-        }
 
 
-        mT.setPower(motorPower + (signum(motorPower) * TURRET_S));
+        mT.setPower((motorPower + (signum(motorPower) * TURRET_S)) * (12/voltageSensor.getVoltage()));
 
 //        if (elapsedTime.seconds() > .05) {
 //
@@ -242,7 +244,7 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Offset Y", targetTagYOffset);
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-//        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
+        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
          telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
 //        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
 //        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);

@@ -16,7 +16,7 @@ public class RRSubsystem extends SubsystemBase {
     private DcMotorEx mBR;
 
     //    BNO055IMU imu;
-    public static IMU imu;
+//    public static IMU imu;
 
     double startingErrorRads = 0;
     double startingOffsetRads = 0;
@@ -34,54 +34,54 @@ public class RRSubsystem extends SubsystemBase {
 //        imu.initialize(new BNO055IMU.Parameters());
 
 
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        imu.initialize(
-                new IMU.Parameters(
-                        new RevHubOrientationOnRobot(
-                                RevHubOrientationOnRobot.LogoFacingDirection.DOWN   ,
-                                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                        )
-                )
-        );
-
-        imu.resetYaw();
+//        imu = hardwareMap.get(IMU.class, "imu");
+//
+//        imu.initialize(
+//                new IMU.Parameters(
+//                        new RevHubOrientationOnRobot(
+//                                RevHubOrientationOnRobot.LogoFacingDirection.DOWN   ,
+//                                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+//                        )
+//                )
+//        );
+//
+//        imu.resetYaw();
     }
 
 
 
-    public void setStartingOffsetDegs(int offsetDeg){
-        startingOffsetRads = Math.toRadians(offsetDeg);
-    }
-
-    public double getStartingOffsetDegs(){
-        return Math.toDegrees(startingOffsetRads);
-    }
-
-    public double getRawYawDegrees(){
-        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-    }
-
+//    public void setStartingOffsetDegs(int offsetDeg){
+//        startingOffsetRads = Math.toRadians(offsetDeg);
+//    }
+//
+//    public double getStartingOffsetDegs(){
+//        return Math.toDegrees(startingOffsetRads);
+//    }
+//
+//    public double getRawYawDegrees(){
+//        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+//    }
+//
     @Override
     public void periodic() {
 
     }
 
-    public double getYawDegrees(){
-        return getRawYawDegrees() + getStartingOffsetDegs();
-    }
-
-    public double getYawRadians(){
-        return Math.toRadians(getYawDegrees());
-    }
-
-    public double getPose2dYawRads(){
-        return Math.toRadians((getYawDegrees() + 360) % 360) + Math.toRadians(getStartingOffsetDegs());
-    }
-
-    public double getPose2dYawDegs(){
-        return ((getYawDegrees() + 360) % 360);
-    }
+//    public double getYawDegrees(){
+//        return getRawYawDegrees() + getStartingOffsetDegs();
+//    }
+//
+//    public double getYawRadians(){
+//        return Math.toRadians(getYawDegrees());
+//    }
+//
+//    public double getPose2dYawRads(){
+//        return Math.toRadians((getYawDegrees() + 360) % 360) + Math.toRadians(getStartingOffsetDegs());
+//    }
+//
+//    public double getPose2dYawDegs(){
+//        return ((getYawDegrees() + 360) % 360);
+//    }
 
 
 
