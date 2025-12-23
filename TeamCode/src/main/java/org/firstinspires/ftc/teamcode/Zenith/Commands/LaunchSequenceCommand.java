@@ -121,8 +121,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
                                 //new WaitCommand(BotPositions.GATE_WAIT),
-                                new MoveInArtifactCommand(intake),
-                                new InstantCommand(storage::openGate)
+                                new MoveInArtifactCommand(intake)
                         )
                 );
             break;
