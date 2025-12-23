@@ -1,23 +1,20 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.CAMERA_RADIUS;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TELEOP_TURRET_S;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TELEOP_TURRET_TOLERANCE_DEG;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TELEOP_TURRET_V;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_X;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_OFFSET_Y;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_RADIANS_PER_TICK;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.BotPositions.TURRET_TICK_TO_RADIAN_MULTIPLIER;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.AUTO_TURRET_S;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_S;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_TURRET_ANGLE_DEG;
 
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.AUTO_TURRET_TOLERANCE_DEG;
-
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.AUTO_TURRET_V;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TOLERANCE_DEG;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_V;
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
+
+import static java.lang.Math.signum;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -80,19 +77,11 @@ public class Turret extends SubsystemBase {
         mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        if (inAuto) {
-            pidController = new PIDController(BotPositions.AUTO_TURRET_P, BotPositions.AUTO_TURRET_I, BotPositions.AUTO_TURRET_D);
+
+        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-            feedforwardController = new SimpleMotorFeedforward(AUTO_TURRET_S, AUTO_TURRET_V);
+        feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
 
-        }
-
-        if (!inAuto) {
-            pidController = new PIDController(BotPositions.TELEOP_TURRET_P, BotPositions.TELEOP_TURRET_I, BotPositions.TELEOP_TURRET_D);
-//        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-            feedforwardController = new SimpleMotorFeedforward(TELEOP_TURRET_S, TELEOP_TURRET_V);
-
-        }
 
         startingvoltage = voltageSensor.getVoltage();
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
@@ -123,56 +112,53 @@ public class Turret extends SubsystemBase {
 //        }
 
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
-        //if (inAuto) {
-            double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition());
 
-            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
-
-
-            if (Math.abs(targetPositionTicks - getCurrentPosition()) > (300 * TURRET_TICKS_PER_DEGREE)) {
-                mustWrap = true;
-                timeSinceWrapped.reset();
-            }
-
-            pidController.setPID(BotPositions.AUTO_TURRET_P, BotPositions.AUTO_TURRET_I, BotPositions.AUTO_TURRET_D);
-
-//        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-
-            if (turretError > AUTO_TURRET_TOLERANCE_DEG) {
-                if (mustWrap) {
-                    motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded);
-                } else {
-                    motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded;
-                }
-
-            } else {
-                motorPower = 0;
-            }
-
-            if (timeSinceWrapped.seconds() > 1) {
-                mustWrap = false;
-            }
-      //  }
-
-//        if (!inAuto) {
-////            double desiredVelocityTicks = ;
-////
-////            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
+//            double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition());
+//
+//            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 //
 //
+//            if (Math.abs(targetPositionTicks - getCurrentPosition()) > (300 * TURRET_TICKS_PER_DEGREE)) {
+//                mustWrap = true;
+//                timeSinceWrapped.reset();
+//            }
 //
+//            pidController.setPID(BotPositions.AUTO_TURRET_P, BotPositions.AUTO_TURRET_I, BotPositions.AUTO_TURRET_D);
 //
-//            pidController.setPID(BotPositions.TELEOP_TURRET_P, BotPositions.TELEOP_TURRET_I, BotPositions.TELEOP_TURRET_D);
+////        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 //
-//            if (turretError > TELEOP_TURRET_TOLERANCE_DEG) {
-//                    motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);// + ffPower) * (12/voltageSensor.getVoltage());
+//            if (turretError > AUTO_TURRET_TOLERANCE_DEG) {
+//                if (mustWrap) {
+//                    motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded);
+//                } else {
+//                    motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded;
+//                }
+//
 //            } else {
 //                motorPower = 0;
 //            }
 //
-//        }
+//            if (timeSinceWrapped.seconds() > 1) {
+//                mustWrap = false;
+//            }
 
-        mT.setPower(motorPower);
+
+//            double desiredVelocityTicks = ;
+//
+//            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
+
+
+        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+        //pidController.setIntegrationBounds();
+
+        if (turretError > TURRET_TOLERANCE_DEG) {
+            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);// + ffPower) * (12/voltageSensor.getVoltage());
+        } else {
+            motorPower = 0;
+        }
+
+
+        mT.setPower(motorPower + (signum(motorPower) * TURRET_S));
 
 //        if (elapsedTime.seconds() > .05) {
 //
@@ -220,8 +206,8 @@ public class Turret extends SubsystemBase {
         Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
 
         // === Apply offset away from origin ===
-        double goalX = targetAprilTagPos.position.x + (Math.signum(targetAprilTagPos.position.x) * targetTagXOffset);
-        double goalY = targetAprilTagPos.position.y + (Math.signum(targetAprilTagPos.position.y) * targetTagYOffset);
+        double goalX = targetAprilTagPos.position.x + (signum(targetAprilTagPos.position.x) * targetTagXOffset);
+        double goalY = targetAprilTagPos.position.y + (signum(targetAprilTagPos.position.y) * targetTagYOffset);
 
         // === Compute turret tracking ===
         double robotX = drive.localizer.getPose().position.x;
@@ -248,22 +234,22 @@ public class Turret extends SubsystemBase {
 
 
         // Telemetry
-        telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);
-        telemetry.addData("TargetAprilTagYPose", targetAprilTagPos.position.y);
-        //check these on the testbed to see if the preset april tag positions are correct
-        telemetry.addData("Tag ID", desiredTagID);
-        telemetry.addData("Offset X", targetTagXOffset);
-        telemetry.addData("Offset Y", targetTagYOffset);
-        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
-        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-        // telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
-        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
-        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
-        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
+//        telemetry.addData("TargetAprilTagXPose", targetAprilTagPos.position.x);
+//        telemetry.addData("TargetAprilTagYPose", targetAprilTagPos.position.y);
+//        //check these on the testbed to see if the preset april tag positions are correct
+//        telemetry.addData("Tag ID", desiredTagID);
+//        telemetry.addData("Offset X", targetTagXOffset);
+//        telemetry.addData("Offset Y", targetTagYOffset);
+//        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
+//        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
+//        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
+         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+//        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
+//        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
+//        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
+//        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
         telemetry.addData("TurretRawMotorPower", mT.getPower());
-        //check THESE when tuning turret
+//        //check THESE when tuning turret
         telemetry.addData("TurretTicks", getCurrentPosition());
         telemetry.addData("Target Pos (ticks)", desiredTicks);
     }

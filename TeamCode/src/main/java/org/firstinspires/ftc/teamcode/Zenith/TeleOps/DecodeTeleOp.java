@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BreakPad;
@@ -139,10 +140,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
             turret = new Turret(hardwareMap);
 
-            if (savedPos == null) {
+        //    if (savedPos == null) {
                 savedPos = new Pose2d(0, 0, Math.toRadians(0));
                 turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            }
+         //   }
 
             turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -629,26 +630,28 @@ public class DecodeTeleOp extends CommandOpMode {
         Pose2d pose = drive.localizer.getPose();
 
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.addData("X", pose.position.x);
-        telemetry.addData("Y", pose.position.y);
+//        telemetry.addData("X", pose.position.x);
+//        telemetry.addData("Y", pose.position.y);
+//
+//        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
+//
+//        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+//        telemetry.addData("currentShootmode", currentShootMode);
+//        telemetry.addData("hoodPos", shooter.sH.getPosition());
+//        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+//        telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
+//        telemetry.addData("motorPower", shooter.mST.getPower());
+//        telemetry.addLine();
+//        telemetry.addData("turretOffset",turret.manualOffset);
+//        telemetry.addData("WheelOffset", shooter.speedOffset);
+//        telemetry.addLine();
+//        telemetry.addData("aColor", aColor);
 
-        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
-
-        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
-        telemetry.addData("currentShootmode", currentShootMode);
-        telemetry.addData("hoodPos", shooter.sH.getPosition());
-        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-        telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
-        telemetry.addData("motorPower", shooter.mST.getPower());
-        telemetry.addLine();
-        telemetry.addData("turretOffset",turret.manualOffset);
-        telemetry.addData("WheelOffset", shooter.speedOffset);
-        telemetry.addLine();
-        telemetry.addData("aColor", aColor);
+        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
 
 
 
-        telemetry.addData("position",drive.localizer.getPose());
+       // telemetry.addData("position",drive.localizer.getPose());
 
 
         telemetry.update();
