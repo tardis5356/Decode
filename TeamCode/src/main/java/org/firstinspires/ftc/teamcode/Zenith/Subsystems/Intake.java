@@ -64,9 +64,9 @@ public class Intake extends SubsystemBase {
                 .count();
 
         // If less than 2 empty slots → STOP the intake
-//        if (emptySlots < 2 && inAuto) {
-//            stop();
-//        }
+        if (emptySlots == 1 ) {
+            stop();
+        }
 
 
     }
@@ -96,7 +96,7 @@ public class Intake extends SubsystemBase {
 
     public String greenOrPurple(ColorRangeSensor cs) {
         //Normalized colors return values from 1 to 0
-        if (cs.getDistance(DistanceUnit.CM) < 7) {
+        if (cs.getDistance(DistanceUnit.CM) < 5.5) {
             if (cs == cSSt && slotFly) {
                 return "_";
             }

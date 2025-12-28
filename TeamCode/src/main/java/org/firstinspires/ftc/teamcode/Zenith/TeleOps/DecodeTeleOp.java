@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Zenith.TeleOps;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.savedPos;
+import static org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand.launcOne;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 
@@ -313,7 +314,7 @@ public class DecodeTeleOp extends CommandOpMode {
                         (currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
                 )
                         //.whileActiveOnce(fly)
-                        .whileActiveOnce(new SequentialCommandGroup(
+                        .whenActive(new SequentialCommandGroup(
                                 new InstantCommand(() -> firing = true),
                                 new LaunchSequenceCommand(intake, storage, "Launch"),
                                 new LaunchSequenceCommand(intake, storage, "PullIn"),
@@ -415,7 +416,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //            ;
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.B) || driver1.getButton(GamepadKeys.Button.B))
-                    .whileActiveOnce(
+                    .whenActive(
                             new SequentialCommandGroup(
                                     new LaunchSequenceCommand(intake, storage, "Fly"),
                                     new InstantCommand(() -> driver2.gamepad.rumble(300)),
@@ -642,7 +643,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //
 //        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 //
-//        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+       telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 //        telemetry.addData("currentShootmode", currentShootMode);
 //        telemetry.addData("hoodPos", shooter.sH.getPosition());
 //        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
