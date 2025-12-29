@@ -4,49 +4,44 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
-
-@TeleOp(name = "Turret kS Calibration (FTCLib)", group = "Calibration")
+@TeleOp(name = "Turret kS Calibration", group = "Calibration")
 public class TurretCalibrationTeleop extends OpMode {
 
     // ==== HARDWARE ====
-    private Turret turret;
+    public static DcMotorEx mT;
     private VoltageSensor voltageSensor;
     private boolean measurementStarted = false;
     // ==== CONSTANTS ====
     private static final double MAX_TURRET_ANGLE_DEG = 200;
-    private static final int KS_BIN_DEG = 20;
+    private static final int KS_BIN_DEG = 10;
 
 
-    private static final double POSITION_POWER = 0.2;
+    private static final double POSITION_POWER = 0.40;
     private static final double POWER_STEP = 0.002;
-    private static final int MOTION_THRESHOLD_TICKS = 100;
+    private static final int MOTION_THRESHOLD_TICKS = 350;
     private static final double MAX_TEST_POWER = 0.3;
     private static final double POSITION_TOLERANCE_DEG = 2.0;
     private static final double TIMEOUT_SEC = 5.0;
 
     // ==== BINS ====
     private static final int NUM_BINS =
-            (int) ((2 * MAX_TURRET_ANGLE_DEG) / KS_BIN_DEG);
+            (int) ((2 * MAX_TURRET_ANGLE_DEG) / KS_BIN_DEG) + 1;
 
     private final double[][] kSLookup = new double[NUM_BINS][2];
     private final boolean[][] measured = new boolean[NUM_BINS][2];
 
     // ==== STATE ====
-    private enum CalState { MOVE_TO_BIN, MEASURE_CCW, MEASURE_CW, NEXT_BIN, DONE }
-    private CalState state = CalState.MOVE_TO_BIN;
+    private enum CalibrateState { MOVE_TO_BIN, MEASURE_CCW, MEASURE_CW, NEXT_BIN, DONE }
+    private CalibrateState state = CalibrateState.MOVE_TO_BIN;
 
     private int currentBin = 0;
     private double testPower = 0;
@@ -59,10 +54,13 @@ public class TurretCalibrationTeleop extends OpMode {
     public void init() {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-        turret = new Turret(hardwareMap);
+      mT = hardwareMap.get(DcMotorEx.class, "mT");
 
-        turret.mT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+      mT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        mT.setDirection(DcMotorSimple.Direction.REVERSE);
+        mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
@@ -75,7 +73,7 @@ public class TurretCalibrationTeleop extends OpMode {
     @Override
     public void loop() {
 
-        double currentAngle = turret.getCurrentPosition() / TURRET_TICKS_PER_DEGREE;
+        double currentAngle = mT.getCurrentPosition() / TURRET_TICKS_PER_DEGREE;
         double targetAngle = binToAngle(currentBin);
 
         switch (state) {
@@ -87,10 +85,11 @@ public class TurretCalibrationTeleop extends OpMode {
                 double error = targetAngle - currentAngle;
 
                 if (Math.abs(error) > POSITION_TOLERANCE_DEG) {
-                    turret.mT.setPower(Math.signum(error) * POSITION_POWER);
+                  mT.setPower(-Math.signum(error) * POSITION_POWER);
+                  telemetry.addLine("Moving to Bin");
                 } else {
-                    turret.mT.setPower(0);
-                    state = CalState.MEASURE_CCW;
+                 mT.setPower(0);
+                    state = CalibrateState.MEASURE_CCW;
                 }
                 break;
 
@@ -105,12 +104,12 @@ public class TurretCalibrationTeleop extends OpMode {
             case NEXT_BIN:
                 currentBin++;
                 state = currentBin >= NUM_BINS
-                        ? CalState.DONE
-                        : CalState.MOVE_TO_BIN;
+                        ? CalibrateState.DONE
+                        : CalibrateState.MOVE_TO_BIN;
                 break;
 
             case DONE:
-                turret.mT.setPower(0);
+              mT.setPower(0);
                 break;
         }
 
@@ -118,9 +117,11 @@ public class TurretCalibrationTeleop extends OpMode {
         telemetry.addData("Bin", currentBin + " / " + (NUM_BINS - 1));
         telemetry.addData("Bin Center (deg)", binToAngle(currentBin));
         telemetry.addData("Voltage", voltageSensor.getVoltage());
-        telemetry.addData("Test Power", testPower);
+        telemetry.addData("Current Angle (deg)", currentAngle);
+        telemetry.addData("Power", mT.getPower());
+        telemetry.addData("error", targetAngle - currentAngle);
         telemetry.addData("Angle (deg)",
-                turret.getCurrentPosition() / TURRET_TICKS_PER_DEGREE);
+                mT.getCurrentPosition() / TURRET_TICKS_PER_DEGREE);
         printKSTableTelemetry();
 
         telemetry.update();
@@ -130,7 +131,7 @@ public class TurretCalibrationTeleop extends OpMode {
     private void measureKS(int dir) {
 
         if (!measurementStarted) {
-            lastTicks = (int) turret.getCurrentPosition();
+            lastTicks =  mT.getCurrentPosition();
             testPower = 0;
             timer.reset();
             measurementStarted = true;
@@ -139,12 +140,12 @@ public class TurretCalibrationTeleop extends OpMode {
         testPower += POWER_STEP * (dir == 0 ? 1 : -1);
         testPower = Range.clip(testPower, -MAX_TEST_POWER, MAX_TEST_POWER);
 
-        turret.mT.setPower(testPower);
+        mT.setPower(testPower);
 
-        int currentTicks = (int) turret.getCurrentPosition();
+        int currentTicks = mT.getCurrentPosition();
         int delta = Math.abs(currentTicks - lastTicks);
 
-        // --- Detect motion or timeout ---
+
         if (delta > MOTION_THRESHOLD_TICKS || timer.seconds() > TIMEOUT_SEC) {
 
             double ks = Math.abs(testPower) *
@@ -153,12 +154,12 @@ public class TurretCalibrationTeleop extends OpMode {
             kSLookup[currentBin][dir] = ks;
             measured[currentBin][dir] = true;
 
-            turret.mT.setPower(0);
+            mT.setPower(0);
             measurementStarted = false;
 
             state = (dir == 0)
-                    ? CalState.MEASURE_CW
-                    : CalState.NEXT_BIN;
+                    ? CalibrateState.MEASURE_CW
+                    : CalibrateState.NEXT_BIN;
 
         }
     }
