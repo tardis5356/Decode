@@ -17,14 +17,14 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
-@Disabled
+
 @TeleOp(name = "Turret kS Calibration (FTCLib)", group = "Calibration")
 public class TurretCalibrationTeleop extends OpMode {
 
     // ==== HARDWARE ====
     private Turret turret;
     private VoltageSensor voltageSensor;
-
+    private boolean measurementStarted = false;
     // ==== CONSTANTS ====
     private static final double MAX_TURRET_ANGLE_DEG = 200;
     private static final int KS_BIN_DEG = 20;
@@ -59,6 +59,7 @@ public class TurretCalibrationTeleop extends OpMode {
     public void init() {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        turret = new Turret(hardwareMap);
 
         turret.mT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -80,6 +81,9 @@ public class TurretCalibrationTeleop extends OpMode {
         switch (state) {
 
             case MOVE_TO_BIN:
+                measurementStarted = false;
+                testPower = 0;
+
                 double error = targetAngle - currentAngle;
 
                 if (Math.abs(error) > POSITION_TOLERANCE_DEG) {
@@ -125,34 +129,37 @@ public class TurretCalibrationTeleop extends OpMode {
     // ==== kS MEASUREMENT ====
     private void measureKS(int dir) {
 
-        if (!measured[currentBin][dir]) {
+        if (!measurementStarted) {
+            lastTicks = (int) turret.getCurrentPosition();
+            testPower = 0;
+            timer.reset();
+            measurementStarted = true;
+        }
 
-            testPower += POWER_STEP * (dir == 0 ? 1 : -1);
-            testPower = Range.clip(testPower, -MAX_TEST_POWER, MAX_TEST_POWER);
+        testPower += POWER_STEP * (dir == 0 ? 1 : -1);
+        testPower = Range.clip(testPower, -MAX_TEST_POWER, MAX_TEST_POWER);
 
-            turret.mT.setPower(testPower);
+        turret.mT.setPower(testPower);
 
-            int ticks = (int) turret.getCurrentPosition();
-            int delta = Math.abs(ticks - lastTicks);
+        int currentTicks = (int) turret.getCurrentPosition();
+        int delta = Math.abs(currentTicks - lastTicks);
 
-            if (delta > MOTION_THRESHOLD_TICKS || timer.seconds() > TIMEOUT_SEC) {
+        // --- Detect motion or timeout ---
+        if (delta > MOTION_THRESHOLD_TICKS || timer.seconds() > TIMEOUT_SEC) {
 
-                double ks = Math.abs(testPower) *
-                        (12.0 / voltageSensor.getVoltage());
+            double ks = Math.abs(testPower) *
+                    (12.0 / voltageSensor.getVoltage());
 
-                kSLookup[currentBin][dir] = ks;
-                measured[currentBin][dir] = true;
+            kSLookup[currentBin][dir] = ks;
+            measured[currentBin][dir] = true;
 
-                testPower = 0;
-                lastTicks = ticks;
-                timer.reset();
+            turret.mT.setPower(0);
+            measurementStarted = false;
 
-                state = (dir == 0)
-                        ? CalState.MEASURE_CW
-                        : CalState.NEXT_BIN;
-            }
+            state = (dir == 0)
+                    ? CalState.MEASURE_CW
+                    : CalState.NEXT_BIN;
 
-            lastTicks = ticks;
         }
     }
     private void printKSTableTelemetry() {
