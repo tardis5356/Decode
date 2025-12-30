@@ -135,6 +135,7 @@ public class Turret extends SubsystemBase {
         } else motorPower = 0;
 
 //set the kS according to the turret theta
+
         if (signum(motorPower)>0){
             kS = CCWTurretAnglekS.get(getTurretThetaDEG());
         } else if(signum(motorPower)<0){

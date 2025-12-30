@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
@@ -88,6 +89,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
     //below we create a new object instance of all the subsystem classes
     int visionOutputPosition = 1;
+    ElapsedTime intakeTimer = new ElapsedTime();
     LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, pullInAgain, launch, store, unStore, scram;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     //gamepads
@@ -118,6 +120,8 @@ public class DecodeTeleOp extends CommandOpMode {
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
+    public static boolean intaketoggle = true;
+
 
     public GoBildaPinpointDriver driver;
     @Override
@@ -145,10 +149,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
             turret = new Turret(hardwareMap);
 
-        //    if (savedPos == null) {
+            if (savedPos == null) {
                 savedPos = new Pose2d(0, 0, Math.toRadians(0));
                 turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-         //   }
+            }
 
             turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -245,14 +249,21 @@ public class DecodeTeleOp extends CommandOpMode {
 //                .whenActive(new InstantCommand(() -> aColor = "blue"));
 
         //Intake
-        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X))
-                .whenActive(new InstantCommand(intake::in));
+        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X) && intaketoggle == true)
+                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::in),
+                        new WaitCommand(200),
+                        new InstantCommand(()->intaketoggle = false)));
 
-        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y))
-                .whenActive(new InstantCommand(intake::out));
+        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y) && intaketoggle == true)
+                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::out),
+                        new WaitCommand(200),
+                        new InstantCommand(()->intaketoggle = false)));
 
-        new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)))
-                .whileActiveOnce(new InstantCommand(intake::stop));
+        new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) && intaketoggle == false)
+                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::stop),
+                        new InstantCommand(()-> intakeTimer.reset()),
+                        new WaitCommand(200),
+                        new InstantCommand(()->intaketoggle = true)));
 
 
 
@@ -569,6 +580,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shooter.sH.setPosition(hoodPos);
 
+        if (intake.intakeState == "stop" && intaketoggle == false && intakeTimer.seconds() > 1){
+
+            intaketoggle = true;
+        }
+
         if (gamepad1.dpad_left) {
             shooter.spinning = true;
             shooter.targeting = true;
@@ -643,6 +659,8 @@ public class DecodeTeleOp extends CommandOpMode {
 //
 //        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 //
+        telemetry.addData("intakeState", intake.intakeState);
+        telemetry.addData("intakeToggle", intaketoggle);
        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 //        telemetry.addData("currentShootmode", currentShootMode);
 //        telemetry.addData("hoodPos", shooter.sH.getPosition());

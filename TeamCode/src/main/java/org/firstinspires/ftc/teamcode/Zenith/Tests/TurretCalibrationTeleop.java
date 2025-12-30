@@ -164,15 +164,15 @@ public class TurretCalibrationTeleop extends OpMode {
         }
     }
     private void printKSTableTelemetry() {
-        telemetry.addLine("public static final double[][] TURRET_KS = {");
+        telemetry.addLine("public static final double[][] TurretAngle_kSMatrix = {");
 
         for (int i = 0; i < NUM_BINS; i++) {
             telemetry.addLine(String.format(
-                    "    {%.4f, %.4f}%s // %.0f°",
+                    "    {%.2f, %.4f, %.4f}%s",
+                    binToAngle(i),      // Angle
                     kSLookup[i][0],     // CCW
                     kSLookup[i][1],     // CW
-                    (i == NUM_BINS - 1) ? "" : ",",
-                    binToAngle(i)
+                    (i == NUM_BINS - 1) ? "" : ","
             ));
         }
 

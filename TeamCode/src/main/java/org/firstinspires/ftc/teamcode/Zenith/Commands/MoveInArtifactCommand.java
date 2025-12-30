@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
+import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class MoveInArtifactCommand extends CommandBase{
 
@@ -59,6 +60,8 @@ public class MoveInArtifactCommand extends CommandBase{
         new SequentialCommandGroup(
                 new InstantCommand(intake::stop)
         ).schedule();
+
+        DecodeTeleOp.intaketoggle = true;
 
     }
 
