@@ -7,6 +7,7 @@
             <goBILDA5202SeriesMotor name="mST" port="2"/>
             <goBILDA5202SeriesMotor name="mSB" port="3"/>
             <Servo name="sRL" port="0"/>
+            <Servo name="liT" port="2"/>
             <RevTouchSensor name="lT" port="1"/>
             <RevColorSensorV3 name="cSM" port="0" bus="1"/>
             <RevColorSensorV3 name="cSI" port="0" bus="0"/>
@@ -32,6 +33,7 @@
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
             <DigitalDevice name="green" port="6"/>
             <DigitalDevice name="red" port="7"/>
+            <DigitalDevice name="lT2" port="5"/>
         </LynxModule>
     </LynxUsbDevice>
 </Robot>
