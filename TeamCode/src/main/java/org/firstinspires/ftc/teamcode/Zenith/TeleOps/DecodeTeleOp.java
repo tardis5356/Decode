@@ -72,7 +72,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
     //private IntakeInCommand intakeInCommand;
     boolean firing;
-    boolean turretLocalized = true;
     AprilTagDetection detectedTag;
     double mFLPower;
     double mFRPower;
@@ -458,13 +457,13 @@ public class DecodeTeleOp extends CommandOpMode {
             new Trigger(() -> gamepad1.touchpad && aColor == "red")
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0)))),
-                            new InstantCommand(() -> turretLocalized = false)
+                            new InstantCommand(() -> turret.turretLocalized = false)
                     ));
             //In blue LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "blue")
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0)))),
-                            new InstantCommand(() -> turretLocalized = false)
+                            new InstantCommand(() -> turret.turretLocalized = false)
                     ));
 
             new Trigger(() -> gamepad1.ps)
@@ -594,11 +593,12 @@ public class DecodeTeleOp extends CommandOpMode {
         turret.updateTurretTracking(drive, telemetry);
 
 
-        if (!turretLocalized) {
+        if (!turret.turretLocalized) {
             if (turret.lT.isPressed()) {
                 turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-                turretLocalized = true;
+                turret.turretLocalized = true;
+                turret.cwORccw = 1;
             }
         }
 
