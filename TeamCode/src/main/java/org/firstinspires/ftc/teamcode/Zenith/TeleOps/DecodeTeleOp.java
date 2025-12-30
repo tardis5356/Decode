@@ -113,7 +113,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //breakpad
     private BreakPad breakPad;
     //Cameras
-   // private Camera camera;
+    // private Camera camera;
     //Roadrunner
     private RRSubsystem rrSubsystem;
     private RecoveryBuilder recoveryBuilder;
@@ -125,11 +125,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
     public GoBildaPinpointDriver driver;
+
     @Override
     //stuff that is ran when you click init at the start of teleop.
     public void initialize() {
-
-
 
 
         {
@@ -141,7 +140,6 @@ public class DecodeTeleOp extends CommandOpMode {
             CommandScheduler.getInstance().reset();
 
             //sets the digital position of the robot to intake for the deposit to state command
-
 
 
             //init controllers
@@ -168,7 +166,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             breakPad = new BreakPad(hardwareMap);
 
-           // camera = new Camera(hardwareMap);
+            // camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 
@@ -236,11 +234,11 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
-        new Trigger(()->driver2.getRightY()>.1)
-                .whileActiveOnce(new InstantCommand(()->shooter.speedOffset -= 25));
+        new Trigger(() -> driver2.getRightY() > .1)
+                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
 
-        new Trigger(()->driver2.getRightY()<-.1)
-                .whileActiveOnce(new InstantCommand(()->shooter.speedOffset += 25));
+        new Trigger(() -> driver2.getRightY() < -.1)
+                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
 
         //red vs blue alliance
 //        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
@@ -253,19 +251,18 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X) && intaketoggle == true)
                 .whenActive(new SequentialCommandGroup(new InstantCommand(intake::in),
                         new WaitCommand(200),
-                        new InstantCommand(()->intaketoggle = false)));
+                        new InstantCommand(() -> intaketoggle = false)));
 
         new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y) && intaketoggle == true)
                 .whenActive(new SequentialCommandGroup(new InstantCommand(intake::out),
                         new WaitCommand(200),
-                        new InstantCommand(()->intaketoggle = false)));
+                        new InstantCommand(() -> intaketoggle = false)));
 
         new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) && intaketoggle == false)
                 .whenActive(new SequentialCommandGroup(new InstantCommand(intake::stop),
-                        new InstantCommand(()-> intakeTimer.reset()),
+                        new InstantCommand(() -> intakeTimer.reset()),
                         new WaitCommand(200),
-                        new InstantCommand(()->intaketoggle = true)));
-
+                        new InstantCommand(() -> intaketoggle = true)));
 
 
         //move all in by 1
@@ -282,11 +279,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(()->turret.manualOffset -= 550);
+                .whenInactive(() -> turret.manualOffset -= 550);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(()->turret.manualOffset += 550);
+                .whenInactive(() -> turret.manualOffset += 550);
 
 
         //Engage/Disengage PTO
@@ -306,7 +303,7 @@ public class DecodeTeleOp extends CommandOpMode {
         //automated targetting on/off
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.BACK))
                 //TODO: swap this back to true after testing
-                .toggleWhenActive(new InstantCommand(turret::disablePID), new InstantCommand(()-> turret.enablePID()));
+                .toggleWhenActive(new InstantCommand(turret::disablePID), new InstantCommand(() -> turret.enablePID()));
 
         //if driver 2 stickY's or triggers are used the autotarget is turned off
 //        new Trigger(() -> driftLock((float) driver2.getLeftY()) != 0 ||
@@ -436,21 +433,21 @@ public class DecodeTeleOp extends CommandOpMode {
                             )
                     );
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
                     .whenActive(
                             new InstantCommand(storage::storeSlot)
                     );
 
-            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
                     .whenActive(
                             new InstantCommand(storage::returnSlot)
                     );
 
-            new Trigger(()-> gamepad2.touchpad)
-                    .toggleWhenActive(storage::closeBack,storage::openBack);
+            new Trigger(() -> gamepad2.touchpad)
+                    .toggleWhenActive(storage::closeBack, storage::openBack);
 
-            new Trigger(()-> gamepad2.ps)
-                    .toggleWhenActive(new InstantCommand(()->aColor = "red"), new InstantCommand(()->aColor = "blue"));
+            new Trigger(() -> gamepad2.ps)
+                    .toggleWhenActive(new InstantCommand(() -> aColor = "red"), new InstantCommand(() -> aColor = "blue"));
 
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
 //                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
@@ -460,24 +457,24 @@ public class DecodeTeleOp extends CommandOpMode {
             //In red LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "red")
                     .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0) ) ) ),
-                            new InstantCommand(()-> turretLocalized = false)
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0)))),
+                            new InstantCommand(() -> turretLocalized = false)
                     ));
-          //In blue LZ Corner
+            //In blue LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "blue")
                     .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0) ) ) ),
-                            new InstantCommand(()-> turretLocalized = false)
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0)))),
+                            new InstantCommand(() -> turretLocalized = false)
                     ));
 
             new Trigger(() -> gamepad1.ps)
                     .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0) ) ) )
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0))))
                     ));
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenInactive(()->
+                    .whenInactive(() ->
                             shooter.hoodOffset += .025);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
@@ -581,7 +578,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shooter.sH.setPosition(hoodPos);
 
-        if (intake.intakeState == "stop" && intaketoggle == false && intakeTimer.seconds() > 1){
+        if (intake.intakeState == "stop" && intaketoggle == false && intakeTimer.seconds() > 1) {
 
             intaketoggle = true;
         }
@@ -594,11 +591,11 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
 
-            turret.updateTurretTracking(drive, telemetry);
+        turret.updateTurretTracking(drive, telemetry);
 
 
-        if(!turretLocalized){
-            if(turret.lT.isPressed()){
+        if (!turretLocalized) {
+            if (turret.lT.isPressed()) {
                 turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
                 turretLocalized = true;
@@ -654,6 +651,29 @@ public class DecodeTeleOp extends CommandOpMode {
 
         Pose2d pose = drive.localizer.getPose();
 
+        telemetry.addLine("======== Motor Currents ========");
+
+        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mST.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mSB.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("IntakeMotorCurrent", intake.mI.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("mFRMotorCurrent", mFR.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("mFLMotorCurrent", mFL.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("mBRMotorCurrent", mBR.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("mBLMotorCurrent", mBL.getCurrent(CurrentUnit.AMPS));
+
+        telemetry.addData("TotalMotorAmps",
+                shooter.mST.getCurrent(CurrentUnit.AMPS)
+                + shooter.mSB.getCurrent(CurrentUnit.AMPS)
+                + intake.mI.getCurrent(CurrentUnit.AMPS)
+                + turret.mT.getCurrent(CurrentUnit.AMPS)
+                + mFR.getCurrent(CurrentUnit.AMPS)
+                + mFL.getCurrent(CurrentUnit.AMPS)
+                + mBR.getCurrent(CurrentUnit.AMPS)
+                + mBL.getCurrent(CurrentUnit.AMPS)
+        );
+
+
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 //        telemetry.addData("X", pose.position.x);
 //        telemetry.addData("Y", pose.position.y);
@@ -662,14 +682,12 @@ public class DecodeTeleOp extends CommandOpMode {
 //
         telemetry.addData("intakeState", intake.intakeState);
         telemetry.addData("intakeToggle", intaketoggle);
-       telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 
         telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
 
 
-
         telemetry.addData("cSMDist", intake.cSM.getDistance(DistanceUnit.CM));
-
 
 
         telemetry.addData("cSSHDist", intake.cSSh.getDistance(DistanceUnit.CM));
@@ -684,12 +702,11 @@ public class DecodeTeleOp extends CommandOpMode {
 //        telemetry.addLine();
 //        telemetry.addData("aColor", aColor);
 
-        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
+
         telemetry.addData("pinpointYawScalar", driver.getYawScalar());
 
 
-
-       // telemetry.addData("position",drive.localizer.getPose());
+        // telemetry.addData("position",drive.localizer.getPose());
 
 
         telemetry.update();
