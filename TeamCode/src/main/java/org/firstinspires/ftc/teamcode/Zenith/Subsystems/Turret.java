@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.MAX_
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TOLERANCE_DEG;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_V;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TurretAngle_kSMatrix;
 import static org.firstinspires.ftc.teamcode.Zenith.Util.vectorFToPose2d;
 import static org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase.getCurrentGameTagLibrary;
 
@@ -29,6 +30,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Zenith.InterpolatingDoubleTreeMap;
 
 public class Turret extends SubsystemBase {
 
@@ -47,6 +49,8 @@ public class Turret extends SubsystemBase {
     public static TouchSensor lT;
     private PIDController pidController;
     //    private PIDController pidfController;
+    InterpolatingDoubleTreeMap CCWTurretAnglekS = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap CWTurretAnglekS = new InterpolatingDoubleTreeMap();
     private SimpleMotorFeedforward feedforwardController;
     private double kF = 0.0;   // velocity gain
     private double kA = 0.0; //acceleration gain
@@ -82,6 +86,11 @@ public class Turret extends SubsystemBase {
 //        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
 
+        //gets data from bot positions, reads the angle and then refers to the CW/CCW motor power
+        for (int i = 0; i < TurretAngle_kSMatrix.length; i++) {
+           CCWTurretAnglekS.put(TurretAngle_kSMatrix[i][0],TurretAngle_kSMatrix[i][1]);
+           CWTurretAnglekS.put(TurretAngle_kSMatrix[i][0],TurretAngle_kSMatrix[i][2]);
+        }
 
         startingvoltage = voltageSensor.getVoltage();
         // pidController.setTolerance(BotPositions.TURRET_TOLERANCE);
@@ -113,39 +122,6 @@ public class Turret extends SubsystemBase {
 
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
 
-//            double desiredVelocityTicks = (targetPositionTicks - getCurrentPosition());
-//
-//            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
-//
-//
-//            if (Math.abs(targetPositionTicks - getCurrentPosition()) > (300 * TURRET_TICKS_PER_DEGREE)) {
-//                mustWrap = true;
-//                timeSinceWrapped.reset();
-//            }
-//
-//            pidController.setPID(BotPositions.AUTO_TURRET_P, BotPositions.AUTO_TURRET_I, BotPositions.AUTO_TURRET_D);
-//
-////        pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-//
-//            if (turretError > AUTO_TURRET_TOLERANCE_DEG) {
-//                if (mustWrap) {
-//                    motorPower = (((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded);
-//                } else {
-//                    motorPower = ((pidController.calculate(getCurrentPosition(), targetPositionTicks) + ffPower) / 13.3) + powerAdded;
-//                }
-//
-//            } else {
-//                motorPower = 0;
-//            }
-//
-//            if (timeSinceWrapped.seconds() > 1) {
-//                mustWrap = false;
-//            }
-
-
-//            double desiredVelocityTicks = ;
-//
-//            double ffPower = feedforwardController.calculate(desiredVelocityTicks);
 
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
@@ -158,22 +134,17 @@ if (!PIDDisabled){
     }
 } else motorPower = 0;
 
+//set the kS according to the turret theta
+        if (signum(motorPower)>0){
+            kS = CCWTurretAnglekS.get(getTurretThetaDEG());
+        } else if(signum(motorPower)<0){
+            kS = - CWTurretAnglekS.get(getTurretThetaDEG());
+        } else {
+            kS = 0;
+        }
 
-
-        mT.setPower((motorPower + (signum(motorPower) * TURRET_S)) * (12/voltageSensor.getVoltage()));
-
-//        if (elapsedTime.seconds() > .05) {
-//
-//            if (lastTurretError >= turretError - 200 && lastTurretError <= turretError + 200) {
-//                powerAdded += Math.signum(motorPower) * .05;
-//            } else {
-//                powerAdded = 0;
-//            }
-//
-//            lastTurretError = turretError;
-//            elapsedTime.reset();
-//        }
-//
+//+ motor power is CCW
+        mT.setPower((motorPower + kS) * (12/voltageSensor.getVoltage()));
 
 
     }
@@ -186,6 +157,9 @@ if (!PIDDisabled){
         return (getCurrentPosition() * TURRET_RADIANS_PER_TICK);
     }
 
+    public double getTurretThetaDEG(){
+        return (getCurrentPosition()/TURRET_TICKS_PER_DEGREE);
+    }
     public void disablePID() {
         PIDDisabled = true;
     }

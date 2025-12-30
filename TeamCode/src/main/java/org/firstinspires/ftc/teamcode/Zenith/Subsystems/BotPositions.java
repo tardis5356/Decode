@@ -19,6 +19,13 @@ public class BotPositions {
     //Penfield Values
     //public static double TURRET_P = 0.0003 , TURRET_I = 0.24, TURRET_D = 0.00001, TURRET_S = 0.9,  TURRET_V = 0.0011, TURRET_TOLERANCE_DEG = 2;
     public static double TURRET_P = 0.0001 , TURRET_I = 0, TURRET_D = 0.000009, TURRET_S = 0.15,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
+//angle, CCW motor power, CW motor power
+    public static double[][] TurretAngle_kSMatrix = {
+                    {-200, 0.15,0.15},
+                    {150,0.15,0.15},
+                    {160,0.15,0.15},
+                    {200,0.15,0.15}
+            };
 
     public static double GOAL_OFFSET = 6;
     public static double MAX_TURRET_ANGLE_DEG = 200; // Flip threshold
