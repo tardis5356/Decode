@@ -9,9 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 
 @TeleOp(name = "Turret kS Calibration", group = "Calibration")
 public class TurretCalibrationTeleop extends OpMode {
@@ -28,7 +31,7 @@ public class TurretCalibrationTeleop extends OpMode {
     private static final double POSITION_POWER = 0.40;
     private static final double POWER_STEP = 0.002;
     private static final int MOTION_THRESHOLD_TICKS = 350;
-    private static final double MAX_TEST_POWER = 0.3;
+    private static final double MAX_TEST_POWER = 0.5;
     private static final double POSITION_TOLERANCE_DEG = 2.0;
     private static final double TIMEOUT_SEC = 5.0;
 
@@ -43,6 +46,8 @@ public class TurretCalibrationTeleop extends OpMode {
     private enum CalibrateState { MOVE_TO_BIN, MEASURE_CCW, MEASURE_CW, NEXT_BIN, DONE }
     private CalibrateState state = CalibrateState.MOVE_TO_BIN;
 
+    Shooter shooter;
+Servo sH;
     private int currentBin = 0;
     private double testPower = 0;
     private int lastTicks = 0;
@@ -55,7 +60,7 @@ public class TurretCalibrationTeleop extends OpMode {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
       mT = hardwareMap.get(DcMotorEx.class, "mT");
-
+sH = hardwareMap.get(Servo.class, "sH");
         mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
       mT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -65,7 +70,7 @@ public class TurretCalibrationTeleop extends OpMode {
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
         );
-
+sH.setPosition(.9);
         telemetry.addLine("AUTO Turret kS Calibration");
         telemetry.update();
     }

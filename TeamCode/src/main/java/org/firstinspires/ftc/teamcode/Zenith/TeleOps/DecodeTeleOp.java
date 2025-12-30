@@ -29,6 +29,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
@@ -662,6 +663,16 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("intakeState", intake.intakeState);
         telemetry.addData("intakeToggle", intaketoggle);
        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+
+        telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
+
+
+
+        telemetry.addData("cSMDist", intake.cSM.getDistance(DistanceUnit.CM));
+
+
+
+        telemetry.addData("cSSHDist", intake.cSSh.getDistance(DistanceUnit.CM));
 //        telemetry.addData("currentShootmode", currentShootMode);
 //        telemetry.addData("hoodPos", shooter.sH.getPosition());
 //        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
