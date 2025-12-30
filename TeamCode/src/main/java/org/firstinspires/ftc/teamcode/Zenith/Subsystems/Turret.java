@@ -46,7 +46,12 @@ public class Turret extends SubsystemBase {
     private static double targetPositionTicks;
     private final VoltageSensor voltageSensor;
     public static double startingvoltage;
-    public static TouchSensor lT;
+    public static TouchSensor lT, lT2;
+
+    public boolean turretLocalized = true;
+    public int cwORccw = 1;
+
+
     private PIDController pidController;
     //    private PIDController pidfController;
     InterpolatingDoubleTreeMap CCWTurretAnglekS = new InterpolatingDoubleTreeMap();
@@ -72,6 +77,7 @@ public class Turret extends SubsystemBase {
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
         lT = hardwareMap.get(TouchSensor.class, "lT");
+        lT2 = hardwareMap.get(TouchSensor.class, "lT2");
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -126,13 +132,20 @@ public class Turret extends SubsystemBase {
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
-        if (!PIDDisabled){
-            if (turretError > TURRET_TOLERANCE_DEG) {
-                motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-            } else {
-                motorPower = 0;
+        if(turretLocalized) {
+            if (!PIDDisabled) {
+                if (turretError > TURRET_TOLERANCE_DEG) {
+                    motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+                } else {
+                    motorPower = 0;
+                }
+            } else motorPower = 0;
+        }else{
+            motorPower = .4 * cwORccw;
+            if(lT2.isPressed()){
+                cwORccw = -1;
             }
-        } else motorPower = 0;
+        }
 
 //set the kS according to the turret theta
 
