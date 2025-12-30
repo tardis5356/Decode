@@ -20,15 +20,16 @@ public class AutoTrajectories {
     public static Pose2d goalStartPos, audienceStartPos;
     public static Pose2d goalShootPos, audienceShootPos;
 
-    public static Pose2d goalIntakePos, midIntakePos, audienceIntakePos;
+    public static Pose2d goalIntakePos, midIntakePos, audienceIntakePos, cornerIntakePos;
     public static Pose2d presetLZIntakePos, randomLZIntakePos;
     public static Pose2d gateReleasePos;
     public static Pose2d gateExitWaypointPos;
     public static Pose2d parkPos;
 
     // Actions: for each cycle index we create startToIntake and intakeToShoot actions
-    public static Action[] startToIntakeWaypoint = new Action[MAX_CYCLES];
-    public static Action[] intakeWaypointToIntake = new Action[MAX_CYCLES];
+//    public static Action[] startToIntakeWaypoint = new Action[MAX_CYCLES];
+//    public static Action[] intakeWaypointToIntake = new Action[MAX_CYCLES];
+    public static Action[] startToIntake = new Action[MAX_CYCLES];
     public static Action[] intakeToShoot = new Action[MAX_CYCLES];
     public static Action gateRelease, gateExit;
 
@@ -101,14 +102,13 @@ public class AutoTrajectories {
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 50, Math.toRadians(90)));
         midIntakePos = allianceCoordinate(new Pose2d(13, 63, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
-        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90))); //-32，10
-//        goalShootPos = allianceCoordinate(new Pose2d(-12, 17, Math.toRadians(90)));
+        goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
+//        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
         gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
         randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
-
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, 180));
 
@@ -159,13 +159,9 @@ public class AutoTrajectories {
 
             if (startPos == goalStartPos && i == 0){
                 goalStartToGoalShoot = drive.actionBuilder(currentStart)
-                        .strafeToLinearHeading(new Vector2d(-12, allianceValue(17)), allianceTangent(90))
-
-//                        .strafeToLinearHeading(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90))
+                        .strafeToLinearHeading(new Vector2d(-12, allianceValue(5)), allianceTangent(90))
                         .build();
-                currentStart = new Pose2d(new Vector2d(-12, allianceValue(17)), allianceTangent(90));
-
-//                currentStart = new Pose2d(new Vector2d(allianceValue(-12), allianceValue(17)), allianceTangent(90));
+                currentStart = new Pose2d(new Vector2d(-12, allianceValue(5)), allianceTangent(90));
             }
 
 
@@ -176,12 +172,17 @@ public class AutoTrajectories {
             double intakeStartRad = allianceTangent(intakeStartDeg);
 
             // === START → INTAKE POS ===
-            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90))
-                    .build();
+//            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
+//                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90))
+//                    .build();
+//
+//            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90)))
+//                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
+//                    .build();
 
-            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90)))
-                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
+            startToIntake[i] = drive.actionBuilder(currentStart)
+                    .setTangent(intakeStartRad)
+                    .splineToLinearHeading(intakePose, intakeEndRad)
                     .build();
 
             // === INTAKE POS → SHOOT ===
@@ -190,7 +191,7 @@ public class AutoTrajectories {
 
             intakeToShoot[i] = drive.actionBuilder(intakePose)
                     .setTangent(shootStartRad)
-                    .splineToLinearHeading(shootPose, shootEndRad, BaseConstraint)
+                    .splineToLinearHeading(shootPose, shootEndRad)
                     .build();
 
             // Next cycle starts from the shoot pose
