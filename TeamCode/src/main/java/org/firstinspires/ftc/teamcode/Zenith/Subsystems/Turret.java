@@ -145,7 +145,7 @@ public class Turret extends SubsystemBase {
         }
 
 //+ motor power is CCW
-        mT.setPower((motorPower + kS) * (12/voltageSensor.getVoltage()));
+        mT.setPower((motorPower + signum(motorPower)*TURRET_S) * (12/voltageSensor.getVoltage()));
 
 
     }

@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -9,6 +8,7 @@ import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
@@ -16,8 +16,10 @@ public class Intake extends SubsystemBase {
 
     public DcMotorEx mI;
 
-    public DigitalChannel redLED;
-    public DigitalChannel greenLED;
+    public Servo liT;
+
+    public DigitalChannel redIntakeLED;
+    public DigitalChannel greenIntakeLED;
 
     public ColorRangeSensor cSI;
     public ColorRangeSensor cSM;
@@ -35,18 +37,18 @@ public class Intake extends SubsystemBase {
     public Intake(HardwareMap hardwareMap) {
 
         mI = hardwareMap.get(DcMotorEx.class, "mI");
-
+        liT = hardwareMap.get(Servo.class, "liT");
 
         cSI = hardwareMap.get(ColorRangeSensor.class, "cSI");
         cSM = hardwareMap.get(ColorRangeSensor.class, "cSM");
         cSSh = hardwareMap.get(ColorRangeSensor.class, "cSSh");
         cSSt = hardwareMap.get(ColorRangeSensor.class, "cSSt");
 
-        redLED = hardwareMap.get(DigitalChannel.class, "red");
-        greenLED = hardwareMap.get(DigitalChannel.class,"green");
+        redIntakeLED = hardwareMap.get(DigitalChannel.class, "iR");
+        greenIntakeLED = hardwareMap.get(DigitalChannel.class,"iG");
 
-        redLED.setMode(DigitalChannel.Mode.OUTPUT);
-        greenLED.setMode(DigitalChannel.Mode.OUTPUT);
+        redIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
+        greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
 
 
     }
@@ -63,6 +65,28 @@ public class Intake extends SubsystemBase {
                 .filter(c -> c == '_')
                 .count();
 
+        switch ((int) emptySlots){
+            case 4:
+                liT.setPosition(0);
+                break;
+
+            case 3:
+                liT.setPosition(0.333);
+                break;
+
+            case 2:
+                liT.setPosition(0.388);
+                break;
+
+            case 1:
+                liT.setPosition(0.5);
+                break;
+
+            default:
+                liT.setPosition(0.277);
+                break;
+        }
+
         // If less than 2 empty slots → STOP the intake
 //        if (emptySlots == 1 ) {
 //            stop();
@@ -74,23 +98,23 @@ public class Intake extends SubsystemBase {
     public void in() {
         intakePower = 1;
         intakeState = "in";
-        greenLED.setState(true);
-        redLED.setState(false);
+        greenIntakeLED.setState(true);
+        redIntakeLED.setState(false);
     }
 
 
     public void out() {
         intakePower = -1;
         intakeState = "out";
-        greenLED.setState(false);
-        redLED.setState(true);
+        greenIntakeLED.setState(false);
+        redIntakeLED.setState(true);
     }
 
     public void stop() {
         intakePower = 0;
         intakeState = "stop";
-        greenLED.setState(false);
-        redLED.setState(false);
+        greenIntakeLED.setState(false);
+        redIntakeLED.setState(false);
     }
 
 
