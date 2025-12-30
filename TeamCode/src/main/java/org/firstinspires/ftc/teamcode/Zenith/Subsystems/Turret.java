@@ -126,13 +126,13 @@ public class Turret extends SubsystemBase {
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
-if (!PIDDisabled){
-    if (turretError > TURRET_TOLERANCE_DEG) {
-        motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-    } else {
-        motorPower = 0;
-    }
-} else motorPower = 0;
+        if (!PIDDisabled){
+            if (turretError > TURRET_TOLERANCE_DEG) {
+                motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+            } else {
+                motorPower = 0;
+            }
+        } else motorPower = 0;
 
 //set the kS according to the turret theta
         if (signum(motorPower)>0){

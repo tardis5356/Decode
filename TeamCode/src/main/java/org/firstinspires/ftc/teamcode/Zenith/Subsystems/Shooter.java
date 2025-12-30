@@ -40,7 +40,7 @@ public class Shooter extends SubsystemBase {
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
     InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
-    InterpolatingDoubleTreeMap WheelRegression = new InterpolatingDoubleTreeMap();
+    public InterpolatingDoubleTreeMap WheelRegression = new InterpolatingDoubleTreeMap();
 
     public double flyWheelSpeed;
     public double hoodOffset;
