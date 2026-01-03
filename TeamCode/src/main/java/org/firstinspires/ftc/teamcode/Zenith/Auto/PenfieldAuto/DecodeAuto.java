@@ -23,7 +23,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
@@ -398,7 +397,7 @@ public class DecodeAuto extends OpMode {
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-        telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
+        telemetry.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
     }
 
 //    @Override

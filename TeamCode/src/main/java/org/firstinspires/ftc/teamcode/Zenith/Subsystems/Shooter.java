@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
-import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -12,8 +10,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.InterpolatingDoubleTreeMap;
+
+import java.util.concurrent.TimeUnit;
 
 @Config
 public class Shooter extends SubsystemBase {
@@ -36,13 +37,14 @@ public class Shooter extends SubsystemBase {
 
     public DcMotorEx mST, mSB;
     public Servo sH;
+    public Servo liH;
 
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
     InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
     public InterpolatingDoubleTreeMap WheelRegression = new InterpolatingDoubleTreeMap();
 
-    public double flyWheelSpeed;
+    public double targetFlyWheelSpeed;
     public double hoodOffset;
 
     public int speedOffset;
@@ -53,7 +55,11 @@ public class Shooter extends SubsystemBase {
 
     double distanceFromTarget;
 
+    ElapsedTime time;
+
     public Shooter(HardwareMap hardwareMap) {
+        time = new ElapsedTime();
+
         //map subsystems
         mST = hardwareMap.get(DcMotorEx.class, "mST");
         mSB = hardwareMap.get(DcMotorEx.class, "mSB");
@@ -62,6 +68,7 @@ public class Shooter extends SubsystemBase {
         mSB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         sH = hardwareMap.get(Servo.class, "sH");
+        liH = hardwareMap.get(Servo.class, "liH");
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
@@ -106,10 +113,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-        mSB.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
-        mST.setPower(calculateFlyWheelPower(flyWheelSpeed + speedOffset));
+        mSB.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+        mST.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
 
-//        if (!inAuto) {
             if (targeting) {
                 sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
             }
@@ -117,35 +123,25 @@ public class Shooter extends SubsystemBase {
                 sH.setPosition(hoodOffset);
             }
 
-//        else {
-//            if (GlobalVariables.distanceFromTarget > 112) {
-//                sH.setPosition(HoodRegression.get(distanceFromTarget));
-//            } else if (GlobalVariables.distanceFromTarget <= 100) {
-//                sH.setPosition(.05);
-//            }
-//        }
-
-//        if (!inAuto) {
             if (spinning) {
                 setVel(WheelRegression.get(distanceFromTarget));
             } else {
                 setVel(0);
             }
-//        }
-//        else {
-//            if (GlobalVariables.distanceFromTarget > 112) {
-//                setVel(1325);
-//            } else if (GlobalVariables.distanceFromTarget <= 100) {
-//                setVel(1000);
-//            }
-//        }
 
+            if (Math.abs(getTargetFlyWheelSpeed()-getFlyWheelSpeed()) < 20) {
+                liH.setPosition(0.8);
+            } else if (getFlyWheelSpeed()-getTargetFlyWheelSpeed() < -20) {
+                liH.setPosition(0);
+            } else {
+                liH.setPosition(getFastPulse());
+            }
 
     }
 
 
     public void setVel(double tps) {
-        flyWheelSpeed = tps;
+        targetFlyWheelSpeed = tps;
     }
 
     public double calculateFlyWheelPower(double tps) {
@@ -156,9 +152,17 @@ public class Shooter extends SubsystemBase {
         return mST.getVelocity();
     }
 
+    public double getTargetFlyWheelSpeed() {
+        return targetFlyWheelSpeed;
+    }
+
     //place this in the run loop in teleop with the input being some math calc finding the distance between the odo listed coordinate and the coordinate of the target
     public void setTargetDistance(double d) {
         distanceFromTarget = d;
+    }
+
+    public double getFastPulse() {
+        return (Math.sin(2 * Math.PI * time.time(TimeUnit.SECONDS) - 0.5 * Math.PI) + 1) / 2.5;
     }
 
     public void setMidRangeAutoShooterPos() {

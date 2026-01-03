@@ -5,7 +5,6 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 
@@ -25,7 +24,7 @@ public class Launch1BallCommand extends CommandBase {
 
     @Override
     public void execute() { // runs continuously
-       if(shooter.getFlyWheelSpeed() > shooter.flyWheelSpeed - 10 && shooter.getFlyWheelSpeed() < shooter.flyWheelSpeed + 10){
+       if(shooter.getFlyWheelSpeed() > shooter.targetFlyWheelSpeed - 10 && shooter.getFlyWheelSpeed() < shooter.targetFlyWheelSpeed + 10){
            new SequentialCommandGroup(new InstantCommand(storage::raiseKicker)).schedule();
        }
        if(!storage.kickerDown){

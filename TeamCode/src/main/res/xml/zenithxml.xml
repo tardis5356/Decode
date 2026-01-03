@@ -29,6 +29,7 @@
             <goBILDA5202SeriesMotor name="mFL" port="3"/>
             <Servo name="sLL" port="0"/>
             <Servo name="sBG" port="1"/>
+            <Servo name="liH" port="2"/>
             <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
             <goBILDAPinpoint name="pinpoint" port="0" bus="1"/>
             <DigitalDevice name="fG" port="2"/>
