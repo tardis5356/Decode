@@ -220,7 +220,7 @@ public class Turret extends SubsystemBase {
 
         setTargetPosition(desiredTicks);
 
-        GlobalVariables.distanceFromTarget = Math.hypot(targetAprilTagPos.position.y - turretFieldY, targetAprilTagPos.position.x - turretFieldX) + 6 - CAMERA_RADIUS;
+        GlobalVariables.distanceFromTarget = Math.hypot(goalY - turretFieldY, goalX - turretFieldX) + 6 - CAMERA_RADIUS;
 
 
         // Telemetry
