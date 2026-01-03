@@ -36,7 +36,7 @@
             <DigitalDevice name="fR" port="3"/>
             <DigitalDevice name="iG" port="6"/>
             <DigitalDevice name="iR" port="7"/>
-            <DigitalDevice name="lT2" port="5"/>
+            <RevTouchSensor name="lT2" port="5"/>
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

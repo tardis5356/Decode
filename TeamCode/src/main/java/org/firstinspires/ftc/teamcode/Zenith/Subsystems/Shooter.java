@@ -130,9 +130,9 @@ public class Shooter extends SubsystemBase {
                 setVel(0);
             }
 
-            if (Math.abs(getTargetFlyWheelSpeed()-getFlyWheelSpeed()) < 20) {
+            if (Math.abs(getTargetFlyWheelSpeed()-getFlyWheelSpeed()) < 35) {
                 liH.setPosition(0.8);
-            } else if (getFlyWheelSpeed()-getTargetFlyWheelSpeed() < -20) {
+            } else if (getFlyWheelSpeed()-getTargetFlyWheelSpeed() < -35) {
                 liH.setPosition(0);
             } else {
                 liH.setPosition(getFastPulse());
@@ -163,7 +163,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public double getFastPulse() {
-        return (Math.sin(2 * Math.PI * time.time(TimeUnit.SECONDS) - 0.5 * Math.PI) + 1) / 2.5;
+        return (Math.sin(2 * Math.PI * time.time(TimeUnit.SECONDS) - 0.5 * Math.PI) + 1) / 5;
     }
 
     public void setMidRangeAutoShooterPos() {
