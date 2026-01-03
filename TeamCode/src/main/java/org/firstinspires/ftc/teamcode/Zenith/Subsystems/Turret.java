@@ -143,7 +143,7 @@ public class Turret extends SubsystemBase {
         }else{
             motorPower = .4 * cwORccw;
             if(lT2.isPressed()){
-                cwORccw = -1;
+                cwORccw = -2;
             }
         }
 
