@@ -59,6 +59,7 @@ public class Shooter extends SubsystemBase {
 
     public Shooter(HardwareMap hardwareMap) {
         time = new ElapsedTime();
+        time.reset();
 
         //map subsystems
         mST = hardwareMap.get(DcMotorEx.class, "mST");
