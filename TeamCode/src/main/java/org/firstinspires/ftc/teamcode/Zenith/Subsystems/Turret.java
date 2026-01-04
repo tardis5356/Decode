@@ -232,7 +232,7 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Offset Y", targetTagYOffset);
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-//        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
+        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
 //         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
 ////        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
 ////        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);

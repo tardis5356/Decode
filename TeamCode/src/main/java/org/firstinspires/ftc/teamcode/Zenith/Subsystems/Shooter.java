@@ -119,6 +119,7 @@ public class Shooter extends SubsystemBase {
         HoodRegression.put(32.8, 0.625);
 
 
+        WheelRegression.put(152.,1450.-hardWheelOffset);
         WheelRegression.put(139.8, 1410.-hardWheelOffset);
         WheelRegression.put(118.6, 1310.-hardWheelOffset);
         WheelRegression.put(109.0, 1230.-hardWheelOffset);

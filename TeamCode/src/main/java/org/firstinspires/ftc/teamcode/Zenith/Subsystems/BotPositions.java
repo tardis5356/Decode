@@ -37,7 +37,7 @@ public class BotPositions {
     //PTO Relevant stuff
     public static double PTO_ENGAGED = 0.35, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0.27, BELLYPAN_RIGHT_LATCHED = 0.6, BELLYPAN_LEFT_UNLATCHED = 0., BELLYPAN_RIGHT_UNLATCHED = 0.2;
 
-    public static double BREAKPAD_ACTIVE = 0, BREAKPAD_INACTIVE = 1;
+    public static double BREAKPAD_ACTIVE = 0.7, BREAKPAD_INACTIVE = .42;
 
     public static double CAMERA_RADIUS = 5.23956, TURRET_OFFSET_X = -2.5590, TURRET_OFFSET_Y = 0;
 

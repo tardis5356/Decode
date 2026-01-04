@@ -15,6 +15,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
@@ -278,11 +279,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Swapper
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenInactive(() -> turret.manualOffset -= 550);
+                .whenInactive(() -> turret.manualOffset -= 350);
 
         //Back Gate
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_BUMPER))
-                .whenInactive(() -> turret.manualOffset += 550);
+                .whenInactive(() -> turret.manualOffset += 350);
 
 
         //Engage/Disengage PTO
@@ -290,8 +291,8 @@ public class DecodeTeleOp extends CommandOpMode {
                 .toggleWhenActive(bellyPan::engagePTO, bellyPan::disEngagePTO);
 
         //BreakPad
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.START))
-                .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.START))
+//                .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
 
 
         //Shooter mode
@@ -322,15 +323,23 @@ public class DecodeTeleOp extends CommandOpMode {
                         (currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
                 )
                         //.whileActiveOnce(fly)
-                        .whenActive(new SequentialCommandGroup(
-                                new InstantCommand(() -> firing = true),
-                                new LaunchSequenceCommand(intake, storage, "Launch"),
-                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-                                //  new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                new InstantCommand(() -> driver2.gamepad.rumble(300)),
-                                new InstantCommand(() -> driver1.gamepad.rumble(300)),
-                                new InstantCommand(() -> firing = false)
-                        ));
+                        .whenActive(
+
+                                new SequentialCommandGroup(
+                                        //new InstantCommand(breakPad::deployBreakPad),
+                                        new InstantCommand(() -> firing = true),
+                                        new LaunchSequenceCommand(intake, storage, "Launch"),
+                                        new LaunchSequenceCommand(intake, storage, "PullIn"),
+                                        //  new InstantCommand(() -> GlobalVariables.ballsShot += 1),
+                                        new InstantCommand(() -> driver2.gamepad.rumble(300)),
+                                        new InstantCommand(() -> driver1.gamepad.rumble(300)),
+                                        new InstantCommand(() -> firing = false)//,
+                                        //new InstantCommand(breakPad::retractBreakPad)
+                                        )
+
+
+
+                        );
 
 
             }
@@ -426,9 +435,11 @@ public class DecodeTeleOp extends CommandOpMode {
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.B) || driver1.getButton(GamepadKeys.Button.B))
                     .whenActive(
                             new SequentialCommandGroup(
+                                    //new InstantCommand(breakPad::deployBreakPad),
                                     new LaunchSequenceCommand(intake, storage, "Fly"),
                                     new InstantCommand(() -> driver2.gamepad.rumble(300)),
-                                    new InstantCommand(() -> driver1.gamepad.rumble(300))
+                                    new InstantCommand(() -> driver1.gamepad.rumble(300))//,
+                                    //new InstantCommand(breakPad::retractBreakPad)
                             )
                     );
 
@@ -674,7 +685,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //        );
 
 
-//        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 //        telemetry.addData("X", pose.position.x);
 //        telemetry.addData("Y", pose.position.y);
 //
