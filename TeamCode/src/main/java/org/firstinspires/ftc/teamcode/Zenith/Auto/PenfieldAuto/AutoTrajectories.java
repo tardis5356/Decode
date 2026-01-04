@@ -23,7 +23,7 @@ public class AutoTrajectories {
     public static Pose2d goalIntakePos, midIntakePos, audienceIntakePos, cornerIntakePos;
     public static Pose2d presetLZIntakePos, randomLZIntakePos;
     public static Pose2d gateReleasePos;
-    public static Pose2d gateExitWaypointPos;
+    public static Pose2d gateReadyToReleasePos;
     public static Pose2d parkPos;
 
     // Actions: for each cycle index we create startToIntake and intakeToShoot actions
@@ -39,11 +39,11 @@ public class AutoTrajectories {
 
 
     // Intake tangents: [goal, mid, audience, LZ preset, LZ random]
-    public static double[] intakeEndTangentDeg = {90, 90, 90, 90 /*check*/, 45};
+    public static double[] intakeEndTangentDeg = {90, 90, 90, 90 /*check*/, 90 /*45*/};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg = {180, 315}; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg = {180, 270 /*315*/ }; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
@@ -100,13 +100,13 @@ public class AutoTrajectories {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 50, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(13, 63, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(36, 63, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(13, 50, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(32, 50, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
-        gateExitWaypointPos = allianceCoordinate(new Pose2d(0, 36, Math.toRadians(90)));
+        gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
         randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
 
@@ -127,7 +127,7 @@ public class AutoTrajectories {
      * @param startPos starting pose for cycle 1
      */
     public static void generateTrajectories(MecanumDrive drive, int[][] choices, int cycles, Pose2d startPos) {
-        Pose2d[] shootPositions = {goalShootPos, audienceShootPos};
+        Pose2d[] shootPositions = {goalShootPos, audienceShootPos,gateReadyToReleasePos};
         Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, randomLZIntakePos};
 
         Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;

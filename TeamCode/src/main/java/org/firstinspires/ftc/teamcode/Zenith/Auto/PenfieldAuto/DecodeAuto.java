@@ -112,7 +112,7 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-12000));
+            turret.setTargetPosition(allianceValue(-12300));
             //sometimes turn before setting configs
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
@@ -143,15 +143,14 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 2;
+                cycleCount = 3;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
-                        {0, 0}, //shoot: audience, intake: audience
-                        {0, 1}, //shoot: goal, intake: mid
-                        //gate
                         {1, 2}, //shoot: goal, intake: Goal
+                        {0, 1}, //shoot: goal, intake: mid
+                        {2, 0}, //shoot: gate ready to push, intake: audience
                         {1, 4}, //shoot: audience, intake: LZ random
-                        {1, 4} //shoot: audience, intake: LZ random
+                        {1, 3} //shoot: audience, intake: preset pose
                 };
             } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;
@@ -160,15 +159,13 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
-                cycleCount = 2;
-//                cycleCount = 3;
+                cycleCount = 3;
                 choices = new int[][]{
-                        {0, 2}, //shoot: goal, intake: audience
+                        {1, 2}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
-                        //gate
-                        {0, 0}, //shoot: goal, intake: audience
-                        {0, 2}, //shoot: audience, intake: audience
-                        {1, 4} //shoot: audience, intake: LZ random
+                        {2, 0}, //shoot: goal ready to push, intake: Goal
+                        {1, 4}, //shoot: audience, intake: LZ random
+                        {1, 3} //shoot: audience, intake: LZ random
                 };
 
             }
