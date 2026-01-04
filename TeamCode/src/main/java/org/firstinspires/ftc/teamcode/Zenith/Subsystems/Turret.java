@@ -232,16 +232,16 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Offset Y", targetTagYOffset);
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-//        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
-//        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
-//        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
-//        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
-        telemetry.addData("TurretRawMotorPower", mT.getPower());
-//        //check THESE when tuning turret
-        telemetry.addData("TurretTicks", getCurrentPosition());
-        telemetry.addData("Target Pos (ticks)", desiredTicks);
+//        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
+//         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+////        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
+////        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
+////        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
+////        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
+//        telemetry.addData("TurretRawMotorPower", mT.getPower());
+////        //check THESE when tuning turret
+//        telemetry.addData("TurretTicks", getCurrentPosition());
+//        telemetry.addData("Target Pos (ticks)", desiredTicks);
     }
 
     // === FLIP MANAGEMENT ===

@@ -651,50 +651,52 @@ public class DecodeTeleOp extends CommandOpMode {
 
         Pose2d pose = drive.localizer.getPose();
 
-        telemetry.addLine("======== Motor Currents ========");
+//        telemetry.addLine("======== Motor Currents ========");
+//
+//        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mST.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mSB.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("IntakeMotorCurrent", intake.mI.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("mFRMotorCurrent", mFR.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("mFLMotorCurrent", mFL.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("mBRMotorCurrent", mBR.getCurrent(CurrentUnit.AMPS));
+//        telemetry.addData("mBLMotorCurrent", mBL.getCurrent(CurrentUnit.AMPS));
+//
+//        telemetry.addData("TotalMotorAmps",
+//                shooter.mST.getCurrent(CurrentUnit.AMPS)
+//                + shooter.mSB.getCurrent(CurrentUnit.AMPS)
+//                + intake.mI.getCurrent(CurrentUnit.AMPS)
+//                + turret.mT.getCurrent(CurrentUnit.AMPS)
+//                + mFR.getCurrent(CurrentUnit.AMPS)
+//                + mFL.getCurrent(CurrentUnit.AMPS)
+//                + mBR.getCurrent(CurrentUnit.AMPS)
+//                + mBL.getCurrent(CurrentUnit.AMPS)
+//        );
 
-        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mST.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mSB.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("IntakeMotorCurrent", intake.mI.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("mFRMotorCurrent", mFR.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("mFLMotorCurrent", mFL.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("mBRMotorCurrent", mBR.getCurrent(CurrentUnit.AMPS));
-        telemetry.addData("mBLMotorCurrent", mBL.getCurrent(CurrentUnit.AMPS));
 
-        telemetry.addData("TotalMotorAmps",
-                shooter.mST.getCurrent(CurrentUnit.AMPS)
-                + shooter.mSB.getCurrent(CurrentUnit.AMPS)
-                + intake.mI.getCurrent(CurrentUnit.AMPS)
-                + turret.mT.getCurrent(CurrentUnit.AMPS)
-                + mFR.getCurrent(CurrentUnit.AMPS)
-                + mFL.getCurrent(CurrentUnit.AMPS)
-                + mBR.getCurrent(CurrentUnit.AMPS)
-                + mBL.getCurrent(CurrentUnit.AMPS)
-        );
-
-
-        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+//        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 //        telemetry.addData("X", pose.position.x);
 //        telemetry.addData("Y", pose.position.y);
 //
 //        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 //
-        telemetry.addData("intakeState", intake.intakeState);
-        telemetry.addData("intakeToggle", intaketoggle);
-        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
-
-        telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
-
-
-        telemetry.addData("cSMDist", intake.cSM.getDistance(DistanceUnit.CM));
+//        telemetry.addData("intakeState", intake.intakeState);
+//        telemetry.addData("intakeToggle", intaketoggle);
+//        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+//
+//        telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
 
 
-        telemetry.addData("cSSHDist", intake.cSSh.getDistance(DistanceUnit.CM));
+        //telemetry.addData("cSMDist", intake.cSM.getDistance(DistanceUnit.CM));
+
+
+        //telemetry.addData("cSSHDist", intake.cSSh.getDistance(DistanceUnit.CM));
 //        telemetry.addData("currentShootmode", currentShootMode);
-//        telemetry.addData("hoodPos", shooter.sH.getPosition());
-//        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-//        telemetry.addData("targetSpeed", shooter.flyWheelSpeed + shooter.speedOffset);
+        telemetry.addLine();
+        telemetry.addData("hoodPos", shooter.sH.getPosition());
+        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+        telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
+        telemetry.addData("Distance",GlobalVariables.distanceFromTarget);
 //        telemetry.addData("motorPower", shooter.mST.getPower());
 //        telemetry.addLine();
 //        telemetry.addData("turretOffset",turret.manualOffset);
@@ -703,7 +705,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //        telemetry.addData("aColor", aColor);
 
 
-        telemetry.addData("pinpointYawScalar", driver.getYawScalar());
+        //telemetry.addData("pinpointYawScalar", driver.getYawScalar());
 
 
         // telemetry.addData("position",drive.localizer.getPose());
