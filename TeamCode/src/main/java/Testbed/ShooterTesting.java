@@ -27,11 +27,11 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import java.util.concurrent.TimeUnit;
 
 @Config
-@TeleOp(name="10.2.25_Shooter_Test")
-@Disabled
+@TeleOp(name="1.4.26_Shooter_Test")
+//@Disabled
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.0095f, vI = 0, vD = 0.0005f, vV = 0.007f, vS = 0;
+    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.000411f, vS = 0.13f;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -51,7 +51,7 @@ public class ShooterTesting extends CommandOpMode {
     Storage storage;
 
     double hoodPos = 0.5;
-    public static double wheelSpeedOne = 1300, wheelSpeedTwo = 1125, wheelSpeed_Three = 800;
+    public static double wheelSpeedOne = 1410, wheelSpeedTwo = 1125, wheelSpeed_Three = 800;
     double wheelSpeed;
 
     double e1, e2, t;
@@ -112,6 +112,15 @@ public class ShooterTesting extends CommandOpMode {
                         )
                 );
 
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
+                .whenActive(new SequentialCommandGroup(
+                                new InstantCommand(()-> wheelSpeed = 0),
+                                new InstantCommand(()->myTimer.reset())//,
+                                //new InstantCommand()
+//
+                        )
+                );
+
 //        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
 //                .whenActive(new SequentialCommandGroup(
 //                                new InstantCommand(()-> wheelSpeed = .9),
@@ -139,12 +148,13 @@ public class ShooterTesting extends CommandOpMode {
                         )
                 );
 
+
     }
 
     public void run() {
         super.run();
 
-        dashboard.updateConfig();
+        velPIDController.setPID(vP,vI,vD);
 
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
@@ -166,7 +176,7 @@ public class ShooterTesting extends CommandOpMode {
 
         telemetry.addData("CommandedPower", wheelSpeed);
 
-        telemetry.addData("T/s_method",mW.getVelocity());
+        telemetry.addData("T/s",mW.getVelocity());
 
         telemetry.addData("HoodPos", sH.getPosition());
 
@@ -176,6 +186,6 @@ public class ShooterTesting extends CommandOpMode {
 
     public double calculateFlyWheelPower(double tps){
         double neededVoltage = velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
-        return neededVoltage/voltageSensor.getVoltage();
+        return neededVoltage * 12.5 / voltageSensor.getVoltage();
     }
 }
