@@ -148,7 +148,7 @@ public class DecodeAuto extends OpMode {
                 choices = new int[][]{
                         {1, 2}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
-                        {2, 0}, //shoot: gate ready to push, intake: audience
+                        {1, 0}, //shoot: gate ready to push, intake: audience
                         {1, 4}, //shoot: audience, intake: LZ random
                         {1, 3} //shoot: audience, intake: preset pose
                 };
@@ -163,7 +163,7 @@ public class DecodeAuto extends OpMode {
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
-                        {2, 0}, //shoot: goal ready to push, intake: Goal
+                        {1, 0}, //shoot: goal ready to push, intake: Goal
                         {1, 4}, //shoot: audience, intake: LZ random
                         {1, 3} //shoot: audience, intake: LZ random
                 };
