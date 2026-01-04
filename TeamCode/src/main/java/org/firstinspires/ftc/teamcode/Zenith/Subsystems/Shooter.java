@@ -77,9 +77,9 @@ public class Shooter extends SubsystemBase {
 
         sH.setPosition(0.05);
 
-// OLD SHOOTING DATA
+
         //prep regression data
-        //small triangle
+//        //small triangle
 //        HoodRegression.put(152., .05);
 //        HoodRegression.put(126.7, .078);
 //        HoodRegression.put(96.6, .05);
@@ -107,10 +107,6 @@ public class Shooter extends SubsystemBase {
 //        WheelRegression.put(34.5,975.-hardWheelOffset);
 //        WheelRegression.put(18.,850.-hardWheelOffset);
 
-
-
-
-       ////NEW SHOOTING DATA 1/4/26
         HoodRegression.put(139.8, 0.1);
         HoodRegression.put(118.6, 0.1);
         HoodRegression.put(109.0, 0.15);
@@ -133,7 +129,6 @@ public class Shooter extends SubsystemBase {
         WheelRegression.put(52.5, 870.-hardWheelOffset);
         WheelRegression.put(42.5, 810.-hardWheelOffset);
         WheelRegression.put(32.8, 790.-hardWheelOffset);
-
 
 
         targeting = true;
