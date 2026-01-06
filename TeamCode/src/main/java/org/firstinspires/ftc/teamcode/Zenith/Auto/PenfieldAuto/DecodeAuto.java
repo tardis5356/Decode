@@ -374,16 +374,16 @@ public class DecodeAuto extends OpMode {
         }
 
         CommandScheduler.getInstance().run();
-//        if (runtime.seconds() > 29 && auto != null) {
-//            CommandScheduler.getInstance().cancel(auto);
-//
-//            drive.leftBack.setPower(0);
-//            drive.leftFront.setPower(0);
-//            drive.rightBack.setPower(0);
-//            drive.rightFront.setPower(0);
-//
-//            auto = null;
-//        }
+        if (runtime.seconds() > 29 && auto != null) {
+            CommandScheduler.getInstance().cancel(auto);
+
+            drive.leftBack.setPower(0);
+            drive.leftFront.setPower(0);
+            drive.rightBack.setPower(0);
+            drive.rightFront.setPower(0);
+
+            auto = null;
+        }
 
         turret.updateTurretTracking(drive, telemetry2);
         shooter.setTargetDistance(GlobalVariables.distanceFromTarget);

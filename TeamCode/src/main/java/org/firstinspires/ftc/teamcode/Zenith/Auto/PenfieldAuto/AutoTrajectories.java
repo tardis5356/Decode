@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.MAX_CYCLES;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.roadrunner.Action;
@@ -101,11 +102,11 @@ public class AutoTrajectories {
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 50, Math.toRadians(90)));
         midIntakePos = allianceCoordinate(new Pose2d(13, 50, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(32, 50, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(36, 50, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
-        gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(90)));
+        gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
         randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
@@ -127,7 +128,7 @@ public class AutoTrajectories {
      * @param startPos starting pose for cycle 1
      */
     public static void generateTrajectories(MecanumDrive drive, int[][] choices, int cycles, Pose2d startPos) {
-        Pose2d[] shootPositions = {goalShootPos, audienceShootPos,gateReadyToReleasePos};
+        Pose2d[] shootPositions = {goalShootPos, audienceShootPos};
         Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, randomLZIntakePos};
 
         Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;
@@ -200,12 +201,12 @@ public class AutoTrajectories {
 
         }
 
-//        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
+        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
 //
-//        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
-//        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
+        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
+        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
 //
-//        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
+        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
 //
 //        gateExit = drive.actionBuilder(gateReleasePos).setTangent(allianceTangent(270)).splineToLinearHeading(gateExitWaypointPos, allianceTangent(90)).build();
 

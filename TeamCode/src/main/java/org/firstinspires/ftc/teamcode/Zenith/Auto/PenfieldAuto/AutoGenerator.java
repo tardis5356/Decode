@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.allianceValue;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.gateRelease;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.goalStartToGoalShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
 
@@ -76,10 +78,10 @@ public class AutoGenerator {
                // seq.add(new AutoLaunchCommands(intake, storage));
 //            }
 
-//            if (i == gateCycleIndex) {
-//                seq.add(new ActionCommand(gateRelease, requirements));
-//            }
-//
+            if (i == gateCycleIndex) {
+                seq.add(new ActionCommand(gateRelease, requirements));
+            }
+
 //            if (i == gateCycleIndex) {
 //                seq.add(new ActionCommand(gateExit, requirements));
 //                gateReleased = true;
