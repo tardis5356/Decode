@@ -177,9 +177,9 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
         return new ParallelCommandGroup(
                 new SequentialCommandGroup(
                 new InstantCommand(s::raiseKicker),
-                new WaitCommand(BotPositions.KICKER_WAIT),
+                new WaitCommand(100),
                 new InstantCommand(s::lowerKicker),
-                new WaitCommand(BotPositions.KICKER_WAIT)
+                new WaitCommand(50)
                 ),
                 new InstantCommand(()-> GlobalVariables.ballsShot += 1)
                 );

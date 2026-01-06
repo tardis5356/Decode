@@ -16,7 +16,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
     private Intake intake;
     private ElapsedTime runtime = new ElapsedTime();
-    private Double timeout = 1.2;
+    private Double timeout = .8;
 
     public MoveInArtifactCommand(Intake intake) {
         // this is the actual method itself
@@ -29,8 +29,9 @@ public class MoveInArtifactCommand extends CommandBase{
 
         //TODO Test run this
 
-        new InstantCommand(intake::in).schedule();
+       // new InstantCommand(intake::in)/*.schedule()*/;
 
+        intake.in();
         runtime.reset();
 //        lift.setTargetPosition(targetPosition);
     }
@@ -47,7 +48,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
     @Override
     public boolean isFinished() { // returns true when finished
-        if (GlobalVariables.currentArtifacts.charAt(1) != '_' || (runtime.seconds() > timeout)) {
+        if (GlobalVariables.currentArtifacts.charAt(0) != '_' || (runtime.seconds() > timeout)) {
             return true;
         }
 
@@ -57,9 +58,9 @@ public class MoveInArtifactCommand extends CommandBase{
     @Override
     public void end(boolean interrupted) {
 
-        new SequentialCommandGroup(
-                new InstantCommand(intake::stop)
-        ).schedule();
+        //new SequentialCommandGroup(
+        intake.stop();
+        //).schedule();
 
         DecodeTeleOp.intaketoggle = true;
 

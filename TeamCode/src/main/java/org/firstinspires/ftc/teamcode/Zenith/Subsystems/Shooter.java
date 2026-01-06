@@ -138,8 +138,7 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-        mSB.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
-        mST.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+        setVel(WheelRegression.get(distanceFromTarget));
 
             if (targeting) {
                 sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
@@ -149,9 +148,11 @@ public class Shooter extends SubsystemBase {
             }
 
             if (spinning) {
-                setVel(WheelRegression.get(distanceFromTarget));
+                mSB.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+                mST.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             } else {
-                setVel(0);
+                mSB.setPower(0);
+                mST.setPower(0);
             }
 
             if (Math.abs(getTargetFlyWheelSpeed()-getFlyWheelSpeed()) < 35) {

@@ -61,30 +61,43 @@ public class Intake extends SubsystemBase {
         setCurrentArtifacts();
 
 
-        long emptySlots = GlobalVariables.currentArtifacts.chars()
-                .filter(c -> c == '_')
-                .count();
+//        long emptySlots = GlobalVariables.currentArtifacts.chars()
+//                .filter(c -> c == '_')
+//                .count();
+//
+//        switch ((int) emptySlots){
+//            case 4:
+//                liT.setPosition(0);
+//                break;
+//
+//            case 3:
+//                liT.setPosition(0.333);
+//                break;
+//
+//            case 2:
+//                liT.setPosition(0.388);
+//                break;
+//
+//            case 1:
+//                liT.setPosition(0.5);
+//                break;
+//
+//            default:
+//                liT.setPosition(0.277);
+//                break;
+//        }
 
-        switch ((int) emptySlots){
-            case 4:
-                liT.setPosition(0);
-                break;
-
-            case 3:
-                liT.setPosition(0.333);
-                break;
-
-            case 2:
-                liT.setPosition(0.388);
-                break;
-
-            case 1:
-                liT.setPosition(0.5);
-                break;
-
-            default:
-                liT.setPosition(0.277);
-                break;
+        if(GlobalVariables.currentArtifacts.substring(1) == "___"){
+            liT.setPosition(0);
+        }
+        else if(currentArtifacts.substring(2) == "__"){
+            liT.setPosition(.227);
+        }
+        else if(currentArtifacts.substring(3) == "_"){
+            liT.setPosition(.388);
+        }
+        else if(currentArtifacts.substring(3) != "_"){
+            liT.setPosition(.5);
         }
 
         // If less than 2 empty slots → STOP the intake
@@ -118,25 +131,40 @@ public class Intake extends SubsystemBase {
     }
 
 
-    public String greenOrPurple(ColorRangeSensor cs) {
+    public String gPST(ColorRangeSensor cs) {
         //Normalized colors return values from 1 to 0
-        if (cs.getDistance(DistanceUnit.CM) < 5) {
-            if (cs == cSSt && slotFly) {
-                return "_";
-            }
-            if (cs.getNormalizedColors().red < 3) {
+        if(cs == cSSt){
+            if (cs.getDistance(DistanceUnit.CM) < 1) {
                 return "P";
-            } else if (cs.getNormalizedColors().red > 10) {
-                return "G";
-            } else {
-                return "_";
-            }
-        } else return "_";
+            } else return "_";
+        }
+        else if(cs == cSSh){
+            if (cs.getDistance(DistanceUnit.CM) < 5) {
+                if (slotFly) {
+                    return "_";
+                }
+                return "P";
+            } else return "_";
+        }
+        else if(cs == cSM){
+            if (cs.getDistance(DistanceUnit.CM) < 2) {
+                return "P";
+            } else return "_";
+        }
+        else if(cs == cSI){
+            if (cs.getDistance(DistanceUnit.CM) < 12) {
+                return "P";
+            } else return "_";
+        }
+        else{
+            return "_";
+        }
+
 
     }
 
     public void setCurrentArtifacts() {
-        currentArtifacts = greenOrPurple(cSSt) + greenOrPurple(cSSh) + greenOrPurple(cSM) + greenOrPurple(cSI);
+        currentArtifacts = gPST(cSSt) + gPST(cSSh) + gPST(cSM) + gPST(cSI);
     }
 
 }

@@ -249,17 +249,17 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //Intake
         new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X) && intaketoggle == true)
-                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::in),
+                .whenActive(new SequentialCommandGroup(
                         new WaitCommand(200),
                         new InstantCommand(() -> intaketoggle = false)));
 
         new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y) && intaketoggle == true)
-                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::out),
+                .whenActive(new SequentialCommandGroup(
                         new WaitCommand(200),
                         new InstantCommand(() -> intaketoggle = false)));
 
         new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) && intaketoggle == false)
-                .whenActive(new SequentialCommandGroup(new InstantCommand(intake::stop),
+                .whenActive(new SequentialCommandGroup(
                         new InstantCommand(() -> intakeTimer.reset()),
                         new WaitCommand(200),
                         new InstantCommand(() -> intaketoggle = true)));
@@ -319,8 +319,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
             {
                 //Fly first and second shot, store one for second second shot
-                new Trigger(() -> ((currentShootMode == shootModes.FLY) && /*(GlobalVariables.ballsShot == 0 || GlobalVariables.ballsShot == 1) &&*/ (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A))) ||
-                        (currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
+                new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)
+
                 )
                         //.whileActiveOnce(fly)
                         .whenActive(
@@ -331,8 +331,8 @@ public class DecodeTeleOp extends CommandOpMode {
                                         new LaunchSequenceCommand(intake, storage, "Launch"),
                                         new LaunchSequenceCommand(intake, storage, "PullIn"),
                                         //  new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                        new InstantCommand(() -> driver2.gamepad.rumble(300)),
-                                        new InstantCommand(() -> driver1.gamepad.rumble(300)),
+                                        new InstantCommand(() -> driver2.gamepad.rumble(100)),
+                                        new InstantCommand(() -> driver1.gamepad.rumble(100)),
                                         new InstantCommand(() -> firing = false)//,
                                         //new InstantCommand(breakPad::retractBreakPad)
                                         )
@@ -437,8 +437,8 @@ public class DecodeTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                     //new InstantCommand(breakPad::deployBreakPad),
                                     new LaunchSequenceCommand(intake, storage, "Fly"),
-                                    new InstantCommand(() -> driver2.gamepad.rumble(300)),
-                                    new InstantCommand(() -> driver1.gamepad.rumble(300))//,
+                                    new InstantCommand(() -> driver2.gamepad.rumble(100)),
+                                    new InstantCommand(() -> driver1.gamepad.rumble(100))//,
                                     //new InstantCommand(breakPad::retractBreakPad)
                             )
                     );
@@ -568,19 +568,19 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
-//        if(intake.mI.getPower() == 0){
-//            if(driver1.getButton(GamepadKeys.Button.X)){
-//                intake.in();
-//            }
-//            else if(driver1.getButton(GamepadKeys.Button.Y)){
-//                intake.out();
-//            }
-//        }
-//        else{
-//            if(driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)){
-//                intake.stop();
-//            }
-//        }
+        if(intake.mI.getPower() == 0 && intaketoggle){
+            if(driver1.getButton(GamepadKeys.Button.X)){
+                intake.in();
+            }
+            else if(driver1.getButton(GamepadKeys.Button.Y)){
+                intake.out();
+            }
+        }
+        else if(intake.mI.getPower() != 0){
+            if(driver1.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)){
+                intake.stop();
+            }
+        }
 
 //        if(gamepad1.touchpad){
 //            savedPos = new Pose2d(24, 48,);
