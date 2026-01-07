@@ -71,21 +71,9 @@ public class AutoGenerator {
             }
 
 
-//            if (!gateReleased) {
+
                 seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
-//            }
-//            else {
-               // seq.add(new AutoLaunchCommands(intake, storage));
-//            }
 
-            if (i == gateCycleIndex) {
-                seq.add(new ActionCommand(gateRelease, requirements));
-            }
-
-//            if (i == gateCycleIndex) {
-//                seq.add(new ActionCommand(gateExit, requirements));
-//                gateReleased = true;
-//            }
         }
 
         return new SequentialCommandGroup(seq.toArray(new Command[0]));

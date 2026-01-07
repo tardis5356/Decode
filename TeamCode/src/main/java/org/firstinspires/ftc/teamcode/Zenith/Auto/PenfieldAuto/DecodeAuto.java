@@ -112,7 +112,7 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-12300));
+            turret.setTargetPosition(allianceValue(-12500));
             //sometimes turn before setting configs
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));

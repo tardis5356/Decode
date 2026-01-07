@@ -44,7 +44,7 @@ public class AutoTrajectories {
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg = {180, 270 /*315*/ }; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg = {180, 0 }; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
@@ -55,7 +55,7 @@ public class AutoTrajectories {
     public static double[] startPosTangentDeg = {0, 180};
 
     // [goalShoot, audienceShoot]
-    public static double[] intakeStartTangentDeg = {0, 180};
+    public static double[] intakeStartTangentDeg = {90, 180};
 
     public static MinVelConstraint BaseConstraint = new MinVelConstraint(
             Arrays.asList(
@@ -100,9 +100,9 @@ public class AutoTrajectories {
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
-        goalIntakePos = allianceCoordinate(new Pose2d(-12, 50, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(13, 50, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(36, 50, Math.toRadians(90)));
+        goalIntakePos = allianceCoordinate(new Pose2d(-12, 53, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(13, 55, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(33, 50, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
@@ -201,12 +201,12 @@ public class AutoTrajectories {
 
         }
 
-        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
-//
-        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
-        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
-//
-        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
+//        int gateShootChoice = (gateCycleIndex < cycles) ? choices[gateCycleIndex][0] : choices[cycles - 1][0];   // last cycle shoot option
+////
+//        double gateStartRad = allianceTangent(gateReleaseStartTangentDeg[gateShootChoice]);
+//        double gateEndRad = allianceTangent(gateReleaseEndTangentDeg);
+////
+//        gateRelease = drive.actionBuilder(shootPositions[choices[gateCycleIndex][0]]).setTangent(gateStartRad).splineToLinearHeading(gateReleasePos, gateEndRad).build();
 //
 //        gateExit = drive.actionBuilder(gateReleasePos).setTangent(allianceTangent(270)).splineToLinearHeading(gateExitWaypointPos, allianceTangent(90)).build();
 
