@@ -33,6 +33,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
+import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BreakPad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
@@ -248,21 +249,27 @@ public class DecodeTeleOp extends CommandOpMode {
 //                .whenActive(new InstantCommand(() -> aColor = "blue"));
 
         //Intake
-        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X) && intaketoggle == true)
-                .whenActive(new SequentialCommandGroup(
-                        new WaitCommand(200),
-                        new InstantCommand(() -> intaketoggle = false)));
 
-        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y) && intaketoggle == true)
-                .whenActive(new SequentialCommandGroup(
-                        new WaitCommand(200),
-                        new InstantCommand(() -> intaketoggle = false)));
+        new Trigger(()->driver1.getButton(GamepadKeys.Button.X))
+                .whenInactive(new IntakeToggleCommand(intake, Intake.Direction.IN));
 
-        new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) && intaketoggle == false)
-                .whenActive(new SequentialCommandGroup(
-                        new InstantCommand(() -> intakeTimer.reset()),
-                        new WaitCommand(200),
-                        new InstantCommand(() -> intaketoggle = true)));
+        new Trigger(()->driver1.getButton(GamepadKeys.Button.Y))
+                .whenInactive(new IntakeToggleCommand(intake, Intake.Direction.OUT));
+
+
+//        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X))
+//                .toggleWhenActive(()->intake.in(), ()->intake.stop());
+
+//        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.Y) && intaketoggle == true)
+//                .whenActive(new SequentialCommandGroup(
+//                        new WaitCommand(200),
+//                        new InstantCommand(() -> intaketoggle = false)));
+//
+//        new Trigger(() -> intake.mI.getPower() != 0 && (driver1.getButton(GamepadKeys.Button.X) || driver1.getButton(GamepadKeys.Button.Y)) && intaketoggle == false)
+//                .whenActive(new SequentialCommandGroup(
+//                        new InstantCommand(() -> intakeTimer.reset()),
+//                        new WaitCommand(200),
+//                        new InstantCommand(() -> intaketoggle = true)));
 
 
         //move all in by 1
@@ -568,19 +575,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
-        if(intake.mI.getPower() == 0 && intaketoggle){
-            if(driver1.getButton(GamepadKeys.Button.X)){
-                intake.in();
-            }
-            else if(driver1.getButton(GamepadKeys.Button.Y)){
-                intake.out();
-            }
-        }
-        else if(intake.mI.getPower() != 0){
-            if(driver1.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.X)){
-                intake.stop();
-            }
-        }
+
 
 //        if(gamepad1.touchpad){
 //            savedPos = new Pose2d(24, 48,);
@@ -588,10 +583,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shooter.sH.setPosition(hoodPos);
 
-        if (intake.intakeState == "stop" && intaketoggle == false && intakeTimer.seconds() > 1) {
-
-            intaketoggle = true;
-        }
 
         if (gamepad1.dpad_left) {
             shooter.spinning = true;

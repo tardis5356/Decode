@@ -33,6 +33,14 @@ public class Intake extends SubsystemBase {
 
     public double intakePower = 0;
 
+    public enum Direction {
+        OFF,
+        IN,
+        OUT
+    }
+
+    public Direction currentDirection;
+
 
     public Intake(HardwareMap hardwareMap) {
 
@@ -49,6 +57,8 @@ public class Intake extends SubsystemBase {
 
         redIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
+
+        currentDirection = Direction.OFF;
 
 
     }
@@ -87,16 +97,16 @@ public class Intake extends SubsystemBase {
 //                break;
 //        }
 
-        if(GlobalVariables.currentArtifacts.substring(1) == "___"){
+        if(GlobalVariables.currentArtifacts == "____"){
             liT.setPosition(0);
         }
-        else if(currentArtifacts.substring(2) == "__"){
+        else if(currentArtifacts == "P___"){
             liT.setPosition(.227);
         }
-        else if(currentArtifacts.substring(3) == "_"){
+        else if(currentArtifacts == "P_P_"){
             liT.setPosition(.388);
         }
-        else if(currentArtifacts.substring(3) != "_"){
+        else if(currentArtifacts == "P_PP"){
             liT.setPosition(.5);
         }
 
@@ -113,6 +123,7 @@ public class Intake extends SubsystemBase {
         intakeState = "in";
         greenIntakeLED.setState(true);
         redIntakeLED.setState(false);
+        currentDirection = Direction.IN;
     }
 
 
@@ -121,6 +132,7 @@ public class Intake extends SubsystemBase {
         intakeState = "out";
         greenIntakeLED.setState(false);
         redIntakeLED.setState(true);
+        currentDirection = Direction.OUT;
     }
 
     public void stop() {
@@ -128,6 +140,7 @@ public class Intake extends SubsystemBase {
         intakeState = "stop";
         greenIntakeLED.setState(false);
         redIntakeLED.setState(false);
+        currentDirection = Direction.OFF;
     }
 
 
