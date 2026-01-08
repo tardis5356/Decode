@@ -109,6 +109,9 @@ public class Intake extends SubsystemBase {
         else if(currentArtifacts == "P_PP"){
             liT.setPosition(.5);
         }
+        else{
+            liT.setPosition(.72);
+        }
 
         // If less than 2 empty slots → STOP the intake
 //        if (emptySlots == 1 ) {
