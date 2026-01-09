@@ -163,7 +163,7 @@ public class DecodeAuto extends OpMode {
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
-                        {1, 0}, //shoot: goal ready to push, intake: Goal
+                        {0, 0}, //shoot: goal ready to push, intake: Goal
                         {1, 4}, //shoot: audience, intake: LZ random
                         {1, 3} //shoot: audience, intake: LZ random
                 };
@@ -395,6 +395,7 @@ public class DecodeAuto extends OpMode {
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
+        telemetry2.addData("distanceFromGoal", GlobalVariables.distanceFromTarget);
     }
 
 //    @Override

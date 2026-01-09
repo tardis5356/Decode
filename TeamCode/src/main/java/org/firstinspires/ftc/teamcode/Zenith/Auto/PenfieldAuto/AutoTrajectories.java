@@ -30,7 +30,11 @@ public class AutoTrajectories {
     // Actions: for each cycle index we create startToIntake and intakeToShoot actions
 //    public static Action[] startToIntakeWaypoint = new Action[MAX_CYCLES];
 //    public static Action[] intakeWaypointToIntake = new Action[MAX_CYCLES];
-    public static Action[] startToIntake = new Action[MAX_CYCLES];
+//    public static Action[] startToIntake = new Action[MAX_CYCLES];
+
+    public static Action[] startToIntakeWaypoint = new Action[MAX_CYCLES];
+    public static Action[] intakeWaypointToIntake = new Action[MAX_CYCLES];
+
     public static Action[] intakeToShoot = new Action[MAX_CYCLES];
     public static Action gateRelease, gateExit;
 
@@ -40,7 +44,7 @@ public class AutoTrajectories {
 
 
     // Intake tangents: [goal, mid, audience, LZ preset, LZ random]
-    public static double[] intakeEndTangentDeg = {90, 90, 90, 90 /*check*/, 90 /*45*/};
+    public static double[] intakeEndTangentDeg = {90, 90, 90 /*120*/ , 90 /*check*/, 90 /*45*/};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
@@ -59,7 +63,7 @@ public class AutoTrajectories {
 
     public static MinVelConstraint BaseConstraint = new MinVelConstraint(
             Arrays.asList(
-                    new TranslationalVelConstraint(55),//inches per second
+                    new TranslationalVelConstraint(50),//inches per second
                     new AngularVelConstraint(Math.PI) // remember the units you're working in, especially for angular constraints!
             )
     );
@@ -100,9 +104,9 @@ public class AutoTrajectories {
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
-        goalIntakePos = allianceCoordinate(new Pose2d(-12, 53, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(13, 55, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(33, 50, Math.toRadians(90)));
+        goalIntakePos = allianceCoordinate(new Pose2d(-12, 60, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(14, 60, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(37, 60, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
@@ -112,8 +116,6 @@ public class AutoTrajectories {
         randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, 180));
-
-
     }
 
     /**
@@ -173,18 +175,18 @@ public class AutoTrajectories {
             double intakeStartRad = allianceTangent(intakeStartDeg);
 
             // === START → INTAKE POS ===
-//            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-//                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90))
-//                    .build();
-//
-//            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(33)), allianceTangent(90)))
-//                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
-//                    .build();
-
-            startToIntake[i] = drive.actionBuilder(currentStart)
-                    .setTangent(intakeStartRad)
-                    .splineToLinearHeading(intakePose, intakeEndRad)
+            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
+                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(27)), allianceTangent(90))
                     .build();
+
+            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(27)), allianceTangent(90)))
+                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
+                    .build();
+
+//            startToIntake[i] = drive.actionBuilder(currentStart)
+//                    .setTangent(intakeStartRad)
+//                    .splineToLinearHeading(intakePose, intakeEndRad)
+//                    .build();
 
             // === INTAKE POS → SHOOT ===
             double shootStartRad = allianceTangent(shootStartTangentDeg[shootChoice]);
