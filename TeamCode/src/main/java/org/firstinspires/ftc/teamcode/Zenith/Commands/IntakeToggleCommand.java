@@ -31,7 +31,7 @@ public class IntakeToggleCommand extends CommandBase {
                             new InstantCommand(intake::stop),
                             new WaitCommand(200),
                             new InstantCommand(intake::in)
-                    );
+                    ).schedule();
                 }
                 break;
             case OUT:
@@ -40,7 +40,7 @@ public class IntakeToggleCommand extends CommandBase {
                             new InstantCommand(intake::stop),
                             new WaitCommand(200),
                             new InstantCommand(intake::out)
-                    );
+                    ).schedule();
 
                 }
                 else if(intake.currentDirection == Direction.OFF){
@@ -51,5 +51,10 @@ public class IntakeToggleCommand extends CommandBase {
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean isFinished(){
+        return true;
     }
 }
