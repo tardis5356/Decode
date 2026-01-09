@@ -146,9 +146,9 @@ public class DecodeAuto extends OpMode {
                 cycleCount = 3;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
-                        {1, 2}, //shoot: goal, intake: Goal
+                        {0, 0}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
-                        {1, 0}, //shoot: gate ready to push, intake: audience
+                        {0, 2}, //shoot: gate ready to push, intake: audience
                         {1, 4}, //shoot: audience, intake: LZ random
                         {1, 3} //shoot: audience, intake: preset pose
                 };

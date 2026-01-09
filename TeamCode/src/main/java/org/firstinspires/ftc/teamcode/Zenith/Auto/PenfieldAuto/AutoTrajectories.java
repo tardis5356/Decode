@@ -162,9 +162,9 @@ public class AutoTrajectories {
 
             if (startPos == goalStartPos && i == 0){
                 goalStartToGoalShoot = drive.actionBuilder(currentStart)
-                        .strafeToLinearHeading(new Vector2d(-12, allianceValue(5)), allianceTangent(90))
+                        .strafeToLinearHeading(new Vector2d(-28, allianceValue(24)), allianceTangent(90))
                         .build();
-                currentStart = new Pose2d(new Vector2d(-12, allianceValue(5)), allianceTangent(90));
+                currentStart = new Pose2d(new Vector2d(-28, allianceValue(24)), allianceTangent(90));
             }
 
 
