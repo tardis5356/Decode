@@ -251,10 +251,10 @@ public class DecodeTeleOp extends CommandOpMode {
         //Intake
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.X))
-                .whenInactive(new IntakeToggleCommand(intake, Intake.Direction.IN));
+                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.IN));
 
         new Trigger(()->driver1.getButton(GamepadKeys.Button.Y))
-                .whenInactive(new IntakeToggleCommand(intake, Intake.Direction.OUT));
+                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.OUT));
 
 
 //        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X))

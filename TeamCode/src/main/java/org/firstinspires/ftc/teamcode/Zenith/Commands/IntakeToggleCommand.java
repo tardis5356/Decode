@@ -9,8 +9,15 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake.Direction;
 
 public class IntakeToggleCommand extends CommandBase {
-
+    Intake intake;
+    Direction commandedDirection;
     public IntakeToggleCommand(Intake intake, Direction commandedDirection){
+        this.intake = intake;
+        this.commandedDirection = commandedDirection;
+    }
+
+    @Override
+    public void execute(){
         switch(commandedDirection){
             case IN:
                 if(intake.currentDirection == Direction.IN){
@@ -26,7 +33,7 @@ public class IntakeToggleCommand extends CommandBase {
                             new InstantCommand(intake::in)
                     );
                 }
-            break;
+                break;
             case OUT:
                 if(intake.currentDirection == Direction.IN){
                     new SequentialCommandGroup(
