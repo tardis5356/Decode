@@ -44,10 +44,10 @@ public class IntakeToggleCommand extends CommandBase {
 
                 }
                 else if(intake.currentDirection == Direction.OFF){
-                    intake.stop();
+                    intake.out();
                 }
                 else {
-                    intake.out();
+                    intake.stop();
                 }
                 break;
         }
