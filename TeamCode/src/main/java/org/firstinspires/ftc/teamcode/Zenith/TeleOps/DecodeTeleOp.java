@@ -680,8 +680,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-//        telemetry.addData("X", pose.position.x);
-//        telemetry.addData("Y", pose.position.y);
+        telemetry.addData("X", pose.position.x);
+        telemetry.addData("Y", pose.position.y);
 //
 //        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 //
