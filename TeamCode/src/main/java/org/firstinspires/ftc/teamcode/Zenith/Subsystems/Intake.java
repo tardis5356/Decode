@@ -99,21 +99,21 @@ public class Intake extends SubsystemBase {
 //                break;
 //        }
 
-        if(Objects.equals(currentArtifacts, "____")){
-            liT.setPosition(0);
-        }
-        else if(Objects.equals(currentArtifacts, "P___")){
-            liT.setPosition(.227);
-        }
-        else if(Objects.equals(currentArtifacts, "P_P_")){
-            liT.setPosition(.388);
-        }
-        else if(Objects.equals(currentArtifacts, "P_PP")){
-            liT.setPosition(.5);
-        }
-        else{
-            liT.setPosition(.72);
-        }
+//        if(Objects.equals(currentArtifacts, "____")){
+//            liT.setPosition(0);
+//        }
+//        else if(Objects.equals(currentArtifacts, "P___")){
+//            liT.setPosition(.227);
+//        }
+//        else if(Objects.equals(currentArtifacts, "P_P_")){
+//            liT.setPosition(.388);
+//        }
+//        else if(Objects.equals(currentArtifacts, "P_PP")){
+//            liT.setPosition(.5);
+//        }
+//        else{
+//            liT.setPosition(.72);
+//        }
 
         // If less than 2 empty slots → STOP the intake
 //        if (emptySlots == 1 ) {
