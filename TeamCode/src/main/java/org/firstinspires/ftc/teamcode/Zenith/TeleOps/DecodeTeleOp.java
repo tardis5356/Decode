@@ -475,12 +475,14 @@ public class DecodeTeleOp extends CommandOpMode {
             new Trigger(() -> gamepad1.touchpad && aColor == "red")
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0)))),
+                            new InstantCommand(()->turret.cwORccw = 1),
                             new InstantCommand(() -> turret.turretLocalized = false)
                     ));
             //In blue LZ Corner
             new Trigger(() -> gamepad1.touchpad && aColor == "blue")
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0)))),
+                            new InstantCommand(()->turret.cwORccw = 1),
                             new InstantCommand(() -> turret.turretLocalized = false)
                     ));
 
@@ -600,7 +602,7 @@ public class DecodeTeleOp extends CommandOpMode {
                 turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
                 turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
                 turret.turretLocalized = true;
-                turret.cwORccw = 1;
+                //turret.cwORccw = 1;
             }
         }
 

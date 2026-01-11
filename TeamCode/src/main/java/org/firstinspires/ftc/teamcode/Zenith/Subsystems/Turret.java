@@ -141,11 +141,12 @@ public class Turret extends SubsystemBase {
                 }
             } else motorPower = 0;
         }else{
-            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-//            motorPower = -.5 * cwORccw;
-//            if(lT2.isPressed()){
-//                cwORccw = -2;
-//            }
+            //motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+            //TODO: actually debug this before next comp
+            motorPower = -.5 * cwORccw;
+            if(lT2.isPressed()){
+                cwORccw = -2;
+            }
         }
 
 //set the kS according to the turret theta
