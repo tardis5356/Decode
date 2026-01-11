@@ -23,8 +23,10 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new MoveInArtifactCommand(intake),
                                 launcOne(storage),
                                 new MoveInArtifactCommand(intake),
+                                new WaitCommand(175),
                                 launcOne(storage),
                                 new MoveInArtifactCommand(intake),
+                                new WaitCommand(175),
                                 launcOne(storage),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0)
                               //  new MoveInArtifactCommand(intake)

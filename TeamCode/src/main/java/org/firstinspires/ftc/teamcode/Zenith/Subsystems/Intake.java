@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.Objects;
+
 public class Intake extends SubsystemBase {
 
     public DcMotorEx mI;
@@ -97,16 +99,16 @@ public class Intake extends SubsystemBase {
 //                break;
 //        }
 
-        if(GlobalVariables.currentArtifacts == "____"){
+        if(Objects.equals(currentArtifacts, "____")){
             liT.setPosition(0);
         }
-        else if(currentArtifacts == "P___"){
+        else if(Objects.equals(currentArtifacts, "P___")){
             liT.setPosition(.227);
         }
-        else if(currentArtifacts == "P_P_"){
+        else if(Objects.equals(currentArtifacts, "P_P_")){
             liT.setPosition(.388);
         }
-        else if(currentArtifacts == "P_PP"){
+        else if(Objects.equals(currentArtifacts, "P_PP")){
             liT.setPosition(.5);
         }
         else{

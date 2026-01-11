@@ -60,7 +60,7 @@ public class DecodeTeleOp extends CommandOpMode {
     public static shootModes currentShootMode;
     //multipliers applied to the sum of the above variables to evenly change the speed of the drivetrain
     static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.4;
+    static double SLOW_SPEED_MULTIPLIER = 0.2;
     //resolution of camera view
     static int imgHeight = 896;
     static int imgWidth = 1600;
@@ -632,6 +632,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mBLPower = FB - LR + Rotation;
             mBRPower = FB + LR - Rotation;
         } else {
+            CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
             mFLPower = -Math.abs(FB);
             mFRPower = -Math.abs(FB);
             mBLPower = -Math.abs(FB);
@@ -684,7 +685,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //
 //        telemetry.addData("intakeState", intake.intakeState);
 //        telemetry.addData("intakeToggle", intaketoggle);
-//        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+       telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 //
 //        telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
 

@@ -374,7 +374,7 @@ public class DecodeAuto extends OpMode {
         }
 
         CommandScheduler.getInstance().run();
-        if (runtime.seconds() > 29 && auto != null) {
+        if (runtime.seconds() > 29.5 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
 
             drive.leftBack.setPower(0);
@@ -386,16 +386,19 @@ public class DecodeAuto extends OpMode {
         }
 
         turret.updateTurretTracking(drive, telemetry2);
-        shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
+        shooter.setTargetDistance(GlobalVariables.distanceFromTarget - 4);
 
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
-        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-        telemetry.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
+        telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+        telemetry2.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
         telemetry2.addData("distanceFromGoal", GlobalVariables.distanceFromTarget);
+        telemetry2.addData("Target Turret (DEG)",Math.toDegrees(turret.getTargetPosition()* TURRET_RADIANS_PER_TICK));
+        telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
+        telemetry2.update();
     }
 
 //    @Override
