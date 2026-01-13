@@ -69,12 +69,13 @@ seq.add(new InstantCommand(storage::closeGate));
                 seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
+                seq.add(new InstantCommand(intake::stop));
             }
 
 
             if (intakeToShoot[i] != null) {
                 seq.add(new ActionCommand(intakeToShoot[i], requirements));
-                seq.add(new InstantCommand(intake::stop));
+
             }
 
 
