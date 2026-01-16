@@ -57,6 +57,7 @@ public class Camera extends SubsystemBase {
     //532.034 * 42.5/52.5;
     public double fy = 545.605 * 56.5 / 58;
     public double cx = 320, cy = 262.311;
+    public int desiredTagID;
     PIDController yawController, forwardController;
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
     ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
@@ -228,7 +229,7 @@ public class Camera extends SubsystemBase {
             setManualExposure(3, 90);//2,80
             manualExposure = true;
         }
-
+        desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
     }
 
@@ -390,5 +391,11 @@ public class Camera extends SubsystemBase {
         INTAKE_PURPLE,
         TURRET
     }
+    public double getDistance(){
+        return Math.hypot(getCurrentAprilTagDetections().get(desiredTagID).ftcPose.x, (getCurrentAprilTagDetections().get(desiredTagID).ftcPose.y + CAMERA_RADIUS) );
+    }
 
+    public double getBearing() {
+        return getCurrentAprilTagDetections().get(desiredTagID).ftcPose.bearing;
+    }
 }

@@ -50,7 +50,7 @@ public class Turret extends SubsystemBase {
 
     public boolean turretLocalized = true;
     public int cwORccw = 1;
-
+    public int desiredTagID;
 
     private PIDController pidController;
     //    private PIDController pidfController;
@@ -125,7 +125,7 @@ public class Turret extends SubsystemBase {
         //if (lT.isPressed()) {
 //            turretOffset += mT.getCurrentPosition();
 //        }
-
+         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
 
 
@@ -187,9 +187,7 @@ public class Turret extends SubsystemBase {
     // === TRACKING TO APRILTAG (with offset) ===
     public void updateTurretTracking(MecanumDrive drive, Telemetry telemetry) {
 
-
         // Select tag based on alliance color
-        int desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
         // Shooting Target Offset relative to AprilTag
         // Positive Offset = further behind apriltag
@@ -244,6 +242,11 @@ public class Turret extends SubsystemBase {
 ////        //check THESE when tuning turret
 //        telemetry.addData("TurretTicks", getCurrentPosition());
 //        telemetry.addData("Target Pos (ticks)", desiredTicks);
+    }
+
+    public void aprilTagTracking ( Camera camera, Telemetry telemetry){
+        GlobalVariables.distanceFromTarget = camera.getDistance();
+        desiredTicks = (int) Math.round((camera.getBearing()*TURRET_TICKS_PER_DEGREE) + getCurrentPosition());
     }
 
     // === FLIP MANAGEMENT ===
