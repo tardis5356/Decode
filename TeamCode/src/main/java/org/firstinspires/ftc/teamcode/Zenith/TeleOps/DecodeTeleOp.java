@@ -570,6 +570,9 @@ public class DecodeTeleOp extends CommandOpMode {
     //this is the main run loop
     public void run() {
         super.run();
+ //Gate is going up and down due to the holes in ball add 2 sensor check for gate
+        //TODO get rid of this after testing
+
 
         shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 
@@ -594,7 +597,8 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
 
-        turret.updateTurretTracking(drive, telemetry);
+       turret.updateTurretTracking(drive, telemetry);
+
 
 
         if (!turret.turretLocalized) {

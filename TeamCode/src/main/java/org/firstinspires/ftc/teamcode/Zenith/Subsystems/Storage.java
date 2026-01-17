@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Storage extends SubsystemBase {
     public Servo sG;
@@ -12,7 +13,9 @@ public class Storage extends SubsystemBase {
 
 
     //We have booleans for the states of each actuator in the storage system for the recovery builder
-    public static boolean gateOpen = true, slotFly = true, kickerDown = true, backOpen = false;
+    public static boolean gateOpen = true, slotFly = true, kickerDown = true, backOpen = false, ballShot = true;
+
+
 
     //The constructor method of the class if you will. you'd write storage = new Storage(hardwaremap);
     //This will then map all of the variables/objects and run methods as innitial setup
@@ -29,12 +32,16 @@ public class Storage extends SubsystemBase {
     @Override
     public void periodic(){
         //if the slot underneath the shooter isn't empty, close the gate, otherwise open it
-        if (GlobalVariables.currentArtifacts.charAt(0) != '_' || !kickerDown){
+        if (GlobalVariables.currentArtifacts.charAt(0) != '_' || !kickerDown || !ballShot){
             closeGate();
+            ballShot = false;
         }
-        else{
+        else {
             openGate();
         }
+
+
+
     }
 
     public void openGate(){

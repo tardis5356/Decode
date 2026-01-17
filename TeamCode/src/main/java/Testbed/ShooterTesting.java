@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.000411f, vS = 0.13f;
+    public static float vP = 0.00f, vI = 0, vD = 0.000f, vV = 0.000f, vS = 0.0f;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);

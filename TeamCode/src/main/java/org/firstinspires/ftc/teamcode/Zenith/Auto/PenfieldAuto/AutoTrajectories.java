@@ -48,7 +48,7 @@ public class AutoTrajectories {
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
-    public static double[] shootEndTangentDeg = {180, 0 }; // final heading tangent at shoot
+    public static double[] shootEndTangentDeg; // final heading tangent at shoot
 
     // Gate release tangents [goal, audience]
     public static double[] gateReleaseStartTangentDeg = {0, 180}; // start tangent when approaching gate
@@ -105,7 +105,7 @@ public class AutoTrajectories {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 60, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(14, 60, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(13, 60, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(37, 60, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
@@ -134,6 +134,12 @@ public class AutoTrajectories {
         Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, randomLZIntakePos};
 
         Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;
+if (startPos == goalStartPos) {
+    shootEndTangentDeg = new double[]{270, 0};
+} else {
+    shootEndTangentDeg = new double[]{180, 0};
+}
+
 
         int shootChoice = 0;
         for (int i = 0; i < cycles; i++) {
@@ -176,10 +182,10 @@ public class AutoTrajectories {
 
             // === START → INTAKE POS ===
             startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(27)), allianceTangent(90))
+                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90))
                     .build();
 
-            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(27)), allianceTangent(90)))
+            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
                     .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
                     .build();
 

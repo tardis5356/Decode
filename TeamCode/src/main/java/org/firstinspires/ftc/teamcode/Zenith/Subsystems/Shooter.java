@@ -23,7 +23,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.000411f, vS = 0.13f;
+    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.00039f, vS = 0.16f;
 
     public static double hardWheelOffset = 0;
 

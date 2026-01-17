@@ -240,8 +240,8 @@ public class Turret extends SubsystemBase {
 ////        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
 //        telemetry.addData("TurretRawMotorPower", mT.getPower());
 ////        //check THESE when tuning turret
-//        telemetry.addData("TurretTicks", getCurrentPosition());
-//        telemetry.addData("Target Pos (ticks)", desiredTicks);
+        telemetry.addData("TurretTicks", getCurrentPosition());
+        telemetry.addData("Target Pos (ticks)", desiredTicks);
     }
 
     public void aprilTagTracking ( Camera camera, Telemetry telemetry){

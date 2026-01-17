@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Commands;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.ballShot;
+
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
@@ -181,7 +183,8 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 new InstantCommand(s::raiseKicker),
                 new WaitCommand(100),
                 new InstantCommand(s::lowerKicker),
-                new WaitCommand(50)
+                new WaitCommand(50),
+        new InstantCommand(()-> ballShot = true)
                 ),
                 new InstantCommand(()-> GlobalVariables.ballsShot += 1)
                 );

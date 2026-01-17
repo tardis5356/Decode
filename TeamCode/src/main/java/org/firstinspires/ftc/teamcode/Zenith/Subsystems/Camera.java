@@ -328,6 +328,8 @@ public class Camera extends SubsystemBase {
         }
     }
 
+
+
     //2, 94
     private void setManualExposure(int exposureMS, int gain) {
 
@@ -397,5 +399,12 @@ public class Camera extends SubsystemBase {
 
     public double getBearing() {
         return getCurrentAprilTagDetections().get(desiredTagID).ftcPose.bearing;
+    }
+    private double getATagRobotHeading(Turret turret) {
+        if (getCurrentAprilTagDetections().contains(24)){
+            return turret.getTurretThetaDEG() + (-getCurrentAprilTagDetections().get(24).ftcPose.bearing) + (getCurrentAprilTagDetections().get(24).metadata.fieldOrientation.toOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle - 90);
+    }else if (getCurrentAprilTagDetections().contains(21)){
+            return turret.getTurretThetaDEG() + (-getCurrentAprilTagDetections().get(21).ftcPose.bearing) + (getCurrentAprilTagDetections().get(21).metadata.fieldOrientation.toOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle - 90);
+        }else return Double.NaN;
     }
 }
