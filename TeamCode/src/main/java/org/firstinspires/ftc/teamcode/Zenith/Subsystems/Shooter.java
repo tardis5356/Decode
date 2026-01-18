@@ -79,58 +79,58 @@ public class Shooter extends SubsystemBase {
 
 
         //prep regression data
-//        //small triangle
-//        HoodRegression.put(152., .05);
-//        HoodRegression.put(126.7, .078);
-//        HoodRegression.put(96.6, .05);
-//        HoodRegression.put(75.7, .071);
-//        HoodRegression.put(54.5,.1);
-//        HoodRegression.put(34.5,.1);
-//        HoodRegression.put(18.,.85);
 //
-//        //MDRegression.put(115., .05);
-//        WheelRegression.put(152., 1450.-hardWheelOffset);
-//        WheelRegression.put(149.,1450.-hardWheelOffset);
-//        //WheelRegression.put(126.7, 1325.-hardWheelOffset);
-//
-//        WheelRegression.put(126.7, 1365.-hardWheelOffset);
-//        WheelRegression.put(120.,1365-hardWheelOffset);
-//        WheelRegression.put(110.,1100-hardWheelOffset);
+//        HoodRegression.put(139.8, 0.1);
+//        HoodRegression.put(118.6, 0.1);
+//        HoodRegression.put(109.0, 0.15);
+//        HoodRegression.put(100.4, 0.2);
+//        HoodRegression.put(90.0, 0.2);
+//        HoodRegression.put(79.7, 0.2);
+//        HoodRegression.put(62.0, 0.25);
+//        HoodRegression.put(52.5, 0.4);
+//        HoodRegression.put(42.5, 0.525);
+//        HoodRegression.put(32.8, 0.625);
 //
 //
-//        WheelRegression.put(120.,1350-hardWheelOffset);
-//        WheelRegression.put(110.,1100-hardWheelOffset);
-//
-//        WheelRegression.put(96.6,1100.-hardWheelOffset);
-//        WheelRegression.put(75.7,1075.-hardWheelOffset);
-//        WheelRegression.put(54.5,975.-hardWheelOffset);
-//        WheelRegression.put(34.5,975.-hardWheelOffset);
-//        WheelRegression.put(18.,850.-hardWheelOffset);
-
-        HoodRegression.put(139.8, 0.1);
-        HoodRegression.put(118.6, 0.1);
-        HoodRegression.put(109.0, 0.15);
-        HoodRegression.put(100.4, 0.2);
-        HoodRegression.put(90.0, 0.2);
-        HoodRegression.put(79.7, 0.2);
-        HoodRegression.put(62.0, 0.25);
-        HoodRegression.put(52.5, 0.4);
-        HoodRegression.put(42.5, 0.525);
-        HoodRegression.put(32.8, 0.625);
+//        WheelRegression.put(152.,1450.-hardWheelOffset);
+//        WheelRegression.put(139.8, 1410.-hardWheelOffset);
+//        WheelRegression.put(118.6, 1310.-hardWheelOffset);
+//        WheelRegression.put(109.0, 1230.-hardWheelOffset);
+//        WheelRegression.put(100.4, 1190.-hardWheelOffset);
+//        WheelRegression.put(90.0, 1090.-hardWheelOffset);
+//        WheelRegression.put(79.7, 1010.-hardWheelOffset);
+//        WheelRegression.put(62.0, 990.-hardWheelOffset);
+//        WheelRegression.put(52.5, 870.-hardWheelOffset);
+//        WheelRegression.put(42.5, 810.-hardWheelOffset);
+//        WheelRegression.put(32.8, 790.-hardWheelOffset);
 
 
-        WheelRegression.put(152.,1450.-hardWheelOffset);
-        WheelRegression.put(139.8, 1410.-hardWheelOffset);
-        WheelRegression.put(118.6, 1310.-hardWheelOffset);
-        WheelRegression.put(109.0, 1230.-hardWheelOffset);
-        WheelRegression.put(100.4, 1190.-hardWheelOffset);
-        WheelRegression.put(90.0, 1090.-hardWheelOffset);
-        WheelRegression.put(79.7, 1010.-hardWheelOffset);
-        WheelRegression.put(62.0, 990.-hardWheelOffset);
-        WheelRegression.put(52.5, 870.-hardWheelOffset);
-        WheelRegression.put(42.5, 810.-hardWheelOffset);
-        WheelRegression.put(32.8, 790.-hardWheelOffset);
+        HoodRegression.put(158., 0.05);
+        HoodRegression.put(146., 0.05);
+        HoodRegression.put(135.5, 0.1);
+        HoodRegression.put(126., 0.1);
+        HoodRegression.put(115., 0.1);
+        HoodRegression.put(109., 0.15);
+        HoodRegression.put(100., 0.2);
+        HoodRegression.put(86., 0.2);
+        HoodRegression.put(76., 0.275);
+        HoodRegression.put(63., 0.15);
+        HoodRegression.put(51., 0.25);
+        HoodRegression.put(34., 0.45);
 
+
+        WheelRegression.put(158.0, 1450. - hardWheelOffset);
+        WheelRegression.put(146.0, 1375. - hardWheelOffset);
+        WheelRegression.put(135.5, 1350. - hardWheelOffset);
+        WheelRegression.put(126.0, 1300. - hardWheelOffset);
+        WheelRegression.put(115.0, 1237.5 - hardWheelOffset);
+        WheelRegression.put(109.0, 1200. - hardWheelOffset);
+        WheelRegression.put(100.0, 1075. - hardWheelOffset);
+        WheelRegression.put(86.0, 1050. - hardWheelOffset);
+        WheelRegression.put(76.0, 975. - hardWheelOffset);
+        WheelRegression.put(63.0, 925. - hardWheelOffset);
+        WheelRegression.put(51.0, 800. - hardWheelOffset);
+        WheelRegression.put(34.0, 750. - hardWheelOffset);
 
         targeting = true;
     }
