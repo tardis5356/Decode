@@ -573,6 +573,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 
+
         drive.localizer.update();
 
         intake.setCurrentArtifacts();

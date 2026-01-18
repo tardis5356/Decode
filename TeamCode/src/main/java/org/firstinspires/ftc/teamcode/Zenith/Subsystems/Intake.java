@@ -157,10 +157,8 @@ public class Intake extends SubsystemBase {
             } else return "_";
         }
         else if(cs == cSSh){
-            if (cs.getDistance(DistanceUnit.CM) < 5) {
-                if (slotFly) {
-                    return "_";
-                }
+            //TODO check this value
+            if (cs.getDistance(DistanceUnit.CM) < 4) {
                 return "P";
             } else return "_";
         }
