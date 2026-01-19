@@ -4,12 +4,14 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-public class BreakPad extends SubsystemBase {
+public class BrakePad extends SubsystemBase {
     Servo sB;
     public static boolean breakPadEngaged;
 
-    public BreakPad (HardwareMap hardwareMap){
+    public BrakePad(HardwareMap hardwareMap){
         sB = hardwareMap.get(Servo.class,"sB");
+                retract();
+
     }
 
 
@@ -22,12 +24,12 @@ public class BreakPad extends SubsystemBase {
     }
 
 
-    public void deployBreakPad(){
+    public void deploy(){
         sB.setPosition(BotPositions.BREAKPAD_ACTIVE);
         breakPadEngaged = true;
     }
 
-    public void retractBreakPad(){
+    public void retract(){
         sB.setPosition(BotPositions.BREAKPAD_INACTIVE);
         breakPadEngaged = false;
     }

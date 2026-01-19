@@ -4,7 +4,6 @@ package org.firstinspires.ftc.teamcode.Zenith.TeleOps;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Subsystems.Turret.tracking;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.savedPos;
-import static org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand.launcOne;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 
@@ -15,9 +14,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -26,17 +23,12 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BreakPad;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
@@ -112,7 +104,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //shooter
     private Shooter shooter;
     //breakpad
-    private BreakPad breakPad;
+    private BrakePad brakePad;
     //Cameras
     // private Camera camera;
     //Roadrunner
@@ -165,7 +157,7 @@ public class DecodeTeleOp extends CommandOpMode {
             shooter = new Shooter(hardwareMap);
             shooter.spinning = true;
 
-            breakPad = new BreakPad(hardwareMap);
+            brakePad = new BrakePad(hardwareMap);
 
             // camera = new Camera(hardwareMap);
 
@@ -298,11 +290,11 @@ public class DecodeTeleOp extends CommandOpMode {
                 .toggleWhenActive(bellyPan::engagePTO, bellyPan::disEngagePTO);
 
         //BreakPad
-//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.START))
-//                .toggleWhenActive(new InstantCommand(breakPad::deployBreakPad), new InstantCommand(breakPad::retractBreakPad));
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.START))
+                .toggleWhenActive(new InstantCommand(brakePad::deploy), new InstantCommand(brakePad::retract));
 
 
-        //Shooter mode
+//        Shooter mode
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.START))
                 .toggleWhenActive(new InstantCommand(() -> flyMode = true), new InstantCommand(() -> flyMode = false));
 
@@ -353,6 +345,10 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             {
+
+                new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
+                        .toggleWhenActive(new InstantCommand(() -> turret.disablePID()), new InstantCommand(() -> turret.enablePID()));
+
                 // Store Middle first shot
 //                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
 //                        //.whileActiveOnce(storeMiddle)
@@ -637,6 +633,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mBRPower = FB + LR - Rotation;
         } else {
             CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
+            brakePad.deploy();
             mFLPower = -Math.abs(FB);
             mFRPower = -Math.abs(FB);
             mBLPower = -Math.abs(FB);
@@ -681,9 +678,9 @@ public class DecodeTeleOp extends CommandOpMode {
 //        );
 
 
-//        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-//        telemetry.addData("X", pose.position.x);
-//        telemetry.addData("Y", pose.position.y);
+        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("X", pose.position.x);
+        telemetry.addData("Y", pose.position.y);
 //
 //        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
 //

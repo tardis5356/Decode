@@ -24,6 +24,7 @@ import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -70,6 +71,7 @@ public class Turret extends SubsystemBase {
     private double pidPower;
     private double powerAdded = 0;
     private boolean PIDDisabled = false;
+    public Servo liT;
 
     // === TURRET CONSTANTS ===
     private double lastTurretAngle = 0.0; // radians
@@ -78,6 +80,11 @@ public class Turret extends SubsystemBase {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
         lT = hardwareMap.get(TouchSensor.class, "lT");
         lT2 = hardwareMap.get(TouchSensor.class, "lT2");
+
+       liT  = hardwareMap.get(Servo.class, "liT");
+
+
+        PIDDisabled = false;
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -89,7 +96,7 @@ public class Turret extends SubsystemBase {
 
 
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-//        pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
+//        pidController =  new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
 
         //gets data from bot positions, reads the angle and then refers to the CW/CCW motor power
@@ -132,14 +139,15 @@ public class Turret extends SubsystemBase {
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
+        if (!PIDDisabled) {
         if(turretLocalized) {
-            if (!PIDDisabled) {
+
                 if (turretError > TURRET_TOLERANCE_DEG) {
                     motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
                 } else {
                     motorPower = 0;
                 }
-            } else motorPower = 0;
+
         }else{
             motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
             //TODO: actually debug this before next comp
@@ -148,6 +156,7 @@ public class Turret extends SubsystemBase {
 //                cwORccw = -2;
 //            }
         }
+        } else motorPower = pidController.calculate(getCurrentPosition(), 0);
 
 //set the kS according to the turret theta
 
@@ -233,13 +242,9 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-//         telemetry.addData("TurretError", (Math.abs(getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-////        telemetry.addData("Turret Distance", GlobalVariables.distanceFromTarget);
-////        telemetry.addData("Radianspertick", TURRET_RADIANS_PER_TICK);
-////        telemetry.addData("Ticksperdegree", TURRET_TICKS_PER_DEGREE);
-////        //   telemetry.addData("RawTurretTicks", mT.getCurrentPosition());
-//        telemetry.addData("TurretRawMotorPower", mT.getPower());
-////        //check THESE when tuning turret
+         telemetry.addData("TurretError", ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+        telemetry.addData("TurretPosX", turretFieldX);
+        telemetry.addData("TurretPosY", turretFieldY);
         telemetry.addData("TurretTicks", getCurrentPosition());
         telemetry.addData("Target Pos (ticks)", desiredTicks);
     }
