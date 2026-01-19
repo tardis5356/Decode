@@ -53,9 +53,9 @@ public class Camera extends SubsystemBase {
     private final AprilTagDetection desiredTag = null;
     private final WebcamName turretWebcam;
     //532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fx = 545.605 * 56.5 / 58;
+    public double fx = 545.605 * 56.5 / 58 * 74/72;
     //532.034 * 42.5/52.5;
-    public double fy = 545.605 * 56.5 / 58;
+    public double fy = 545.605 * 56.5 / 58 * 74/72; //actual / calculated
     public double cx = 320, cy = 262.311;
     public int desiredTagID;
     PIDController yawController, forwardController;
@@ -110,7 +110,7 @@ public class Camera extends SubsystemBase {
                 .setLensIntrinsics(fx, fy, cx, cy)
                 .build();
 
-        aprilTagProcessor.setDecimation(4);
+
         // Start with the turret camera
 //        switchableCamera = ClassFactory.getInstance()
 //                .getCameraManager().nameForSwitchableCamera(turretWebcam, intakeWebcam);;
@@ -142,7 +142,7 @@ public class Camera extends SubsystemBase {
 
         double finalX = 0, finalY = 0;
         double aTagAmount = 0;
-        double thetaTurretRad = Turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK;
+        double thetaTurretRad = (Turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK)+Math.PI; //+Math.PI b/c starting turret position is flipped 180 deg relative to original starting position b/c it's assuming alignment with - x axis of robot
 
         for (AprilTagDetection detection : detections) {
 
@@ -226,7 +226,7 @@ public class Camera extends SubsystemBase {
 //            forwardPower = 0;
 //        }
         if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
-            setManualExposure(3, 90);//2,80
+            setManualExposure(2, 80);//2,80
             manualExposure = true;
         }
         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;

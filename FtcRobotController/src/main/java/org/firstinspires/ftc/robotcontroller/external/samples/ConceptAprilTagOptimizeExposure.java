@@ -66,7 +66,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
-@Disabled
+
 
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {

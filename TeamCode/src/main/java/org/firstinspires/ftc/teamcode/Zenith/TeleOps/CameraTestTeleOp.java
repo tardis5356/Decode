@@ -6,7 +6,6 @@ package org.firstinspires.ftc.teamcode.Zenith.TeleOps;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.savedPos;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -14,6 +13,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.controller.PDController;
@@ -28,11 +28,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RecoveryBuilder;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
@@ -43,26 +43,13 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 @Config
 @TeleOp(name = "Decode Teleop", group = "AGen1")
 
-public class DecodeTeleOp extends CommandOpMode {
+public class CameraTestTeleOp extends CommandOpMode {
     public static boolean flyMode = true;
     //private DcMotorEx liftEncoder;
 
     //This is just a boolean used for telemetry to see if we took in the incorrect sample color
 
-    //TODO:
-    public static shootModes currentShootMode;
-    //multipliers applied to the sum of the above variables to evenly change the speed of the drivetrain
-    static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.2;
-    //resolution of camera view
-    static int imgHeight = 896;
-    static int imgWidth = 1600;
-    public double turretBearing;
-    //
-    int desiredTagID;
-    //String shootMode;
-    PDController controller;
-    boolean targetFound = false;
+
     boolean autoTarget = true;
 
     //private IntakeInCommand intakeInCommand;
@@ -95,7 +82,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //For example, stop and reset encoder.
     private DcMotorEx mFL, mFR, mBL, mBR;
     //intake
-    private Intake intake;
+
     //lift
     private BellyPan bellyPan;
     //turret
@@ -103,11 +90,11 @@ public class DecodeTeleOp extends CommandOpMode {
     //storage
     private Storage storage;
     //shooter
-    private Shooter shooter;
+//    private Shooter shooter;
     //breakpad
     private BrakePad brakePad;
     //Cameras
-     private Camera camera;
+    private Camera camera;
     //Roadrunner
     private RRSubsystem rrSubsystem;
     private RecoveryBuilder recoveryBuilder;
@@ -151,16 +138,16 @@ public class DecodeTeleOp extends CommandOpMode {
 
             storage = new Storage(hardwareMap);
 
-            intake = new Intake(hardwareMap);
+            // intake = new Intake(hardwareMap);
 
             bellyPan = new BellyPan(hardwareMap);
 
-            shooter = new Shooter(hardwareMap);
-            shooter.spinning = true;
+//            shooter = new Shooter(hardwareMap);
+//            shooter.spinning = true;
 
             brakePad = new BrakePad(hardwareMap);
 
-             camera = new Camera(hardwareMap);
+            camera = new Camera(hardwareMap);
 
             rrSubsystem = new RRSubsystem(hardwareMap);
 
@@ -174,8 +161,8 @@ public class DecodeTeleOp extends CommandOpMode {
 
             driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-            shooter.hoodOffset = 0;
-            shooter.speedOffset = 0;
+//            shooter.hoodOffset = 0;
+//            shooter.speedOffset = 0;
 
             //this motor physically runs opposite. For convenience, reverse direction.
             //mBL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -189,7 +176,7 @@ public class DecodeTeleOp extends CommandOpMode {
             mFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             mBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
+//            CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
 
 
             telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -215,7 +202,7 @@ public class DecodeTeleOp extends CommandOpMode {
             //storeOneForLast = new LaunchSequenceCommand(intake, storage, "StoreOneForLast");
             //storeOneForSecond = new LaunchSequenceCommand(intake, storage, "StoreOneForSecond");
 
-            pullIn = new LaunchSequenceCommand(intake, storage, "PullIn");
+//            pullIn = new LaunchSequenceCommand(intake, storage, "PullIn");
 
             //pullInAgain = new LaunchSequenceCommand(intake, storage, "PullIn");
             //launch = new LaunchSequenceCommand(intake, storage, "Launch");
@@ -225,29 +212,28 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
         //Granny Mode
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
-                .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
-
-        new Trigger(() -> driver2.getRightY() > .1)
-                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
-
-        new Trigger(() -> driver2.getRightY() < -.1)
-                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
+//        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
+//                .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
+//
+//        new Trigger(() -> driver2.getRightY() > .1)
+//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
+//
+//        new Trigger(() -> driver2.getRightY() < -.1)
+//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
 
         //red vs blue alliance
 //        new Trigger(() -> driver1.getButton(GamepadKeys.Button.DPAD_UP))
 //                .whenActive(new InstantCommand(()->camera.getRelocalizedPose(drive, telemetry)));
 
 
-
         //Intake
 
-        new Trigger(()->driver1.getButton(GamepadKeys.Button.X))
-                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.IN));
-
-        new Trigger(()->driver1.getButton(GamepadKeys.Button.Y))
-                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.OUT));
-
+//        new Trigger(()->driver1.getButton(GamepadKeys.Button.X))
+//                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.IN));
+//
+//        new Trigger(()->driver1.getButton(GamepadKeys.Button.Y))
+//                .whenActive(new IntakeToggleCommand(intake, Intake.Direction.OUT));
+//
 
 //        new Trigger(() -> intake.mI.getPower() == 0 && driver1.getButton(GamepadKeys.Button.X))
 //                .toggleWhenActive(()->intake.in(), ()->intake.stop());
@@ -316,136 +302,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
         {
 
-            {
-                //Fly first and second shot, store one for second second shot
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)
-
-                )
-                        //.whileActiveOnce(fly)
-                        .whenActive(
-
-                                new SequentialCommandGroup(
-                                        //new InstantCommand(breakPad::deployBreakPad),
-                                        new InstantCommand(() -> firing = true),
-                                        new LaunchSequenceCommand(intake, storage, "Launch"),
-                                        new LaunchSequenceCommand(intake, storage, "PullIn"),
-                                        //  new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-                                        new InstantCommand(() -> driver2.gamepad.rumble(100)),
-                                        new InstantCommand(() -> driver1.gamepad.rumble(100)),
-                                        new InstantCommand(() -> firing = false)//,
-                                        //new InstantCommand(breakPad::retractBreakPad)
-                                        )
-
-
-
-                        );
-
-
-            }
-
-
-            {
-
-                new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
-                        .toggleWhenActive(new InstantCommand(() -> turret.disablePID()), new InstantCommand(() -> turret.enablePID()));
-
-                // Store Middle first shot
-//                new Trigger(() -> currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
-//                        //.whileActiveOnce(storeMiddle)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(() -> firing = true),
-//                                new LaunchSequenceCommand(intake, storage, "Launch"),
-//                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-//                                new LaunchSequenceCommand(intake, storage, "Store"),
-//                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-//                                //   new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(() -> driver2.gamepad.rumble(300)),
-//                                new InstantCommand(() -> driver1.gamepad.rumble(300)),
-//                                new InstantCommand(() -> firing = false)
-//                        ))
-//                ;
-
-                //Store Middle and Store One for Last second shots
-//                new Trigger(() -> (currentShootMode == shootModes.STORE_MIDDLE && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A))) ||
-//                        (currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 1 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A))))
-//                        //.whileActiveOnce(storeMiddle)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(() -> firing = true),
-//                                new LaunchSequenceCommand(intake, storage, "Launch"),
-//                                new LaunchSequenceCommand(intake, storage, "UnStore"),
-//                                //  new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(() -> driver2.gamepad.rumble(300)),
-//                                new InstantCommand(() -> driver1.gamepad.rumble(300)),
-//                                new InstantCommand(() -> firing = false)
-//                        ))
-//                ;
-            }
-
-            // Store One For Last first shot
-            {
-//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_LAST && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
-//                        //.whileActiveOnce(storeOneForLast)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(() -> firing = true),
-//                                new LaunchSequenceCommand(intake, storage, "Store"),
-//                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-//                                new LaunchSequenceCommand(intake, storage, "Launch"),
-//                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-//                                //     new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(() -> driver2.gamepad.rumble(300)),
-//                                new InstantCommand(() -> driver1.gamepad.rumble(300)),
-//                                new InstantCommand(() -> firing = false)
-//                        ))
-//                ;
-
-
-            }
-
-            // Store One For Second first shot
-            {
-//                new Trigger(() -> currentShootMode == shootModes.STORE_ONE_FOR_SECOND && GlobalVariables.ballsShot == 0 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
-//                        //.whileActiveOnce(storeOneForSecond)
-//                        .whenActive(new SequentialCommandGroup(
-//                                new InstantCommand(() -> firing = true),
-//                                new LaunchSequenceCommand(intake, storage, "Store"),
-//                                new LaunchSequenceCommand(intake, storage, "PullIn"),
-//                                new LaunchSequenceCommand(intake, storage, "Launch"),
-//                                new LaunchSequenceCommand(intake, storage, "UnStore"),
-//                                //    new InstantCommand(() -> GlobalVariables.ballsShot += 1),
-//                                new InstantCommand(() -> driver2.gamepad.rumble(300)),
-//                                new InstantCommand(() -> driver1.gamepad.rumble(300)),
-//                                new InstantCommand(() -> firing = false)
-//                        ))
-//                ;
-
-            }
-
-            // All shoot modes end with just launching
-//            new Trigger(() -> GlobalVariables.ballsShot == 2 && (driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A)))
-//                    //.whileActiveOnce(storeOneForSecond)
-//                    .whenActive(new SequentialCommandGroup(
-//                            new InstantCommand(() -> firing = true),
-//                            new LaunchSequenceCommand(intake, storage, "Launch"),
-//                            new InstantCommand(() -> GlobalVariables.ballsShot = 0),
-//                            new InstantCommand(() -> driver2.gamepad.rumble(300)),
-//                            new InstantCommand(() -> driver1.gamepad.rumble(300)),
-//                            new InstantCommand(() -> firing = false),
-//                            new InstantCommand(() -> intake.currentArtifactsEstablished = false),
-//                            new InstantCommand(()->intake.in())
-//                    ))
-//            ;
-
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.B) || driver1.getButton(GamepadKeys.Button.B))
-                    .whenActive(
-                            new SequentialCommandGroup(
-                                    //new InstantCommand(breakPad::deployBreakPad),
-                                    new LaunchSequenceCommand(intake, storage, "Fly"),
-                                    new InstantCommand(() -> driver2.gamepad.rumble(100)),
-                                    new InstantCommand(() -> driver1.gamepad.rumble(100))//,
-                                    //new InstantCommand(breakPad::retractBreakPad)
-                            )
-                    );
-
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
                     .whenActive(
                             new InstantCommand(storage::storeSlot)
@@ -459,9 +315,16 @@ public class DecodeTeleOp extends CommandOpMode {
             new Trigger(() -> gamepad2.touchpad)
                     .whenActive(new InstantCommand(()->drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))));
 
-
             new Trigger(() -> gamepad2.ps)
+                    .whenActive(
+                            new ParallelCommandGroup(
+                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(0, 0, drive.localizer.getPose().heading.toDouble()))),
+                                    new InstantCommand(() -> turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER))
+                            )
+                    );
+            new Trigger(() -> gamepad2.y)
                     .toggleWhenActive(new InstantCommand(() -> aColor = "red"), new InstantCommand(() -> aColor = "blue"));
+
 
 //            new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
 //                    .whenActive(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, 0)));
@@ -469,33 +332,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //Relocalize in Alliance Corner
             //In red LZ Corner
-            new Trigger(() -> gamepad1.touchpad && aColor == "red")
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, -62, Math.toRadians(0)))),
-                            new InstantCommand(()->turret.cwORccw = 1),
-                            new InstantCommand(() -> turret.turretLocalized = false)
-                    ));
-            //In blue LZ Corner
-            new Trigger(() -> gamepad1.touchpad && aColor == "blue")
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(62, 62, Math.toRadians(0)))),
-                            new InstantCommand(()->turret.cwORccw = 1),
-                            new InstantCommand(() -> turret.turretLocalized = false)
-                    ));
 
-            new Trigger(() -> gamepad1.ps)
-                    .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0))))
-                    ));
-
-
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
-                    .whenInactive(() ->
-                            shooter.hoodOffset += .025);
-
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
-                    .whenInactive(() ->
-                            shooter.hoodOffset -= .025);
 
             // Triple shot modes
             // TODO: Check that these actually launch all 3 or if it just stops at one
@@ -568,13 +405,8 @@ public class DecodeTeleOp extends CommandOpMode {
     public void run() {
         super.run();
 
-        shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
-
 
         drive.localizer.update();
-
-        intake.setCurrentArtifacts();
-
 
 
 //        if(gamepad1.touchpad){
@@ -583,38 +415,13 @@ public class DecodeTeleOp extends CommandOpMode {
 
         //shooter.sH.setPosition(hoodPos);
 
-
-        if (gamepad1.dpad_left) {
-            shooter.spinning = true;
-            shooter.targeting = true;
-        } else if (gamepad1.dpad_right) {
-            shooter.spinning = false;
-        }
-
-
-       turret.updateTurretTracking(drive, telemetry);
+camera.getRelocalizedPose(drive, telemetry);
 
 
 
-        if (!turret.turretLocalized) {
-            if (turret.lT.isPressed()) {
-                turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-                turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-                turret.turretLocalized = true;
-                //turret.cwORccw = 1;
-            }
-        }
+        turret.updateTurretTracking(drive, telemetry);
 
 
-        if (flyMode || GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
-            currentShootMode = shootModes.FLY;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
-            currentShootMode = shootModes.STORE_MIDDLE;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
-            currentShootMode = shootModes.STORE_ONE_FOR_LAST;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
-            currentShootMode = shootModes.STORE_ONE_FOR_SECOND;
-        }
 
 
         telemetry.addData("preview on/off", "... Camera Stream\n");
@@ -625,29 +432,15 @@ public class DecodeTeleOp extends CommandOpMode {
         LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
-
-
-        if (!bellyPan.PTO_Engaged) {
-            mFLPower = FB + LR + Rotation;
-            mFRPower = FB - LR - Rotation;
-            mBLPower = FB - LR + Rotation;
-            mBRPower = FB + LR - Rotation;
-        } else {
-            CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER;
-            brakePad.deploy();
-            mFLPower = -Math.abs(FB);
-            mFRPower = -Math.abs(FB);
-            mBLPower = -Math.abs(FB);
-            mBRPower = -Math.abs(FB);
-            shooter.spinning = false;
-            shooter.targeting = false;
-            shooter.hoodOffset = .6;
-            autoTarget = false;
-        }
-
+        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
+        FB = -cubicScaling(gamepad1.left_stick_y);
+        LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
         //actually sets the motor powers
-
+        mFLPower = FB + LR + Rotation;
+        mFRPower = FB - LR - Rotation;
+        mBLPower = FB - LR + Rotation;
+        mBRPower = FB + LR - Rotation;
 
         mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
         mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
@@ -656,59 +449,14 @@ public class DecodeTeleOp extends CommandOpMode {
 
         Pose2d pose = drive.localizer.getPose();
 
-//        telemetry.addLine("======== Motor Currents ========");
-//
-//        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mST.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("FlyWheelTopMotorCurrent", shooter.mSB.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("IntakeMotorCurrent", intake.mI.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("TurretMotorCurrent", turret.mT.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("mFRMotorCurrent", mFR.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("mFLMotorCurrent", mFL.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("mBRMotorCurrent", mBR.getCurrent(CurrentUnit.AMPS));
-//        telemetry.addData("mBLMotorCurrent", mBL.getCurrent(CurrentUnit.AMPS));
-//
-//        telemetry.addData("TotalMotorAmps",
-//                shooter.mST.getCurrent(CurrentUnit.AMPS)
-//                + shooter.mSB.getCurrent(CurrentUnit.AMPS)
-//                + intake.mI.getCurrent(CurrentUnit.AMPS)
-//                + turret.mT.getCurrent(CurrentUnit.AMPS)
-//                + mFR.getCurrent(CurrentUnit.AMPS)
-//                + mFL.getCurrent(CurrentUnit.AMPS)
-//                + mBR.getCurrent(CurrentUnit.AMPS)
-//                + mBL.getCurrent(CurrentUnit.AMPS)
-//        );
-
 
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
-//
-//        telemetry.addData("PTO_Engaged", bellyPan.PTO_Engaged);
-//
-//        telemetry.addData("intakeState", intake.intakeState);
-//        telemetry.addData("intakeToggle", intaketoggle);
-//       telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
-//
-//        telemetry.addData("cSIDist", intake.cSI.getDistance(DistanceUnit.CM));
+        telemetry.addData("FPS", camera.visionPortal.getFps());
+        telemetry.addData("AprilTag#Seen", camera.getCurrentAprilTagDetections().size());
 
-
-        //telemetry.addData("cSMDist", intake.cSM.getDistance(DistanceUnit.CM));
-
-
-        //telemetry.addData("cSSHDist", intake.cSSh.getDistance(DistanceUnit.CM));
-//        telemetry.addData("currentShootmode", currentShootMode);
         telemetry.addLine();
-        telemetry.addData("hoodPos", shooter.sH.getPosition());
-        telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
-        telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
-        telemetry.addData("Distance",GlobalVariables.distanceFromTarget);
-        telemetry.addData("cwORccw relocRotation", turret.cwORccw);
-//        telemetry.addData("motorPower", shooter.mST.getPower());
-//        telemetry.addLine();
-//        telemetry.addData("turretOffset",turret.manualOffset);
-//        telemetry.addData("WheelOffset", shooter.speedOffset);
-//        telemetry.addLine();
-//        telemetry.addData("aColor", aColor);
 
 
         //telemetry.addData("pinpointYawScalar", driver.getYawScalar());
