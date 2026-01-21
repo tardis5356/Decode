@@ -56,7 +56,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name = "StarterBotTeleop", group = "StarterBot")
-@Disabled
+//@Disabled
 public class StarterBotTeleop extends OpMode {
     final double FEED_TIME_SECONDS = 0.3; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
@@ -218,7 +218,7 @@ public class StarterBotTeleop extends OpMode {
         // Relating joystick movement to drivetrain.
         double leftStickY = - gamepad1.left_stick_y;
         double leftStickX = gamepad1.left_stick_x;
-        double rightStickX = gamepad1.right_trigger - gamepad1.left_trigger;
+        double rightStickX = gamepad1.right_trigger - gamepad1.left_trigger + gamepad1.right_stick_x;
 
         mFL.setPower((leftStickY + rightStickX + leftStickX) * .5);
         mFR.setPower((leftStickY - rightStickX - leftStickX) * .5);
@@ -235,17 +235,17 @@ public class StarterBotTeleop extends OpMode {
 
         if (gamepad1.a) {
             // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-            launcher.setPower(0.62); // flywheel at 50%
+            LAUNCH_SPEED = .5; // flywheel at 50%
             isLauncherActive = true;
         } else if (gamepad1.x){
-            launcher.setPower(0.7); // flywheel at 62.5%
+            LAUNCH_SPEED = .625; // flywheel at 62.5%
             isLauncherActive = true;
         } else if (gamepad1.y){
-            launcher.setPower(0.8); // flywheel at 75%
+            LAUNCH_SPEED = .75; // flywheel at 75%
             isLauncherActive = true;
         } else if (gamepad1.b) {
             // launcher.setVelocity(STOP_SPEED);
-            launcher.setPower(0); // flywheel at 0% (it stops moving)
+            LAUNCH_SPEED = 0; // flywheel at 0% (it stops moving)
             isLauncherActive = false;
         }
 
