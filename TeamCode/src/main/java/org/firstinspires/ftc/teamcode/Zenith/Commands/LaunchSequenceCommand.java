@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
+import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class LaunchSequenceCommand extends SequentialCommandGroup {
 
@@ -21,15 +22,16 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
-                                new InstantCommand(storage::openGate),
+                                new InstantCommand(()->storage.gateManualMode = true),
                                 new MoveInArtifactCommand(intake),
                                 launcOne(storage),
                                 new MoveInArtifactCommand(intake),
-                                new WaitCommand(175),
                                 launcOne(storage),
                                 new MoveInArtifactCommand(intake),
-                                new WaitCommand(175),
                                 launcOne(storage),
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(()-> DecodeTeleOp.intaketoggle = true),
+                                new InstantCommand(()->storage.gateManualMode = false),
                                 new InstantCommand(()-> GlobalVariables.ballsShot = 0)
                               //  new MoveInArtifactCommand(intake)
                         )
@@ -179,11 +181,17 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
     }
     public static Command launcOne(Storage s){
         return new ParallelCommandGroup(
+
                 new SequentialCommandGroup(
+                        new InstantCommand(()->s.gateManualMode = true),
+                new InstantCommand(s::closeGate),
                 new InstantCommand(s::raiseKicker),
                 new WaitCommand(100),
                 new InstantCommand(s::lowerKicker),
+                        new InstantCommand(s::openGate),
                 new WaitCommand(50),
+
+                        new InstantCommand(()->s.gateManualMode = false),
         new InstantCommand(()-> ballShot = true)
                 ),
                 new InstantCommand(()-> GlobalVariables.ballsShot += 1)

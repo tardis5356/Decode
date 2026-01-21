@@ -449,7 +449,7 @@ camera.getRelocalizedPose(drive, telemetry);
 
         Pose2d pose = drive.localizer.getPose();
 
-
+telemetry.addData("ATagRobotHeading", camera.getATagRobotHeading(turret));
         telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
