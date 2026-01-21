@@ -41,7 +41,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
-@TeleOp(name = "Decode Teleop", group = "AGen1")
+@TeleOp(name = "CameraTestTeleOp", group = "AGen1")
 
 public class CameraTestTeleOp extends CommandOpMode {
     public static boolean flyMode = true;
