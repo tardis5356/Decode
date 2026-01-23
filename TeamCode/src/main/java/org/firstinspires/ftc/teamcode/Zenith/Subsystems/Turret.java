@@ -97,7 +97,7 @@ public class Turret extends SubsystemBase {
 
         pidController = new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
 //        pidController =  new PIDController(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
-        feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
+      //  feedforwardController = new SimpleMotorFeedforward(TURRET_S, TURRET_V);
 
         //gets data from bot positions, reads the angle and then refers to the CW/CCW motor power
         for (int i = 0; i < TurretAngle_kSMatrix.length; i++) {

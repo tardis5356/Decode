@@ -105,7 +105,7 @@ public class AutoTrajectories {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
         goalStartPos = allianceCoordinate(new Pose2d(-49, 53, Math.toRadians(38)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 60, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(13, 60, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(15, 60, Math.toRadians(90)));
         audienceIntakePos = allianceCoordinate(new Pose2d(37, 60, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
