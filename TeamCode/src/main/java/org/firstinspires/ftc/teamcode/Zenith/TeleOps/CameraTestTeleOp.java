@@ -443,7 +443,7 @@ camera.getRelocalizedPose(drive, telemetry);
         telemetry.addData("time", Timer.milliseconds());
 
  camera.getATagRobotHeading(turret, telemetry);
- telemetry.addData("Odometry        X(in)       Y(in)       Heading(deg)\n                              ","%.3f\t\t%.3f\t\t%.3f", pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
+ telemetry.addData("Odometry        X(in)       Y(in)       Heading(deg)\n            ","%.3f\t\t%.3f\t\t%.3f", pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
         telemetry.addLine();
         telemetry.addData("FPS", camera.visionPortal.getFps());
 //        telemetry.addData("AprilTag#Seen", camera.getCurrentAprilTagDetections().size());
