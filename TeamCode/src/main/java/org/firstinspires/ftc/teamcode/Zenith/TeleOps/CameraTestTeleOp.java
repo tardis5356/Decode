@@ -71,7 +71,7 @@ public class CameraTestTeleOp extends CommandOpMode {
 
     //below we create a new object instance of all the subsystem classes
     int visionOutputPosition = 1;
-    ElapsedTime intakeTimer = new ElapsedTime();
+    ElapsedTime Timer = new ElapsedTime();
     LaunchSequenceCommand fly, storeMiddle, storeOneForLast, storeOneForSecond, pullIn, pullInAgain, launch, store, unStore, scram;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     //gamepads
@@ -122,7 +122,7 @@ public class CameraTestTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
-
+Timer.reset();
             //init controllers
             driver1 = new GamepadEx(gamepad1);
             driver2 = new GamepadEx(gamepad2);
@@ -315,13 +315,7 @@ public class CameraTestTeleOp extends CommandOpMode {
             new Trigger(() -> gamepad2.touchpad)
                     .whenActive(new InstantCommand(()->drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))));
 
-            new Trigger(() -> gamepad2.ps)
-                    .whenActive(
-                            new ParallelCommandGroup(
-                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(0, 0, drive.localizer.getPose().heading.toDouble()))),
-                                    new InstantCommand(() -> turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER))
-                            )
-                    );
+
             new Trigger(() -> gamepad2.y)
                     .toggleWhenActive(new InstantCommand(() -> aColor = "red"), new InstantCommand(() -> aColor = "blue"));
 
@@ -432,9 +426,7 @@ camera.getRelocalizedPose(drive, telemetry);
         LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
 
         //defines the powers for the motors based on the stick inputs (trust i've written this so many times)
-        Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
-        FB = -cubicScaling(gamepad1.left_stick_y);
-        LR = -cubicScaling(-gamepad1.left_stick_x) * 1.2;
+
 
         //actually sets the motor powers
         mFLPower = FB + LR + Rotation;
@@ -442,17 +434,18 @@ camera.getRelocalizedPose(drive, telemetry);
         mBLPower = FB - LR + Rotation;
         mBRPower = FB + LR - Rotation;
 
-        mFL.setPower(mFLPower * CURRENT_SPEED_MULTIPLIER);
-        mFR.setPower(mFRPower * CURRENT_SPEED_MULTIPLIER);
-        mBL.setPower(mBLPower * CURRENT_SPEED_MULTIPLIER);
-        mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
+        mFL.setPower(mFLPower);
+        mFR.setPower(mFRPower);
+        mBL.setPower(mBLPower);
+        mBR.setPower(mBRPower);
 
         Pose2d pose = drive.localizer.getPose();
+        telemetry.addData("time", Timer.milliseconds());
 
-telemetry.addData("ATagRobotHeading", camera.getATagRobotHeading(turret));
-        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.addData("X", pose.position.x);
-        telemetry.addData("Y", pose.position.y);
+ camera.getATagRobotHeading(turret, telemetry);
+telemetry.addData("Odometry Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("Odometry X", pose.position.x);
+        telemetry.addData("Odometry Y", pose.position.y);
         telemetry.addData("FPS", camera.visionPortal.getFps());
         telemetry.addData("AprilTag#Seen", camera.getCurrentAprilTagDetections().size());
 

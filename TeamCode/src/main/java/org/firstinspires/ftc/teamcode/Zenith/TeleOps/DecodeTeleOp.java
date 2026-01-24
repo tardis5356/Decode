@@ -20,9 +20,12 @@ import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.lynx.LynxEmbeddedIMU;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
@@ -64,6 +67,10 @@ public class DecodeTeleOp extends CommandOpMode {
     PDController controller;
     boolean targetFound = false;
     boolean autoTarget = true;
+    public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
+            RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
+    public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
+            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
     //private IntakeInCommand intakeInCommand;
     boolean firing;
@@ -80,6 +87,7 @@ public class DecodeTeleOp extends CommandOpMode {
     double hoodPos;
     double LeftTrigger;
     double RightTrigger;
+    public static IMU imu;
     MultipleTelemetry telemetry2 = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     //below we create a new object instance of all the subsystem classes
@@ -128,6 +136,11 @@ public class DecodeTeleOp extends CommandOpMode {
         {
             GlobalVariables.inAuto = false;
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+            imu = hardwareMap.get(IMU.class, "imu");
+
+            imu.resetYaw();
+
+
             //Removes previous Commands from scheduler
             //We call it at the start of TeleOp as it clears lingering autocommands that make the intake freak out
             //Make sure it is not called in a loop since it will clear all the triggers every frame. Be very careful. It is a kill switch.
@@ -679,7 +692,8 @@ public class DecodeTeleOp extends CommandOpMode {
 //        );
 
 
-        telemetry.addData("Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("Pinpoint Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addData("Control Hub Heading (deg)", Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
 //
