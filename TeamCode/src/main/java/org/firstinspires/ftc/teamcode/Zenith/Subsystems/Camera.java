@@ -101,6 +101,9 @@ public class Camera extends SubsystemBase {
     private CameraName switchableCamera;
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
 
+    public static double xBotOnField;
+    public static double yBotOnField;
+
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
         //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
@@ -185,9 +188,9 @@ public class Camera extends SubsystemBase {
 
 
             // Bot position on field
-            double xBotOnField = -(xTagToBot * Math.cos(headingBotOnFieldRad)
+            xBotOnField = -(xTagToBot * Math.cos(headingBotOnFieldRad)
                     - yTagToBot * Math.sin(headingBotOnFieldRad));
-            double yBotOnField = -(xTagToBot * Math.sin(headingBotOnFieldRad)
+            yBotOnField = -(xTagToBot * Math.sin(headingBotOnFieldRad)
                     + yTagToBot * Math.cos(headingBotOnFieldRad));
 
 
@@ -197,8 +200,7 @@ public class Camera extends SubsystemBase {
 //            telemetry.addData("Camera_xBotOnField", xBotOnField);
 //            telemetry.addData("Camera_yBotOnField", yBotOnField);
 
-
-            telemetry.addLine("Camera Coordinates: " + xBotOnField + ", " + yBotOnField + ", " + headingBotOnFieldRad);
+            telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                  ", "%.2f\t\t%.2f\t\t%s", xBotOnField , yBotOnField ,  "not calculated");
 
             telemetry.addLine();
             finalX += xBotOnField;
@@ -438,11 +440,9 @@ public class Camera extends SubsystemBase {
                         + tagYaw
                         + tagFieldHeading);
 
-        telemetry.addData("Turret Theta (deg)", Math.toDegrees(turretTheta));
         telemetry.addData("Tag ID", tag.id);
-        telemetry.addData("Tag Field Heading (deg)", Math.toDegrees(tagFieldHeading));
-        telemetry.addData("Tag Yaw (deg)", Math.toDegrees(tagYaw));
-        telemetry.addData("ATag Robot Heading (deg)", Math.toDegrees(robotHeading));
+        telemetry.addData("Tag Yaw (deg)", "%.3f", Math.toDegrees(tagYaw));
+        telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                      ", "%.2f\t\t%.2f\t\t%.2f", xBotOnField , yBotOnField ,  Math.toDegrees(robotHeading));
 
         return Math.toDegrees(robotHeading);
     }

@@ -418,7 +418,7 @@ camera.getRelocalizedPose(drive, telemetry);
 
 
 
-        telemetry.addData("preview on/off", "... Camera Stream\n");
+//        telemetry.addData("preview on/off", "... Camera Stream\n");
 
 
         Rotation = -cubicScaling(gamepad1.left_trigger - gamepad1.right_trigger) * 0.75;
@@ -443,12 +443,10 @@ camera.getRelocalizedPose(drive, telemetry);
         telemetry.addData("time", Timer.milliseconds());
 
  camera.getATagRobotHeading(turret, telemetry);
-telemetry.addData("Odometry Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.addData("Odometry X", pose.position.x);
-        telemetry.addData("Odometry Y", pose.position.y);
+ telemetry.addData("Odometry        X(in)       Y(in)       Heading(deg)\n                              ","%.3f\t\t%.3f\t\t%.3f", pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
+        telemetry.addLine();
         telemetry.addData("FPS", camera.visionPortal.getFps());
-        telemetry.addData("AprilTag#Seen", camera.getCurrentAprilTagDetections().size());
-
+//        telemetry.addData("AprilTag#Seen", camera.getCurrentAprilTagDetections().size());
         telemetry.addLine();
 
 
