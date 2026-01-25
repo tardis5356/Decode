@@ -241,12 +241,13 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Offset Y", targetTagYOffset);
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-        telemetry.addData("TurretTheta", Math.toDegrees(getTurretThetaRAD()));
-         telemetry.addData("TurretError", ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-        telemetry.addData("TurretPosX", turretFieldX);
-        telemetry.addData("TurretPosY", turretFieldY);
-        telemetry.addData("TurretTicks", getCurrentPosition());
-        telemetry.addData("Target Pos (ticks)", desiredTicks);
+        telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()),((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+//
+//        telemetry.addData("TurretPosX", turretFieldX);
+//        telemetry.addData("TurretPosY", turretFieldY);
+//        telemetry.addLine("Turret Ticks");
+//        telemetry.addData("Target", desiredTicks);
+//        telemetry.addData("Current", getCurrentPosition());
     }
 
     public void aprilTagTracking ( Camera camera, Telemetry telemetry){

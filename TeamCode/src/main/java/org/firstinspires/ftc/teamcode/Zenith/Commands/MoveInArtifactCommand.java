@@ -16,7 +16,7 @@ public class MoveInArtifactCommand extends CommandBase{
 
     private Intake intake;
     private ElapsedTime runtime = new ElapsedTime();
-    private Double timeout = .8;
+    private Double timeout = .4;
 
     public MoveInArtifactCommand(Intake intake) {
         // this is the actual method itself
@@ -59,10 +59,10 @@ public class MoveInArtifactCommand extends CommandBase{
     public void end(boolean interrupted) {
 
         //new SequentialCommandGroup(
-        intake.stop();
+
         //).schedule();
 
-        DecodeTeleOp.intaketoggle = true;
+
 
     }
 

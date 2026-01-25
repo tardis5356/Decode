@@ -11,6 +11,8 @@ public class Storage extends SubsystemBase {
     public Servo sK;
     public Servo sBG;
 
+    public boolean gateManualMode;
+
 
     //We have booleans for the states of each actuator in the storage system for the recovery builder
     public static boolean gateOpen = true, slotFly = true, kickerDown = true, backOpen = false, ballShot = true;
@@ -32,13 +34,18 @@ public class Storage extends SubsystemBase {
     @Override
     public void periodic(){
         //if the slot underneath the shooter isn't empty, close the gate, otherwise open it
-        if (GlobalVariables.currentArtifacts.charAt(0) != '_'|| GlobalVariables.currentArtifacts.charAt(1) != '_'  || !kickerDown || !ballShot){
-            closeGate();
-            ballShot = false;
+        if (!gateManualMode){
+            if ((GlobalVariables.currentArtifacts.charAt(0) != '_'|| GlobalVariables.currentArtifacts.charAt(1) != '_'  || !kickerDown || !ballShot)){
+                closeGate();
+                ballShot = false;
+            }
+            else {
+                openGate();
+            }
+        }else {
+            ballShot = true;
         }
-        else {
-            openGate();
-        }
+
 
 
 

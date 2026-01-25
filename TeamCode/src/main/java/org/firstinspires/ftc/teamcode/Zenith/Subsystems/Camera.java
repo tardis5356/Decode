@@ -101,6 +101,9 @@ public class Camera extends SubsystemBase {
     private CameraName switchableCamera;
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
 
+    public static double xBotOnField;
+    public static double yBotOnField;
+
     // === CONSTRUCTOR ===
     public Camera(HardwareMap hardwareMap) {
         //intakeWebcam = hardwareMap.get(WebcamName.class, "Webcam 2");
@@ -158,8 +161,8 @@ public class Camera extends SubsystemBase {
             // Camera → Tag translation
             double xCameraToTag = detection.ftcPose.x;
             double yCameraToTag = detection.ftcPose.y;
-            telemetry.addData("xCameraToTag", xCameraToTag);
-            telemetry.addData("yCameraToTag", yCameraToTag);
+//            telemetry.addData("xCameraToTag", xCameraToTag);
+//            telemetry.addData("yCameraToTag", yCameraToTag);
             yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
 
             // Rotate relative to turret
@@ -168,34 +171,37 @@ public class Camera extends SubsystemBase {
             double yTagToTurret = xCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad)
                     + yCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad);
 
-            telemetry.addData("xTagToTurret", xTagToTurret);
-            telemetry.addData("yTagToTurret", yTagToTurret);
+//            telemetry.addData("xTagToTurret", xTagToTurret);
+//            telemetry.addData("yTagToTurret", yTagToTurret);
 
 
             // Offset from turret to bot center
             double xTagToBot = xTagToTurret + TURRET_OFFSET_X;
             double yTagToBot = yTagToTurret + TURRET_OFFSET_Y;
-            telemetry.addData("xTagToBot", xTagToBot);
-            telemetry.addData("yTagToBot", yTagToBot);
+//            telemetry.addData("xTagToBot", xTagToBot);
+//            telemetry.addData("yTagToBot", yTagToBot);
 
 
             // Tag orientation
             double headingBotOnFieldRad = drive.localizer.getPose().heading.toDouble();
-            telemetry.addData("headingBotOnFieldRad", headingBotOnFieldRad);
+//            telemetry.addData("headingBotOnFieldRad", headingBotOnFieldRad);
 
 
             // Bot position on field
-            double xBotOnField = -(xTagToBot * Math.cos(headingBotOnFieldRad)
+            xBotOnField = -(xTagToBot * Math.cos(headingBotOnFieldRad)
                     - yTagToBot * Math.sin(headingBotOnFieldRad));
-            double yBotOnField = -(xTagToBot * Math.sin(headingBotOnFieldRad)
+            yBotOnField = -(xTagToBot * Math.sin(headingBotOnFieldRad)
                     + yTagToBot * Math.cos(headingBotOnFieldRad));
 
 
             xBotOnField += tagPose.position.x;
             yBotOnField += tagPose.position.y;
 
-            telemetry.addData("xBotOnField", xBotOnField);
-            telemetry.addData("yBotOnField", yBotOnField);
+//            telemetry.addData("Camera_xBotOnField", xBotOnField);
+//            telemetry.addData("Camera_yBotOnField", yBotOnField);
+
+            telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                  ", "%.2f\t\t%.2f\t\t%s", xBotOnField , yBotOnField ,  "not calculated");
+
             telemetry.addLine();
             finalX += xBotOnField;
             finalY += yBotOnField;
@@ -226,6 +232,7 @@ public class Camera extends SubsystemBase {
 //            forwardPower = 0;
 //        }
         if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
+            //TODO Check this setting
             setManualExposure(2, 80);//2,80
             manualExposure = true;
         }
@@ -400,11 +407,43 @@ public class Camera extends SubsystemBase {
     public double getBearing() {
         return getCurrentAprilTagDetections().get(desiredTagID).ftcPose.bearing;
     }
-    private double getATagRobotHeading(Turret turret) {
-        if (getCurrentAprilTagDetections().contains(24)){
-            return turret.getTurretThetaDEG() + (-getCurrentAprilTagDetections().get(24).ftcPose.bearing) + (getCurrentAprilTagDetections().get(24).metadata.fieldOrientation.toOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle - 90);
-    }else if (getCurrentAprilTagDetections().contains(21)){
-            return turret.getTurretThetaDEG() + (-getCurrentAprilTagDetections().get(21).ftcPose.bearing) + (getCurrentAprilTagDetections().get(21).metadata.fieldOrientation.toOrientation(AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).thirdAngle - 90);
-        }else return Double.NaN;
+    public double getATagRobotHeading(Turret turret, Telemetry telemetry) {
+
+
+        AprilTagDetection tag = null;
+
+        for (AprilTagDetection d : getCurrentAprilTagDetections()) {
+            if (d.id == 20||d.id == 24) {
+                tag = d;
+                break;
+            }
+        }
+
+        if (tag == null) {
+            telemetry.addLine("No Goal AprilTag Detected");
+            return Double.NaN;
+        }
+
+        double turretTheta = turret.getTurretThetaRAD();     // radians
+        double tagYaw = Math.toRadians(tag.ftcPose.yaw);                      // radians
+
+        double tagFieldHeading =
+                tag.metadata.fieldOrientation
+                        .toOrientation(
+                                AxesReference.INTRINSIC,
+                                AxesOrder.XYZ,
+                                AngleUnit.RADIANS
+                        ).secondAngle + Math.PI / 2;
+
+        double robotHeading =
+                -(turretTheta
+                        + tagYaw
+                        + tagFieldHeading);
+
+        telemetry.addData("Tag ID", tag.id);
+        telemetry.addData("Tag Yaw (deg)", "%.3f", Math.toDegrees(tagYaw));
+        telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                      ", "%.2f\t\t%.2f\t\t%.2f", xBotOnField , yBotOnField ,  Math.toDegrees(robotHeading));
+
+        return Math.toDegrees(robotHeading);
     }
 }
