@@ -50,11 +50,11 @@ public class IndexServos extends CommandOpMode {
         new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
                 .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
 
-        new Trigger(()-> driver.getButton(GamepadKeys.Button.X))
-                .toggleWhenActive(storage::storeSlot, storage::returnSlot);
-
-        new Trigger(()-> driver.getButton(GamepadKeys.Button.Y))
-                .toggleWhenActive(storage::closeBack, storage::openBack);
+//        new Trigger(()-> driver.getButton(GamepadKeys.Button.X))
+//                .toggleWhenActive(storage::storeSlot, storage::returnSlot);
+//
+////        new Trigger(()-> driver.getButton(GamepadKeys.Button.Y))
+//                .toggleWhenActive(storage::closeBack, storage::openBack);
 
 
         new Trigger(()->driver.getButton(GamepadKeys.Button.START))
@@ -70,33 +70,33 @@ public class IndexServos extends CommandOpMode {
 
         telemetry.addData("PTO_State", bellyPan.PTO_Engaged);
         telemetry.addData("BreakPad_State", brakePad.breakPadEngaged);
-        telemetry.addData("YolkPos",storage.sS.getPosition());
+//        telemetry.addData("YolkPos",storage.sS.getPosition());
         telemetry.addData("GatePos",storage.sG.getPosition());
         telemetry.addData("KickerPos",storage.sK.getPosition());
-        telemetry.addData("BackPos",storage.sBG.getPosition());
-
-        telemetry.addData("IntakeRed", intake.cSI.red());
-        telemetry.addData("IntakeGreen", intake.cSI.green());
-        telemetry.addData("IntakeBlue", intake.cSI.blue());
-        telemetry.addData("IntakeDist", intake.cSI.getDistance(DistanceUnit.CM));
-
-
-        telemetry.addData("MiddleRed", intake.cSM.red());
-        telemetry.addData("MiddleGreen", intake.cSM.green());
-        telemetry.addData("MiddleBlue", intake.cSM.blue());
-        telemetry.addData("MiddleDist", intake.cSM.getDistance(DistanceUnit.CM));
+//        telemetry.addData("BackPos",storage.sBG.getPosition());
+//
+//        telemetry.addData("IntakeRed", intake.bbI.red());
+//        telemetry.addData("IntakeGreen", intake.bbI.green());
+//        telemetry.addData("IntakeBlue", intake.bbI.blue());
+//        telemetry.addData("IntakeDist", intake.bbI.getDistance(DistanceUnit.CM));
 
 
-        telemetry.addData("ShooterRed", intake.cSSh.red());
-        telemetry.addData("ShooterGreen", intake.cSSh.green());
-        telemetry.addData("ShooterBlue", intake.cSSh.blue());
-        telemetry.addData("ShooterDist", intake.cSSh.getDistance(DistanceUnit.CM));
-
-
-        telemetry.addData("YolkRed", intake.cSSt.red());
-        telemetry.addData("YolkGreen", intake.cSSt.green());
-        telemetry.addData("YolkBlue", intake.cSSt.blue());
-        telemetry.addData("YolkDist", intake.cSSt.getDistance(DistanceUnit.CM));
+//        telemetry.addData("MiddleRed", intake.bbM.red());
+//        telemetry.addData("MiddleGreen", intake.bbM.green());
+//        telemetry.addData("MiddleBlue", intake.bbM.blue());
+//        telemetry.addData("MiddleDist", intake.bbM.getDistance(DistanceUnit.CM));
+//
+//
+//        telemetry.addData("ShooterRed", intake.bbSh.red());
+//        telemetry.addData("ShooterGreen", intake.bbSh.green());
+//        telemetry.addData("ShooterBlue", intake.bbSh.blue());
+//        telemetry.addData("ShooterDist", intake.bbSh.getDistance(DistanceUnit.CM));
+//
+//
+//        telemetry.addData("YolkRed", intake.cSSt.red());
+//        telemetry.addData("YolkGreen", intake.cSSt.green());
+//        telemetry.addData("YolkBlue", intake.cSSt.blue());
+//        telemetry.addData("YolkDist", intake.cSSt.getDistance(DistanceUnit.CM));
 
         intake.setCurrentArtifacts();
 

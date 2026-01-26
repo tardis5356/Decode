@@ -13,10 +13,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.InstantCommand;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -26,16 +23,12 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RecoveryBuilder;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -97,7 +90,7 @@ public class CameraTestTeleOp extends CommandOpMode {
     private Camera camera;
     //Roadrunner
     private RRSubsystem rrSubsystem;
-    private RecoveryBuilder recoveryBuilder;
+
     private MecanumDrive drive;
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
@@ -181,7 +174,7 @@ Timer.reset();
 
             telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
 
-            storage.returnSlot();
+//            storage.returnSlot();
             //shooter.sH.setPosition(.05);
 
 
@@ -302,15 +295,15 @@ Timer.reset();
 
         {
 
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
-                    .whenActive(
-                            new InstantCommand(storage::storeSlot)
-                    );
-
-            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
-                    .whenActive(
-                            new InstantCommand(storage::returnSlot)
-                    );
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+//                    .whenActive(
+//                            new InstantCommand(storage::storeSlot)
+//                    );
+//
+//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_LEFT))
+//                    .whenActive(
+//                            new InstantCommand(storage::returnSlot)
+//                    );
 
             new Trigger(() -> gamepad2.touchpad)
                     .whenActive(new InstantCommand(()->drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))));

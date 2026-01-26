@@ -361,17 +361,17 @@ public class DecodeAuto extends OpMode {
     public void loop() {
         intake.setCurrentArtifacts();
 
-        if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
-        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
-        } else {
-            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
-        }
+//        if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
+//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
+//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
+//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
+//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
+//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
+//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
+//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
+//        } else {
+//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
+//        }
 
         CommandScheduler.getInstance().run();
         if (runtime.seconds() > 29.5 && auto != null) {

@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Storage extends SubsystemBase {
     public Servo sG;
-    public Servo sS;
+//    public Servo sS;
     public Servo sK;
-    public Servo sBG;
+//    public Servo sBG;
 
     public boolean gateManualMode;
 
@@ -23,28 +23,28 @@ public class Storage extends SubsystemBase {
     //This will then map all of the variables/objects and run methods as innitial setup
     public Storage(HardwareMap hardwareMap){
         sG = hardwareMap.get(Servo.class,"sG");
-        sS = hardwareMap.get(Servo.class,"sS");
+//        sS = hardwareMap.get(Servo.class,"sS");
         sK = hardwareMap.get(Servo.class,"sK");
-        sBG = hardwareMap.get(Servo.class, "sBG");
-        openGate();
-        returnSlot();
-        closeBack();
+//        sBG = hardwareMap.get(Servo.class, "sBG");
+        closeGate();
+raiseKicker();
+
     }
 
     @Override
     public void periodic(){
         //if the slot underneath the shooter isn't empty, close the gate, otherwise open it
-        if (!gateManualMode){
-            if ((GlobalVariables.currentArtifacts.charAt(0) != '_'|| GlobalVariables.currentArtifacts.charAt(1) != '_'  || !kickerDown || !ballShot)){
-                closeGate();
-                ballShot = false;
-            }
-            else {
-                openGate();
-            }
-        }else {
-            ballShot = true;
-        }
+//        if (!gateManualMode){
+//            if ((GlobalVariables.currentArtifacts.charAt(0) != '_'|| GlobalVariables.currentArtifacts.charAt(1) != '_'  || !kickerDown || !ballShot)){
+//                closeGate();
+//                ballShot = false;
+//            }
+//            else {
+//                openGate();
+//            }
+//        }else {
+//            ballShot = true;
+//        }
 
 
 
@@ -62,14 +62,14 @@ public class Storage extends SubsystemBase {
     }
 
     //Open and close Back are referring to the back gate.
-    public void openBack(){
-        sBG.setPosition(BotPositions.BACK_OPEN);
-        backOpen = true;
-    }
-    public void closeBack(){
-        sBG.setPosition(BotPositions.BACK_CLOSE);
-        backOpen = false;
-    }
+//    public void openBack(){
+//        sBG.setPosition(BotPositions.BACK_OPEN);
+//        backOpen = true;
+//    }
+//    public void closeBack(){
+//        sBG.setPosition(BotPositions.BACK_CLOSE);
+//        backOpen = false;
+//    }
 
     public void raiseKicker(){
         sK.setPosition(BotPositions.KICKER_UP);
@@ -81,14 +81,14 @@ public class Storage extends SubsystemBase {
         kickerDown = true;
     }
 
-    public void storeSlot(){
-        sS.setPosition(BotPositions.SLOT_STORED);
-        slotFly = false;
-    }
-
-    public void returnSlot(){
-        sS.setPosition(BotPositions.SLOT_FLY);
-        slotFly = true;
-    }
+//    public void storeSlot(){
+//        sS.setPosition(BotPositions.SLOT_STORED);
+//        slotFly = false;
+//    }
+//
+//    public void returnSlot(){
+//        sS.setPosition(BotPositions.SLOT_FLY);
+//        slotFly = true;
+//    }
 
 }

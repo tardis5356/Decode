@@ -4,15 +4,14 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.c
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.slotFly;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
-import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import java.util.Objects;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto;
+import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class Intake extends SubsystemBase {
 
@@ -23,10 +22,19 @@ public class Intake extends SubsystemBase {
     public DigitalChannel redIntakeLED;
     public DigitalChannel greenIntakeLED;
 
-    public ColorRangeSensor cSI;
-    public ColorRangeSensor cSM;
-    public ColorRangeSensor cSSh;
-    public ColorRangeSensor cSSt;
+    public DigitalChannel bbI;
+    public DigitalChannel bbM;
+    public DigitalChannel bbSh;
+
+    private boolean shLatched = false;
+    private boolean mLatched  = false;
+    private boolean iLatched  = false;
+
+    private long shLastBroken = 0;
+    private long mLastBroken  = 0;
+    private long iLastBroken  = 0;
+
+    private static final long CLEAR_TIME_MS = 120; // tweak if needed
 
 
     public static String intakeState = new String();
@@ -49,13 +57,18 @@ public class Intake extends SubsystemBase {
         mI = hardwareMap.get(DcMotorEx.class, "mI");
         liT = hardwareMap.get(Servo.class, "liT");
 
-        cSI = hardwareMap.get(ColorRangeSensor.class, "cSI");
-        cSM = hardwareMap.get(ColorRangeSensor.class, "cSM");
-        cSSh = hardwareMap.get(ColorRangeSensor.class, "cSSh");
-        cSSt = hardwareMap.get(ColorRangeSensor.class, "cSSt");
+        bbI = hardwareMap.get(DigitalChannel.class, "bbI");
+        bbM = hardwareMap.get(DigitalChannel.class, "bbM");
+        bbSh = hardwareMap.get(DigitalChannel.class, "bbSh");
+
 
         redIntakeLED = hardwareMap.get(DigitalChannel.class, "iR");
         greenIntakeLED = hardwareMap.get(DigitalChannel.class,"iG");
+
+        bbI.setMode(DigitalChannel.Mode.INPUT);
+        bbM.setMode(DigitalChannel.Mode.INPUT);
+        bbSh.setMode(DigitalChannel.Mode.INPUT);
+
 
         redIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
@@ -73,31 +86,31 @@ public class Intake extends SubsystemBase {
         setCurrentArtifacts();
 
 
-//        long emptySlots = GlobalVariables.currentArtifacts.chars()
-//                .filter(c -> c == '_')
-//                .count();
-//
-//        switch ((int) emptySlots){
-//            case 4:
-//                liT.setPosition(0);
-//                break;
-//
-//            case 3:
-//                liT.setPosition(0.333);
-//                break;
-//
-//            case 2:
-//                liT.setPosition(0.388);
-//                break;
-//
-//            case 1:
-//                liT.setPosition(0.5);
-//                break;
-//
-//            default:
-//                liT.setPosition(0.277);
-//                break;
-//        }
+        long emptySlots = GlobalVariables.currentArtifacts.chars()
+                .filter(c -> c == '_')
+                .count();
+
+        switch ((int) emptySlots){
+            case 3:
+                liT.setPosition(0);
+                break;
+
+            case 2:
+                liT.setPosition(0.333);
+                break;
+
+            case 1:
+                liT.setPosition(0.388);
+                break;
+
+            case 0:
+                liT.setPosition(0.5);
+                break;
+
+            default:
+                liT.setPosition(0.277);
+                break;
+        }
 
 //        if(Objects.equals(currentArtifacts, "____")){
 //            liT.setPosition(0);
@@ -115,10 +128,10 @@ public class Intake extends SubsystemBase {
 //            liT.setPosition(.72);
 //        }
 
-        // If less than 2 empty slots → STOP the intake
-//        if (emptySlots == 1 ) {
-//            stop();
-//        }
+
+        if (emptySlots == 0 && DecodeTeleOp.firing) {
+            stop();
+        }
 
 
     }
@@ -149,40 +162,45 @@ public class Intake extends SubsystemBase {
     }
 
 
-    public String gPST(ColorRangeSensor cs) {
-        //Normalized colors return values from 1 to 0
-        if(cs == cSSt){
-            if (cs.getDistance(DistanceUnit.CM) < 1) {
-                return "P";
-            } else return "_";
-        }
-        else if(cs == cSSh){
-            if (cs.getDistance(DistanceUnit.CM) < 5) {
-                if (slotFly) {
-                    return "_";
-                }
-                return "P";
-            } else return "_";
-        }
-        else if(cs == cSM){
-            if (cs.getDistance(DistanceUnit.CM) < 2) {
-                return "P";
-            } else return "_";
-        }
-        else if(cs == cSI){
-            if (cs.getDistance(DistanceUnit.CM) < 12) {
-                return "P";
-            } else return "_";
-        }
-        else{
-            return "_";
+    public String getIntakeState(DigitalChannel bb) {
+        long now = System.currentTimeMillis();
+        boolean beamBroken = bb.getState(); // true = broken
+
+        if (bb == bbSh) {
+            if (beamBroken) {
+                shLatched = true;
+                shLastBroken = now;
+            } else if (shLatched && now - shLastBroken > CLEAR_TIME_MS) {
+                shLatched = false;
+            }
+            return shLatched ? "P" : "_";
         }
 
+        if (bb == bbM) {
+            if (beamBroken) {
+                mLatched = true;
+                mLastBroken = now;
+            } else if (mLatched && now - mLastBroken > CLEAR_TIME_MS) {
+                mLatched = false;
+            }
+            return mLatched ? "P" : "_";
+        }
 
+        if (bb == bbI) {
+            if (beamBroken) {
+                iLatched = true;
+                iLastBroken = now;
+            } else if (iLatched && now - iLastBroken > CLEAR_TIME_MS) {
+                iLatched = false;
+            }
+            return iLatched ? "P" : "_";
+        }
+
+        return "_";
     }
 
     public void setCurrentArtifacts() {
-        currentArtifacts = gPST(cSSt) + gPST(cSSh) + gPST(cSM) + gPST(cSI);
+        currentArtifacts = getIntakeState(bbSh) + getIntakeState(bbM) + getIntakeState(bbI);
     }
 
 }
