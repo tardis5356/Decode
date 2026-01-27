@@ -21,6 +21,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,6 +31,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.InterpolatingDoubleTreeMap;
 
@@ -63,7 +65,9 @@ public class Turret extends SubsystemBase {
     private double kS = 0.0;   // static gain
     private double lastTicks = 0;
     private double lastTime = 0;
-    private double turretVelocityTicksPerSec = 0;
+    private double turretVelocityDegreesPerSec = 0;
+    private double robotVelocityDegreesPerSec = 0;
+    private double turretToFieldAngularVelocity_Deg = 0;
     private ElapsedTime elapsedTime = new ElapsedTime();
     private ElapsedTime timeSinceWrapped = new ElapsedTime();
     private ElapsedTime timeFromLastTurretError = new ElapsedTime();
@@ -71,7 +75,10 @@ public class Turret extends SubsystemBase {
     private double pidPower;
     private double powerAdded = 0;
     private boolean PIDDisabled = false;
+
+    private MecanumDrive drive;
     public Servo liT;
+    public GoBildaPinpointDriver driver;
 
     // === TURRET CONSTANTS ===
     private double lastTurretAngle = 0.0; // radians
@@ -83,6 +90,7 @@ public class Turret extends SubsystemBase {
 
        liT  = hardwareMap.get(Servo.class, "liT");
 
+        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         PIDDisabled = false;
 
@@ -132,6 +140,15 @@ public class Turret extends SubsystemBase {
         //if (lT.isPressed()) {
 //            turretOffset += mT.getCurrentPosition();
 //        }
+
+        //These values are to compensate for angular velocity of the robot when applying power to turret
+        turretVelocityDegreesPerSec = mT.getVelocity() / TURRET_TICKS_PER_DEGREE;
+        robotVelocityDegreesPerSec = driver.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+
+        turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec;
+
+
+
          desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
 
@@ -144,6 +161,7 @@ public class Turret extends SubsystemBase {
 
                 if (turretError > TURRET_TOLERANCE_DEG) {
                     motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+                         //   + feedforwardController.calculate(turretToFieldAngularVelocity_Deg);
                 } else {
                     motorPower = 0;
                 }
@@ -169,7 +187,7 @@ public class Turret extends SubsystemBase {
         }
 
 //+ motor power is CCW
-        mT.setPower((motorPower + signum(motorPower)*TURRET_S) * (12/voltageSensor.getVoltage()));
+        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12/voltageSensor.getVoltage()));
 
 
     }
