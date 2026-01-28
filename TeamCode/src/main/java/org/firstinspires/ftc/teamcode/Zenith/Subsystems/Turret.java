@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.UnnormalizedAngleUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.InterpolatingDoubleTreeMap;
@@ -67,7 +68,7 @@ public class Turret extends SubsystemBase {
     private double lastTime = 0;
     private double turretVelocityDegreesPerSec = 0;
     private double robotVelocityDegreesPerSec = 0;
-    private double turretToFieldAngularVelocity_Deg = 0;
+    public static double turretToFieldAngularVelocity_Deg = 0;
     private ElapsedTime elapsedTime = new ElapsedTime();
     private ElapsedTime timeSinceWrapped = new ElapsedTime();
     private ElapsedTime timeFromLastTurretError = new ElapsedTime();
@@ -88,7 +89,7 @@ public class Turret extends SubsystemBase {
         lT = hardwareMap.get(TouchSensor.class, "lT");
         lT2 = hardwareMap.get(TouchSensor.class, "lT2");
 
-       liT  = hardwareMap.get(Servo.class, "liT");
+        liT = hardwareMap.get(Servo.class, "liT");
 
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -109,8 +110,8 @@ public class Turret extends SubsystemBase {
 
         //gets data from bot positions, reads the angle and then refers to the CW/CCW motor power
         for (int i = 0; i < TurretAngle_kSMatrix.length; i++) {
-           CCWTurretAnglekS.put(TurretAngle_kSMatrix[i][0],TurretAngle_kSMatrix[i][1]);
-           CWTurretAnglekS.put(TurretAngle_kSMatrix[i][0],TurretAngle_kSMatrix[i][2]);
+            CCWTurretAnglekS.put(TurretAngle_kSMatrix[i][0], TurretAngle_kSMatrix[i][1]);
+            CWTurretAnglekS.put(TurretAngle_kSMatrix[i][0], TurretAngle_kSMatrix[i][2]);
         }
 
         startingvoltage = voltageSensor.getVoltage();
@@ -142,52 +143,49 @@ public class Turret extends SubsystemBase {
 //        }
 
         //These values are to compensate for angular velocity of the robot when applying power to turret
-        turretVelocityDegreesPerSec = mT.getVelocity() / TURRET_TICKS_PER_DEGREE;
-        robotVelocityDegreesPerSec = driver.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
-
-        turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec;
 
 
 
-         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
+
+        desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
-
 
 
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
         if (!PIDDisabled) {
-        if(turretLocalized) {
+            if (turretLocalized) {
 
                 if (turretError > TURRET_TOLERANCE_DEG) {
+                  //  if (Math.abs(turretToFieldAngularVelocity_Deg) < 1)
                     motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-                         //   + feedforwardController.calculate(turretToFieldAngularVelocity_Deg);
+                    //   + feedforwardController.calculate(turretToFieldAngularVelocity_Deg);
                 } else {
                     motorPower = 0;
                 }
 
-        }else{
-            motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-            //TODO: actually debug this before next comp
+            } else {
+                motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+                //TODO: actually debug this before next comp
 //            motorPower = -.5 * cwORccw;
 //            if(lT2.isPressed()){
 //                cwORccw = -2;
 //            }
-        }
+            }
         } else motorPower = pidController.calculate(getCurrentPosition(), 0);
 
 //set the kS according to the turret theta
 
-        if (signum(motorPower)>0){
+        if (signum(motorPower) > 0) {
             kS = CCWTurretAnglekS.get(getTurretThetaDEG());
-        } else if(signum(motorPower)<0){
-            kS = - CWTurretAnglekS.get(getTurretThetaDEG());
+        } else if (signum(motorPower) < 0) {
+            kS = -CWTurretAnglekS.get(getTurretThetaDEG());
         } else {
             kS = 0;
         }
 
 //+ motor power is CCW
-        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12/voltageSensor.getVoltage()));
+        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12 / voltageSensor.getVoltage()));
 
 
     }
@@ -200,15 +198,42 @@ public class Turret extends SubsystemBase {
         return (getCurrentPosition() * TURRET_RADIANS_PER_TICK);
     }
 
-    public double getTurretThetaDEG(){
-        return (getCurrentPosition()/TURRET_TICKS_PER_DEGREE);
+    public double getTurretThetaDEG() {
+        return (getCurrentPosition() / TURRET_TICKS_PER_DEGREE);
     }
+
     public void disablePID() {
         PIDDisabled = true;
     }
 
     public void enablePID() {
         PIDDisabled = false;
+    }
+
+    public void updateTurretToFieldAngularVelocity_Deg(MecanumDrive drive) {
+        turretVelocityDegreesPerSec = mT.getVelocity() / TURRET_TICKS_PER_DEGREE;
+        robotVelocityDegreesPerSec = driver.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
+
+
+
+        driver.setEncoderResolution(1/0.00197, DistanceUnit.INCH);
+
+        double targetTagXOffset = 4 /*8*/, targetTagYOffset = 7/*7*/;
+
+        Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
+
+        double goalX = targetAprilTagPos.position.x + (signum(targetAprilTagPos.position.x) * targetTagXOffset);
+        double goalY = targetAprilTagPos.position.y + (signum(targetAprilTagPos.position.y) * targetTagYOffset);
+
+        // === Compute turret tracking ===
+        double robotXVelocity = driver.getVelX(DistanceUnit.INCH);
+        double robotYVelocity =  driver.getVelY(DistanceUnit.INCH);
+
+        double turretXYAngularVelocity_Deg = Math.atan2(goalY - drive.localizer.getPose().position.y, goalX - drive.localizer.getPose().position.x) - Math.atan2(goalY - (drive.localizer.getPose().position.y - robotYVelocity), goalX - (drive.localizer.getPose().position.x- robotXVelocity)) ;
+
+        turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Deg);
+
+
     }
 
     // === TRACKING TO APRILTAG (with offset) ===
@@ -259,7 +284,7 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Offset Y", targetTagYOffset);
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
-        telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()),((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+        telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()), ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
 //
 //        telemetry.addData("TurretPosX", turretFieldX);
 //        telemetry.addData("TurretPosY", turretFieldY);
@@ -268,9 +293,9 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Current", getCurrentPosition());
     }
 
-    public void aprilTagTracking ( Camera camera, Telemetry telemetry){
+    public void aprilTagTracking(Camera camera, Telemetry telemetry) {
         GlobalVariables.distanceFromTarget = camera.getDistance();
-        desiredTicks = (int) Math.round((camera.getBearing()*TURRET_TICKS_PER_DEGREE) + getCurrentPosition());
+        desiredTicks = (int) Math.round((camera.getBearing() * TURRET_TICKS_PER_DEGREE) + getCurrentPosition());
     }
 
     // === FLIP MANAGEMENT ===

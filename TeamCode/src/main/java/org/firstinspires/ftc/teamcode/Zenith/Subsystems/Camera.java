@@ -420,6 +420,10 @@ public class Camera extends SubsystemBase {
         }
 
         if (tag == null) {
+            telemetry.addData("Tag ID", 0);
+            telemetry.addData("Tag Yaw (deg)", "%.3f",Double.NaN);
+            telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                      ", "%.2f\t\t%.2f\t\t%.2f", xBotOnField , yBotOnField ,  Double.NaN);
+
             telemetry.addLine("No Goal AprilTag Detected");
             return Double.NaN;
         }
