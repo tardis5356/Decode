@@ -216,7 +216,7 @@ public class Turret extends SubsystemBase {
 
 
 
-        driver.setEncoderResolution(1/0.00197, DistanceUnit.INCH);
+        driver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
         double targetTagXOffset = 4 /*8*/, targetTagYOffset = 7/*7*/;
 
