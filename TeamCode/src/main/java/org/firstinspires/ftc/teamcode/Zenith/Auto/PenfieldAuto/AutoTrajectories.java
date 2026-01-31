@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.MAX_CYCLES;
-import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 import com.acmerobotics.roadrunner.Action;
@@ -22,7 +21,7 @@ public class AutoTrajectories {
     public static Pose2d goalShootPos, audienceShootPos;
 
     public static Pose2d goalIntakePos, midIntakePos, audienceIntakePos, cornerIntakePos;
-    public static Pose2d presetLZIntakePos, randomLZIntakePos;
+    public static Pose2d presetLZIntakePos, gateIntakePos;
     public static Pose2d gateReleasePos;
     public static Pose2d gateReadyToReleasePos;
     public static Pose2d parkPos;
@@ -43,7 +42,7 @@ public class AutoTrajectories {
     public static Action park;
 
 
-    // Intake tangents: [goal, mid, audience, LZ preset, LZ random]
+    // Intake tangents: [goal, mid, audience, LZ preset, LZ Gate]
     public static double[] intakeEndTangentDeg = {90, 90, 90 /*120*/ , 90 /*check*/, 90 /*45*/};
 
     // Shoot tangents: [goal, audience]
@@ -113,7 +112,7 @@ public class AutoTrajectories {
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
-        randomLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 45));
+        gateIntakePos = allianceCoordinate(new Pose2d(7,57,120));
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, 180));
     }
@@ -131,7 +130,7 @@ public class AutoTrajectories {
      */
     public static void generateTrajectories(MecanumDrive drive, int[][] choices, int cycles, Pose2d startPos) {
         Pose2d[] shootPositions = {goalShootPos, audienceShootPos};
-        Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, randomLZIntakePos};
+        Pose2d[] intakePositions = {goalIntakePos, midIntakePos, audienceIntakePos, presetLZIntakePos, gateIntakePos};
 
         Pose2d currentStart = (startPos != null) ? startPos : goalStartPos;
 if (startPos == goalStartPos) {
@@ -181,13 +180,17 @@ if (startPos == goalStartPos) {
             double intakeStartRad = allianceTangent(intakeStartDeg);
 
             // === START → INTAKE POS ===
-            startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-                    .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90))
-                    .build();
 
-            intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
-                    .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
-                    .build();
+
+    startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
+            .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90))
+            .build();
+
+    intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
+            .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
+            .build();
+
+
 
 //            startToIntake[i] = drive.actionBuilder(currentStart)
 //                    .setTangent(intakeStartRad)

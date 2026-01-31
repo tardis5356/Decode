@@ -60,7 +60,7 @@ public class DecodeAuto extends OpMode {
     private int currentCycle = 0;  // row selector
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
-    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
+    // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
     private int[][] choices = new int[MAX_CYCLES][2];
     private boolean gateCyclePressed;
     // private Camera camera;
@@ -142,14 +142,14 @@ public class DecodeAuto extends OpMode {
 
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
-                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
+                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
                 cycleCount = 3;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
                         {0, 0}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 2}, //shoot: gate ready to push, intake: audience
-                        {1, 4}, //shoot: audience, intake: LZ random
+                        {1, 4}, //shoot: audience, intake: Gate
                         {1, 3} //shoot: audience, intake: preset pose
                 };
             } else if (gamepad2.dpad_down) {
@@ -158,14 +158,14 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
-                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 LZ random)]
+                // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
                 cycleCount = 3;
                 choices = new int[][]{
                         {0, 2}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 0}, //shoot: goal ready to push, intake: Goal
-                        {1, 4}, //shoot: audience, intake: LZ random
-                        {1, 3} //shoot: audience, intake: LZ random
+                        {1, 4}, //shoot: audience, intake: Gate
+                        {1, 3} //shoot: audience, intake: Gate
                 };
 
             }
@@ -258,7 +258,7 @@ public class DecodeAuto extends OpMode {
         if (gamepad1.right_stick_button && currentColumn == 1)
             choices[currentCycle][currentColumn] = 3; // intake LZ preset
         if (gamepad1.left_stick_button && currentColumn == 1)
-            choices[currentCycle][currentColumn] = 4; // intake LZ random
+            choices[currentCycle][currentColumn] = 4; // intake Gate
     }
 
     private void printEASITelemetry() {
@@ -308,7 +308,7 @@ public class DecodeAuto extends OpMode {
             telemetry2.addLine("✖️ - Goal, ⭕ - Audience");
         } else if (currentColumn == 1) {
             telemetry2.addLine("✖️ - Goal, ⭕ - Mid,    ⃤ ️ - Audience");
-            telemetry2.addLine("Right Stick - LZ Preset, Left Stick - LZ Random");
+            telemetry2.addLine("Right Stick - LZ Preset, Left Stick - Gate");
         }
         telemetry2.addLine("");
         // --- Table header ---
@@ -316,7 +316,7 @@ public class DecodeAuto extends OpMode {
         telemetry2.addLine("-------------------------");
 
         String[] shootNames = {"Goal", "Audience"};
-        String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "LZ Random"};
+        String[] intakeNames = {"Goal", "Mid", "Audience", "LZ Preset", "Gate"};
 
 
         //telemetry2.addLine(String.format(HEADER_FORMAT, "Cycle", "Shoot", "Intake"));

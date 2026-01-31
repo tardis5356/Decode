@@ -29,7 +29,7 @@ public class MeepMeepTesting {
     public static final Pose2d midSpikePos = allianceCoordinate(new Pose2d(12,43,90)); //PGP
     public static final Pose2d backSpikePos = allianceCoordinate(new Pose2d(35,43,90)); //GPP
     public static final Pose2d cornerPickupPos = allianceCoordinate(new Pose2d(48,60,90)); //pick up corner PGP
-    public static final Pose2d gateReleasePos = allianceCoordinate(new Pose2d(0,52,90)); //open the gate
+    public static final Pose2d gateReleasePos = allianceCoordinate(new Pose2d(7,57,120)); //open the gate
     public static final Pose2d backShootPos = allianceCoordinate(new Pose2d(48,10,90)); //PPG
     public static final Pose2d frontShootPos = allianceCoordinate(new Pose2d(-12,17,90)); //PPG
 
@@ -83,9 +83,9 @@ public class MeepMeepTesting {
 //                               .setTangent(allianceTangent(0))
 //                               .splineToLinearHeading(gateReleasePos, allianceTangent(90))
 
-                       driveShim.trajectorySequenceBuilder(backShootPos)
-                               .setTangent(allianceTangent(180))
-                                .splineToLinearHeading(presetLZPos,allianceTangent(45))//fill in tangent
+                       driveShim.trajectorySequenceBuilder(gateReleasePos)
+//                               .setTangent(allianceTangent(180))
+//                                .splineToLinearHeading(presetLZPos,allianceTangent(45))//fill in tangent
                                .waitSeconds(10)
 //                                .setTangent(allianceTangent(270))
 //                                .splineToLinearHeading(backShootPos, allianceTangent(270))
