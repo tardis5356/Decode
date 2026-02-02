@@ -235,17 +235,17 @@ public class StarterBotTeleop extends OpMode {
 
         if (gamepad1.a) {
             // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-            LAUNCH_SPEED = .5; // flywheel at 50%
+            LAUNCH_SPEED = 0.9;
             isLauncherActive = true;
         } else if (gamepad1.x){
-            LAUNCH_SPEED = .625; // flywheel at 62.5%
+            LAUNCH_SPEED = 0.95;
             isLauncherActive = true;
         } else if (gamepad1.y){
-            LAUNCH_SPEED = .75; // flywheel at 75%
+            LAUNCH_SPEED = 1.0;
             isLauncherActive = true;
         } else if (gamepad1.b) {
             // launcher.setVelocity(STOP_SPEED);
-            LAUNCH_SPEED = 0; // flywheel at 0% (it stops moving)
+            LAUNCH_SPEED = 0;
             isLauncherActive = false;
         }
 
