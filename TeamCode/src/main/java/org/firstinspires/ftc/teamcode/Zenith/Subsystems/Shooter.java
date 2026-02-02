@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -38,6 +40,8 @@ public class Shooter extends SubsystemBase {
     public DcMotorEx mST, mSB;
     public Servo sH;
     public Servo liH;
+
+    public boolean bangBangActive;
 
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
@@ -138,30 +142,39 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
+        if (gateOpen){
+            bangBangActive = true;
+        }else bangBangActive = false;
+
         setVel(WheelRegression.get(distanceFromTarget));
 
-            if (targeting) {
-                sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
-            }
-            else{
-                sH.setPosition(hoodOffset);
+        if (targeting) {
+            sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
+        } else {
+            sH.setPosition(hoodOffset);
+        }
+
+        if (spinning) {
+            if(bangBangActive){
+                mSB.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+                mST.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+            }else{
+                mSB.setPower(calculatePIDFlyWheelPower(targetFlyWheelSpeed + speedOffset));
+                mST.setPower(calculatePIDFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             }
 
-            if (spinning) {
-                mSB.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
-                mST.setPower(calculateFlyWheelPower(targetFlyWheelSpeed + speedOffset));
-            } else {
-                mSB.setPower(0);
-                mST.setPower(0);
-            }
+        } else {
+            mSB.setPower(0);
+            mST.setPower(0);
+        }
 
-            if (Math.abs(getTargetFlyWheelSpeed()-getFlyWheelSpeed()) < 35) {
-                liH.setPosition(0.8);
-            } else if (getFlyWheelSpeed()-getTargetFlyWheelSpeed() < -35) {
-                liH.setPosition(0);
-            } else {
-                liH.setPosition(getFastPulse());
-            }
+        if (Math.abs(getTargetFlyWheelSpeed() - getFlyWheelSpeed()) < 35) {
+            liH.setPosition(0.8);
+        } else if (getFlyWheelSpeed() - getTargetFlyWheelSpeed() < -35) {
+            liH.setPosition(0);
+        } else {
+            liH.setPosition(getFastPulse());
+        }
 
     }
 
@@ -170,9 +183,16 @@ public class Shooter extends SubsystemBase {
         targetFlyWheelSpeed = tps;
     }
 
-    public double calculateFlyWheelPower(double tps) {
+    public double calculatePIDFlyWheelPower(double tps) {
         return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
     }
+
+    public double calculateBangBangFlyWheelPower(double tps) {
+        if (getFlyWheelSpeed() > tps) {
+            return 0;
+        } else return 1;
+    }
+
 
     public double getFlyWheelSpeed() {
         return mST.getVelocity();
