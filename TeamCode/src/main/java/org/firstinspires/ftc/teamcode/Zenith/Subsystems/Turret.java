@@ -94,6 +94,7 @@ public class Turret extends SubsystemBase {
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         PIDDisabled = false;
+        driver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -216,7 +217,6 @@ public class Turret extends SubsystemBase {
 
 
 
-        driver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
         double targetTagXOffset = 4 /*8*/, targetTagYOffset = 7/*7*/;
 
@@ -229,9 +229,11 @@ public class Turret extends SubsystemBase {
         double robotXVelocity = driver.getVelX(DistanceUnit.INCH);
         double robotYVelocity =  driver.getVelY(DistanceUnit.INCH);
 
-        double turretXYAngularVelocity_Deg = Math.atan2(goalY - drive.localizer.getPose().position.y, goalX - drive.localizer.getPose().position.x) - Math.atan2(goalY - (drive.localizer.getPose().position.y - robotYVelocity), goalX - (drive.localizer.getPose().position.x- robotXVelocity)) ;
+        double turretXYAngularVelocity_Rad =
+                Math.atan2(goalY - drive.localizer.getPose().position.y, goalX - drive.localizer.getPose().position.x)
+                - Math.atan2(goalY - (drive.localizer.getPose().position.y - robotYVelocity), goalX - (drive.localizer.getPose().position.x- robotXVelocity)) ;
 
-        turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Deg);
+        turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Rad);
 
 
     }
