@@ -20,7 +20,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 addCommands(
                         new SequentialCommandGroup(
                                 new InstantCommand(intake::in),
-                                openGate(storage),
+                                new InstantCommand(storage::openGate),
                                 new IntakeWaitCommand(intake),
                                 new InstantCommand(storage::closeGate),
                                 new InstantCommand(intake::stop)
@@ -30,40 +30,40 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 
 
 
-            case "Launch":
-                addCommands(
-                        new SequentialCommandGroup(
-                               launchOne(storage)
-                        )
-                );
-            break;
+//            case "Launch":
+//                addCommands(
+//                        new SequentialCommandGroup(
+//                               launchOne(storage)
+//                        )
+//                );
+//            break;
 
         }
 
     }
-    public static Command launchOne(Storage s){
-        return
+//    public static Command launchOne(Storage s){
+//        return
+//
+//                new SequentialCommandGroup(
+//                        new InstantCommand(s::raiseKicker),
+//                        openGate(s),
+//                        new InstantCommand(s::lowerKicker),
+//                        new InstantCommand(s::closeGate)
+//                );
+//
+//    }
 
-                new SequentialCommandGroup(
-                        new InstantCommand(s::raiseKicker),
-                        openGate(s),
-                        new InstantCommand(s::lowerKicker),
-                        new InstantCommand(s::closeGate)
-                );
-
-    }
 
 
-
-    public static Command openGate(Storage s){
-        return new SequentialCommandGroup(new InstantCommand(s::openGate),
-                new WaitCommand(BotPositions.GATE_WAIT));
-    }
-
-    public static Command closeGate(Storage s){
-        return new SequentialCommandGroup(new InstantCommand(s::closeGate),
-                new WaitCommand(BotPositions.GATE_WAIT));
-    }
+//    public static Command openGate(Storage s){
+//        return new SequentialCommandGroup(new InstantCommand(s::openGate),
+//                new WaitCommand(BotPositions.GATE_WAIT));
+//    }
+//
+//    public static Command closeGate(Storage s){
+//        return new SequentialCommandGroup(new InstantCommand(s::closeGate),
+//                new WaitCommand(BotPositions.GATE_WAIT));
+//    }
 
 
 

@@ -5,22 +5,25 @@
         <LynxModule name="Expansion Hub 2" port="2">
             <goBILDA5202SeriesMotor name="mT" port="0"/>
             <goBILDA5202SeriesMotor name="mI" port="1"/>
-            <goBILDA5202SeriesMotor name="mST" port="2"/>
-            <goBILDA5202SeriesMotor name="mSB" port="3"/>
+            <goBILDA5202SeriesMotor name="mSR" port="2"/>
+            <goBILDA5202SeriesMotor name="mSL" port="3"/>
             <Servo name="sRL" port="0"/>
             <Servo name="liT" port="2"/>
-            <RevTouchSensor name="lT" port="1"/>
-            <RevColorSensorV3 name="cSM" port="0" bus="1"/>
-            <RevColorSensorV3 name="cSI" port="0" bus="0"/>
-            <RevColorSensorV3 name="cSSh" port="0" bus="2"/>
-            <RevColorSensorV3 name="cSSt" port="0" bus="3"/>
+<!--            <RevTouchSensor name="lT" port="1"/>-->
+            <DigitalDevice name="bbF" port="7"/>
+            <DigitalDevice name="bbM" port="5"/>
+            <DigitalDevice name="bbSh" port="3"/>
+<!--            <RevColorSensorV3 name="cSM" port="0" bus="1"/>-->
+<!--            <RevColorSensorV3 name="cSI" port="0" bus="0"/>-->
+<!--            <RevColorSensorV3 name="cSSh" port="0" bus="2"/>-->
+<!--            <RevColorSensorV3 name="cSSt" port="0" bus="3"/>-->
         </LynxModule>
         <ServoHub name="Servo Hub 3" port="3">
             <Servo name="sP" port="0"/>
-            <Servo name="sS" port="1"/>
+            <Servo name="sG" port="1"/>
             <Servo name="sH" port="2"/>
-            <Servo name="sK" port="3"/>
-            <Servo name="sG" port="4"/>
+<!--            <Servo name="sK" port="3"/>-->
+<!--            <Servo name="sG" port="4"/>-->
             <Servo name="sB" port="5"/>
         </ServoHub>
         <LynxModule name="Control Hub" port="173">

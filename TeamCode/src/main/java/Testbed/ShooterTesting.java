@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -21,6 +22,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 
@@ -31,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.00f, vI = 0, vD = 0.000f, vV = 0.000f, vS = 0.0f;
+    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.000f, vS = 0.f;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -50,7 +52,7 @@ public class ShooterTesting extends CommandOpMode {
     Intake intake;
     Storage storage;
 
-    double hoodPos = 0.5;
+    double hoodPos = 0.95;
     public static double wheelSpeedOne = 1410, wheelSpeedTwo = 1125, wheelSpeed_Three = 800;
     double wheelSpeed;
 
@@ -60,8 +62,8 @@ public class ShooterTesting extends CommandOpMode {
     @Override
     public void initialize(){
 
-        mW = hardwareMap.get(DcMotorEx.class,"mST");
-        m2 = hardwareMap.get(DcMotorEx.class,"mSB");
+        mW = hardwareMap.get(DcMotorEx.class,"mSR");
+        m2 = hardwareMap.get(DcMotorEx.class,"mSL");
         sH = hardwareMap.get(Servo.class,"sH");
         driver1 = new GamepadEx(gamepad1);
         intake = new Intake(hardwareMap);
@@ -70,6 +72,10 @@ public class ShooterTesting extends CommandOpMode {
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        mW.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        m2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -120,6 +126,11 @@ public class ShooterTesting extends CommandOpMode {
 //
                         )
                 );
+        new Trigger(()->driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
+                .whenActive(new InstantCommand(intake::in));
+
+        new Trigger(()->driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
+                .whenActive(new InstantCommand(intake::stop));
 
 //        new Trigger(()-> driver1.getButton(GamepadKeys.Button.X))
 //                .whenActive(new SequentialCommandGroup(
@@ -139,14 +150,14 @@ public class ShooterTesting extends CommandOpMode {
                 .toggleWhenActive(intake::in, intake::stop);
 
 
-        new Trigger(()-> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
-                .whenActive(
-                        new SequentialCommandGroup(
-                                new InstantCommand(storage::raiseKicker),
-                                new WaitCommand(BotPositions.KICKER_WAIT),
-                                new InstantCommand(storage::lowerKicker)
-                        )
-                );
+//        new Trigger(()-> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+//                .whenActive(
+//                        new SequentialCommandGroup(
+//                                new InstantCommand(storage::raiseKicker),
+//                                new WaitCommand(BotPositions.KICKER_WAIT),
+//                                new InstantCommand(storage::lowerKicker)
+//                        )
+//                );
 
 
     }
@@ -155,7 +166,7 @@ public class ShooterTesting extends CommandOpMode {
         super.run();
 
         velPIDController.setPID(vP,vI,vD);
-
+intake.setCurrentArtifacts();
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
         mW.setPower(calculateFlyWheelPower(wheelSpeed));
@@ -174,18 +185,28 @@ public class ShooterTesting extends CommandOpMode {
 
         telemetry.addData("motorPower",mW.getPower());
 
+        telemetry.addData("Intake power",intake.mI.getPower());
+
+        telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
+
         telemetry.addData("CommandedPower", wheelSpeed);
 
         telemetry.addData("T/s",mW.getVelocity());
 
         telemetry.addData("HoodPos", sH.getPosition());
+        telemetry.addData("mwah<3",true);
 
 
     }
 
 
     public double calculateFlyWheelPower(double tps){
-        double neededVoltage = velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
+        double neededVoltage;
+        if(tps == 0){
+            neededVoltage = 0;
+        }else{
+            neededVoltage = velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
+        }
         return neededVoltage * 12.5 / voltageSensor.getVoltage();
     }
 }

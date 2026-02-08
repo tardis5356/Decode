@@ -41,7 +41,7 @@ public class AutoGenerator {
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
         List<Command> seq = new ArrayList<>();
 
-seq.add(new InstantCommand(storage::closeGate));
+//seq.add(new InstantCommand(storage::closeGate));
         if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos){
 
           //  seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-200))));

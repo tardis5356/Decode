@@ -8,7 +8,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
@@ -38,17 +37,19 @@ public class IndexServos extends CommandOpMode {
 
 
 
-        shooter.sH.setPosition(0);
+        //shooter.sH.setPosition(0);
+
+
 
         new Trigger(()-> driver.getButton(GamepadKeys.Button.BACK))
-                .whenActive(()->shooter.sH.setPosition(.95));
+                .toggleWhenActive(()->shooter.hoodOffset = .05,()->shooter.hoodOffset = 0.95);
 
 
-        new Trigger(()-> driver.getButton(GamepadKeys.Button.A))
-                .toggleWhenActive(storage::closeGate, storage::openGate);
-
-        new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
-                .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
+//        new Trigger(()-> driver.getButton(GamepadKeys.Button.A))
+//                .toggleWhenActive(storage::closeGate, storage::openGate);
+//
+//        new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
+//                .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
 
         new Trigger(()->driver.getButton(GamepadKeys.Button.START))
                 .toggleWhenActive(brakePad::deploy, brakePad::retract);
@@ -60,14 +61,17 @@ public class IndexServos extends CommandOpMode {
     @Override
     public void run() {
         super.run();
+        shooter.targeting = false;
+
+        telemetry.addData("hoodPos", shooter.hoodOffset);
 
         telemetry.addData("PTO_State", bellyPan.PTO_Engaged);
         telemetry.addData("BreakPad_State", brakePad.breakPadEngaged);
 
-        telemetry.addData("GatePos",storage.sG.getPosition());
-        telemetry.addData("KickerPos",storage.sK.getPosition());
+//        telemetry.addData("GatePos",storage.sG.getPosition());
+//        telemetry.addData("KickerPos",storage.sK.getPosition());
 
-        telemetry.addData("IntakeBeamBreak", intake.bbI.getState());
+        telemetry.addData("IntakeBeamBreak", intake.bbF.getState());
         telemetry.addData("MiddleBeamBreak", intake.bbM.getState());
         telemetry.addData("ShooterBeamBreak", intake.bbSh.getState());
 

@@ -11,7 +11,7 @@ import java.util.Objects;
 public class IntakeWaitCommand extends CommandBase {//This is a separate command used to actually set the target position of the lift for the PID
     private Intake intake;//create a lift object. It will have all the associated code of the lift file since that file outlines a class
     private ElapsedTime runtime = new ElapsedTime();
-    private Double timeout = .7;
+    private Double timeout = 1.5;
     public IntakeWaitCommand(Intake intake) {
 
 

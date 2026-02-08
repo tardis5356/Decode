@@ -94,7 +94,7 @@ public class Turret extends SubsystemBase {
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         PIDDisabled = false;
-        driver.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        driver.setEncoderResolution(1/0.00197, DistanceUnit.INCH);
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -233,6 +233,7 @@ public class Turret extends SubsystemBase {
                 Math.atan2(goalY - drive.localizer.getPose().position.y, goalX - drive.localizer.getPose().position.x)
                 - Math.atan2(goalY - (drive.localizer.getPose().position.y - robotYVelocity), goalX - (drive.localizer.getPose().position.x- robotXVelocity)) ;
 
+       
         turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Rad);
 
 
