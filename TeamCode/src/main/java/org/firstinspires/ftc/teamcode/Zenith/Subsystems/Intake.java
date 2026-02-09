@@ -130,13 +130,13 @@ timeIntakeFull.reset();
 //            liT.setPosition(.72);
 //        }
 
-        if (emptySlots != 0){
-            timeIntakeFull.reset();
-        }
-
-        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
-            stop();
-        }
+//        if (emptySlots != 0){
+//            timeIntakeFull.reset();
+//        }
+//
+//        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
+//            stop();
+//        }
 
 
     }

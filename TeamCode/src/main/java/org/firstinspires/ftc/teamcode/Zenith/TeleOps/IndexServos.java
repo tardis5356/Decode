@@ -45,9 +45,9 @@ public class IndexServos extends CommandOpMode {
                 .toggleWhenActive(()->shooter.hoodOffset = .05,()->shooter.hoodOffset = 0.95);
 
 
-//        new Trigger(()-> driver.getButton(GamepadKeys.Button.A))
-//                .toggleWhenActive(storage::closeGate, storage::openGate);
-//
+        new Trigger(()-> driver.getButton(GamepadKeys.Button.A))
+                .toggleWhenActive(storage::closeGate, storage::openGate);
+
 //        new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
 //                .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
 
@@ -68,7 +68,7 @@ public class IndexServos extends CommandOpMode {
         telemetry.addData("PTO_State", bellyPan.PTO_Engaged);
         telemetry.addData("BreakPad_State", brakePad.breakPadEngaged);
 
-//        telemetry.addData("GatePos",storage.sG.getPosition());
+        telemetry.addData("GatePos",storage.sG.getPosition());
 //        telemetry.addData("KickerPos",storage.sK.getPosition());
 
         telemetry.addData("IntakeBeamBreak", intake.bbF.getState());

@@ -16,8 +16,6 @@ public class BotPositions {
     //public static int SLOT1_FIRE = 360, SLOT2_FIRE = 120, SLOT3_FIRE = 240, SLOT1_LOAD = 180, SLOT2_LOAD = 300, SLOT3_LOAD = 60;
     //public static double TURRET_P = 0.000000, TURRET_I = 0.000, TURRET_D = 0.00000;
     public static double TURRET_TICKS_PER_DEGREE = 108.615834 , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
-    //Penfield Values
-    //public static double TURRET_P = 0.0003 , TURRET_I = 0.24, TURRET_D = 0.00001, TURRET_S = 0.9,  TURRET_V = 0.0011, TURRET_TOLERANCE_DEG = 2;
     public static double TURRET_P = 0.00008 , TURRET_I = 0, TURRET_D = 0.000008, TURRET_S = 0.15,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
 //angle, CCW motor power, CW motor power
     public static double[][] TurretAngle_kSMatrix = {
@@ -39,10 +37,10 @@ public class BotPositions {
 
     public static double BREAKPAD_ACTIVE = 0.7, BREAKPAD_INACTIVE = .42;
 
-    public static double CAMERA_RADIUS = 5.23956, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
+    public static double CAMERA_RADIUS = -3.89894311, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
 
     //positions of servos in StorageSubsystem
-    public static double GATE_OPEN = .2, GATE_CLOSED = .37, KICKER_UP = .60, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .89, BACK_OPEN = .44, BACK_CLOSE = .5;
+    public static double GATE_OPEN = .54, GATE_CLOSED = .35, KICKER_UP = .60, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .89, BACK_OPEN = .44, BACK_CLOSE = .5;
 
     public static long KICKER_WAIT = 150, GATE_WAIT = 500, SWAP_WAIT = 500, INTAKE_WAIT = 700;
 

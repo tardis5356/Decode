@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.000f, vS = 0.f;
+    public static float vP = 0.009f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -88,6 +88,9 @@ public class ShooterTesting extends CommandOpMode {
                 .whenInactive(new InstantCommand(()->
                         hoodPos -= .05)
                 );
+
+        new Trigger(()-> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
+                .toggleWhenActive(storage::closeGate, storage::openGate);
 
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.Y))
@@ -169,8 +172,8 @@ public class ShooterTesting extends CommandOpMode {
 intake.setCurrentArtifacts();
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
-        mW.setPower(calculateFlyWheelPower(wheelSpeed));
-        m2.setPower(calculateFlyWheelPower(wheelSpeed));
+        mW.setPower(calculateBangBangFlyWheelPower(wheelSpeed));
+        m2.setPower(calculateBangBangFlyWheelPower(wheelSpeed));
         sH.setPosition(Math.abs(hoodPos));
 
 
@@ -208,5 +211,10 @@ intake.setCurrentArtifacts();
             neededVoltage = velPIDController.calculate(mW.getVelocity(), tps) + velFFController.calculate(tps);
         }
         return neededVoltage * 12.5 / voltageSensor.getVoltage();
+    }
+    public double calculateBangBangFlyWheelPower(double tps) {
+        if (mW.getVelocity() > tps) {
+            return 0;
+        } else return 1;
     }
 }
