@@ -333,11 +333,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
                     .whenInactive(() ->
-                            shooter.hoodOffset += .025);
+                            shooter.hoodOffset += .01);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
                     .whenInactive(() ->
-                            shooter.hoodOffset -= .025);
+                            shooter.hoodOffset -= .01);
 
 
         }
@@ -346,6 +346,10 @@ public class DecodeTeleOp extends CommandOpMode {
     //this is the main run loop
     public void run() {
         super.run();
+
+
+        //TODO:Remove this open gate
+        storage.openGate();
 
         shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 

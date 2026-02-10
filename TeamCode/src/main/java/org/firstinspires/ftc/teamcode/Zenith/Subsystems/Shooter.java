@@ -79,7 +79,7 @@ public class Shooter extends SubsystemBase {
 
         mSL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        sH.setPosition(0.05);
+        //sH.setPosition(0.05);
 
 
 

@@ -86,7 +86,7 @@ public class Turret extends SubsystemBase {
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
-        lT = hardwareMap.get(TouchSensor.class, "lT");
+        //lT = hardwareMap.get(TouchSensor.class, "lT");
         lT2 = hardwareMap.get(TouchSensor.class, "lT2");
 
         liT = hardwareMap.get(Servo.class, "liT");
@@ -186,7 +186,7 @@ public class Turret extends SubsystemBase {
         }
 
 //+ motor power is CCW
-        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12 / voltageSensor.getVoltage()));
+//        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12 / voltageSensor.getVoltage()));
 
 
     }
