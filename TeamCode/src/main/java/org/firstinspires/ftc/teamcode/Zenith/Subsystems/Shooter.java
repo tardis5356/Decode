@@ -85,40 +85,37 @@ public class Shooter extends SubsystemBase {
 
 
 //Old shooter interpolator
-//        HoodRegression.put(158., 0.05);
-//        HoodRegression.put(146., 0.05);
-//        HoodRegression.put(135.5, 0.1);
-//        HoodRegression.put(126., 0.1);
-//        HoodRegression.put(115., 0.1);
-//        HoodRegression.put(109., 0.15);
-//        HoodRegression.put(100., 0.2);
-//        HoodRegression.put(86., 0.2);
-//        HoodRegression.put(76., 0.275);
-//        HoodRegression.put(63., 0.15);
-//        HoodRegression.put(51., 0.25);
-//        HoodRegression.put(34., 0.45);
-//
-//
-//        WheelRegression.put(158.0, 1450. - hardWheelOffset);
-//        WheelRegression.put(146.0, 1375. - hardWheelOffset);
-//        WheelRegression.put(135.5, 1350. - hardWheelOffset);
-//        WheelRegression.put(126.0, 1300. - hardWheelOffset);
-//        WheelRegression.put(115.0, 1237.5 - hardWheelOffset);
-//        WheelRegression.put(109.0, 1200. - hardWheelOffset);
-//        WheelRegression.put(100.0, 1075. - hardWheelOffset);
-//        WheelRegression.put(86.0, 1050. - hardWheelOffset);
-//        WheelRegression.put(76.0, 975. - hardWheelOffset);
-//        WheelRegression.put(63.0, 925. - hardWheelOffset);
-//        WheelRegression.put(51.0, 800. - hardWheelOffset);
-//        WheelRegression.put(34.0, 750. - hardWheelOffset);
+        HoodRegression.put(30., 0.96);
+        HoodRegression.put(42., 0.96);
+        HoodRegression.put(50., 0.92);
+        HoodRegression.put(56., 0.91);
+        HoodRegression.put(67., 0.88);
+        HoodRegression.put(77., 0.86);
+        HoodRegression.put(88., 0.85);
+        HoodRegression.put(95.5, 0.85);
+        HoodRegression.put(106., 0.83);
+        HoodRegression.put(114., 0.79);
+        HoodRegression.put(121., 0.79);
+        HoodRegression.put(132., 0.79);
+        HoodRegression.put(140., 0.78);
+        HoodRegression.put(149., 0.78);
+        HoodRegression.put(156., 0.77);
 
-        HoodRegression.put(158., 0.85);
-
-
-
-        WheelRegression.put(158.0, 1220 - hardWheelOffset);
-
-
+        WheelRegression.put(30., 695.);
+        WheelRegression.put(42., 720.);
+        WheelRegression.put(50., 720.);
+        WheelRegression.put(56., 770.);
+        WheelRegression.put(67., 870.);
+        WheelRegression.put(77., 920.);
+        WheelRegression.put(88., 995.);
+        WheelRegression.put(95.5, 995.);
+        WheelRegression.put(106., 1070.);
+        WheelRegression.put(114., 1095.);
+        WheelRegression.put(121., 1120.);
+        WheelRegression.put(132., 1195.);
+        WheelRegression.put(140., 1245.);
+        WheelRegression.put(149., 1270.);
+        WheelRegression.put(156., 1320.);
 
         targeting = true;
     }
@@ -126,10 +123,9 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-//        if (gateOpen){
-//            bangBangActive = true;
-//        }else
-        bangBangActive = false;
+        if (gateOpen){
+            bangBangActive = true;
+        }else bangBangActive = false;
 
         setVel(WheelRegression.get(distanceFromTarget));
 
