@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class Intake extends SubsystemBase {
@@ -135,6 +136,10 @@ timeIntakeFull.reset();
 //        }
 //
 //        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
+//            stop();
+//        }
+
+//        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>10){
 //            stop();
 //        }
 
