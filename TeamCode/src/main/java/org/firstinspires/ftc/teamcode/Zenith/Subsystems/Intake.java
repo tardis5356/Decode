@@ -78,7 +78,7 @@ public class Intake extends SubsystemBase {
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
 
         currentDirection = Direction.OFF;
-timeIntakeFull.reset();
+        timeIntakeFull.reset();
 
     }
 
