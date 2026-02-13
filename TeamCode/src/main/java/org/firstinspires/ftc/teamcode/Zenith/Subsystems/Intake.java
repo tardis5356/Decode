@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -139,15 +140,17 @@ timeIntakeFull.reset();
 //            stop();
 //        }
 
-//        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>10){
-//            stop();
-//        }
+        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>9){
+            stop();
+        }
 
 
     }
 
     public void in() {
-        intakePower = 1;
+        if (firing){
+            intakePower = .7;
+        }else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);
         redIntakeLED.setState(false);

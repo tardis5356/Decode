@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
@@ -329,7 +330,8 @@ public class DecodeTeleOp extends CommandOpMode {
                     .whenActive(new SequentialCommandGroup(
                             new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0))))
                     ));
-
+            new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
+                    .toggleWhenActive(storage::closeGate, storage::openGate);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
                     .whenInactive(() ->
@@ -349,7 +351,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         //TODO:Remove this open gate
-        storage.openGate();
+//        storage.openGate();
 
         shooter.setTargetDistance(GlobalVariables.distanceFromTarget);
 
@@ -434,6 +436,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         telemetry.addLine();
         telemetry.addData("hoodPos", shooter.sH.getPosition());
+        telemetry.addData("IntakeMotorAmps", intake.mI.getCurrent(CurrentUnit.AMPS));
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
         telemetry.addData("Distance",GlobalVariables.distanceFromTarget);

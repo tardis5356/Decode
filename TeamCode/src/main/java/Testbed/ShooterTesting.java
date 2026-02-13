@@ -81,12 +81,12 @@ public class ShooterTesting extends CommandOpMode {
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_UP))
                 .whenInactive(new InstantCommand(()->
-                        hoodPos += .05)
+                        hoodPos += .02)
                 );
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.DPAD_DOWN))
                 .whenInactive(new InstantCommand(()->
-                        hoodPos -= .05)
+                        hoodPos -= .02)
                 );
 
         new Trigger(()-> driver1.getButton(GamepadKeys.Button.RIGHT_BUMPER))
@@ -213,7 +213,7 @@ intake.setCurrentArtifacts();
         return neededVoltage * 12.5 / voltageSensor.getVoltage();
     }
     public double calculateBangBangFlyWheelPower(double tps) {
-        if (mW.getVelocity() > tps) {
+        if (mW.getVelocity() >= tps) {
             return 0;
         } else return 1;
     }

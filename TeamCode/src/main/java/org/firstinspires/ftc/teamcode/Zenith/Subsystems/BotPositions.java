@@ -40,7 +40,7 @@ public class BotPositions {
     public static double CAMERA_RADIUS = -3.89894311, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
 
     //positions of servos in StorageSubsystem
-    public static double GATE_OPEN = .54, GATE_CLOSED = .35, KICKER_UP = .60, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .89, BACK_OPEN = .44, BACK_CLOSE = .5;
+    public static double GATE_OPEN = .54, GATE_CLOSED = .39, KICKER_UP = .60, KICKER_DOWN = .31, SLOT_STORED = .53, SLOT_FLY = .89, BACK_OPEN = .44, BACK_CLOSE = .5;
 
     public static long KICKER_WAIT = 150, GATE_WAIT = 500, SWAP_WAIT = 500, INTAKE_WAIT = 700;
 
