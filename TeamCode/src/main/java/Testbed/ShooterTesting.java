@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 //@Disabled
 public class ShooterTesting extends CommandOpMode {
 
-    public static float vP = 0.009f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
+    public static float vP = 0.007f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
 
     PIDController velPIDController = new PIDController(vP, vI, vD);
     SimpleMotorFeedforward velFFController = new SimpleMotorFeedforward(vS, vV);
@@ -172,8 +172,8 @@ public class ShooterTesting extends CommandOpMode {
 intake.setCurrentArtifacts();
 
         //mW.setVelocity(wheelSpeed*360/60, AngleUnit.DEGREES);
-        mW.setPower(calculateBangBangFlyWheelPower(wheelSpeed));
-        m2.setPower(calculateBangBangFlyWheelPower(wheelSpeed));
+        mW.setPower(calculateFlyWheelPower(wheelSpeed));
+        m2.setPower(calculateFlyWheelPower(wheelSpeed));
         sH.setPosition(Math.abs(hoodPos));
 
 

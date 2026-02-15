@@ -150,7 +150,7 @@ public class Intake extends SubsystemBase {
 
     public void in() {
         if (firing){
-            intakePower = .7;
+            intakePower = .8;
         }else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);
@@ -161,7 +161,7 @@ public class Intake extends SubsystemBase {
 
     public void out() {
         if (gateOpen){
-            intakePower = .5;
+            intakePower = -.5;
         }else intakePower = -1;
         intakeState = "out";
         greenIntakeLED.setState(false);

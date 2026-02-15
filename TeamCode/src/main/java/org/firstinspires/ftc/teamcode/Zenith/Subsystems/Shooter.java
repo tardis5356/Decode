@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0.009f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
+    public static float vP = 0.007f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
 
     public static double hardWheelOffset = 0;
 
@@ -85,22 +85,22 @@ public class Shooter extends SubsystemBase {
 
 
 //Old shooter interpolator
-//        HoodRegression.put(30., 0.96);
-//        HoodRegression.put(42., 0.96);
-//        HoodRegression.put(50., 0.92);
-//        HoodRegression.put(56., 0.91);
-//        HoodRegression.put(67., 0.88);
-//        HoodRegression.put(77., 0.86);
-//        HoodRegression.put(88., 0.85);
-//        HoodRegression.put(95.5, 0.85);
-//        HoodRegression.put(106., 0.83);
-//        HoodRegression.put(114., 0.79);
-//        HoodRegression.put(121., 0.79);
-//        HoodRegression.put(132., 0.79);
-//        HoodRegression.put(140., 0.78);
-//        HoodRegression.put(149., 0.78);
-//        HoodRegression.put(156., 0.77);
-//
+        HoodRegression.put(30., 0.96);
+        HoodRegression.put(42., 0.96);
+        HoodRegression.put(50., 0.92);
+        HoodRegression.put(56., 0.91);
+        HoodRegression.put(67., 0.88);
+        HoodRegression.put(77., 0.86);
+        HoodRegression.put(88., 0.85);
+        HoodRegression.put(95.5, 0.85);
+        HoodRegression.put(106., 0.83);
+        HoodRegression.put(114., 0.79);
+        HoodRegression.put(121., 0.79);
+        HoodRegression.put(132., 0.79);
+        HoodRegression.put(140., 0.78);
+        HoodRegression.put(149., 0.78);
+        HoodRegression.put(156., 0.77);
+
 //        WheelRegression.put(30., 695. + hardWheelOffset);
 //        WheelRegression.put(42., 720. + hardWheelOffset);
 //        WheelRegression.put(50., 720. + hardWheelOffset);
@@ -117,7 +117,7 @@ public class Shooter extends SubsystemBase {
 //        WheelRegression.put(149., 1270. + hardWheelOffset);
 //        WheelRegression.put(156., 1320. + hardWheelOffset);
 
-        HoodRegression.put(158., 0.85);
+        //HoodRegression.put(158., 0.85);
 
         WheelRegression.put(158.0, 1220 - hardWheelOffset);
 
