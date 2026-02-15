@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -140,7 +141,7 @@ public class Intake extends SubsystemBase {
 //            stop();
 //        }
 
-        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8){
+        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8){
             stop();
         }
 
@@ -159,7 +160,9 @@ public class Intake extends SubsystemBase {
 
 
     public void out() {
-        intakePower = -1;
+        if (gateOpen){
+            intakePower = .5;
+        }else intakePower = -1;
         intakeState = "out";
         greenIntakeLED.setState(false);
         redIntakeLED.setState(true);

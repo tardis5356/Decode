@@ -293,7 +293,7 @@ public class DecodeTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                   new InstantCommand(storage::openGate),
                                     new InstantCommand(intake::out),
-                                    new WaitCommand(400),
+                                    new WaitCommand(100),
                                     new InstantCommand(storage::closeGate),
                                     new InstantCommand(intake::stop)
                             )
