@@ -215,25 +215,31 @@ public class Turret extends SubsystemBase {
         turretVelocityDegreesPerSec = mT.getVelocity() / TURRET_TICKS_PER_DEGREE;
         robotVelocityDegreesPerSec = driver.getHeadingVelocity(UnnormalizedAngleUnit.DEGREES);
 
+//        double robotX = drive.localizer.getPose().position.x;
+//        double robotY = drive.localizer.getPose().position.y;
+//        double robotHeadingRad = drive.localizer.getPose().heading.toDouble();
+//
+//        double turretFieldX = robotX + Math.cos(robotHeadingRad) * TURRET_OFFSET_X - Math.sin(robotHeadingRad) * TURRET_OFFSET_Y;
+//        double turretFieldY = robotY + Math.sin(robotHeadingRad) * TURRET_OFFSET_X + Math.cos(robotHeadingRad) * TURRET_OFFSET_Y;
+//
+//
+//
+//        double targetTagXOffset = 4 /*8*/, targetTagYOffset = 7/*7*/;
+//
+//        Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
+//        double goalX = targetAprilTagPos.position.x + (signum(targetAprilTagPos.position.x) * targetTagXOffset);
+//        double goalY = targetAprilTagPos.position.y + (signum(targetAprilTagPos.position.y) * targetTagYOffset);
+//
+//        // === Compute turret tracking ===
+//        double robotXVelocity = driver.getVelX(DistanceUnit.INCH);
+//        double robotYVelocity =  driver.getVelY(DistanceUnit.INCH);
 
+//        double turretXYAngularVelocity_Rad =
+//                Math.atan2(goalY - turretFieldY, goalX - turretFieldX)
+//                - Math.atan2(goalY - (turretFieldY - robotYVelocity), goalX - (turretFieldY- robotXVelocity)) ;
 
+       // GlobalVariables.distanceFromTarget = Math.hypot(goalY -turretFieldY - robotYVelocity, goalX - turretFieldY - robotXVelocity) + 6 - CAMERA_RADIUS;
 
-        double targetTagXOffset = 4 /*8*/, targetTagYOffset = 7/*7*/;
-
-        Pose2d targetAprilTagPos = vectorFToPose2d(getCurrentGameTagLibrary().lookupTag(desiredTagID).fieldPosition, 0);
-
-        double goalX = targetAprilTagPos.position.x + (signum(targetAprilTagPos.position.x) * targetTagXOffset);
-        double goalY = targetAprilTagPos.position.y + (signum(targetAprilTagPos.position.y) * targetTagYOffset);
-
-        // === Compute turret tracking ===
-        double robotXVelocity = driver.getVelX(DistanceUnit.INCH);
-        double robotYVelocity =  driver.getVelY(DistanceUnit.INCH);
-
-        double turretXYAngularVelocity_Rad =
-                Math.atan2(goalY - drive.localizer.getPose().position.y, goalX - drive.localizer.getPose().position.x)
-                - Math.atan2(goalY - (drive.localizer.getPose().position.y - robotYVelocity), goalX - (drive.localizer.getPose().position.x- robotXVelocity)) ;
-
-       
         turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Rad);
 
 

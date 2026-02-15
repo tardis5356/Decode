@@ -288,14 +288,16 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 
-//            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A))
-//                    .whenActive(
-//                            new SequentialCommandGroup(
-//                                    new InstantCommand(() -> firing = true),
-//                                    new LaunchSequenceCommand(intake, storage, "Launch"),
-//                                    new InstantCommand(() -> firing = false)
-//                            )
-//                    );
+            new Trigger(() -> driver2.getButton(GamepadKeys.Button.Y) || driver1.getButton(GamepadKeys.Button.A))
+                    .whenActive(
+                            new SequentialCommandGroup(
+                                  new InstantCommand(storage::openGate),
+                                    new InstantCommand(intake::out),
+                                    new WaitCommand(400),
+                                    new InstantCommand(storage::closeGate),
+                                    new InstantCommand(intake::stop)
+                            )
+                    );
 
 
 

@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
     private long mLastBroken  = 0;
     private long fLastBroken = 0;
 
-    private ElapsedTime timeIntakeFull = new ElapsedTime();
+   // private ElapsedTime timeIntakeFull = new ElapsedTime();
 
     private static final long CLEAR_TIME_MS = 75; // tweak if needed
 
@@ -78,7 +78,7 @@ public class Intake extends SubsystemBase {
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
 
         currentDirection = Direction.OFF;
-        timeIntakeFull.reset();
+      //  timeIntakeFull.reset();
 
     }
 
@@ -140,7 +140,7 @@ public class Intake extends SubsystemBase {
 //            stop();
 //        }
 
-        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>9){
+        if (!Storage.gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8){
             stop();
         }
 
