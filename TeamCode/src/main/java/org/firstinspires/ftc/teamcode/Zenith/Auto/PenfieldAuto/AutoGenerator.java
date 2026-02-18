@@ -18,10 +18,13 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
+import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeWaitCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +43,7 @@ public class AutoGenerator {
      */
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
         List<Command> seq = new ArrayList<>();
-
+        seq.add(new InstantCommand(()-> storage.gateOpen = true));
 //seq.add(new InstantCommand(storage::closeGate));
         if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos){
 
@@ -68,7 +71,9 @@ public class AutoGenerator {
             if (startToIntakeWaypoint[i] != null) {
                 seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
+                seq.add(new InstantCommand(()-> DecodeTeleOp.firing = true));
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
+                seq.add(new InstantCommand(()-> DecodeTeleOp.firing = false));
                 seq.add(new InstantCommand(intake::stop));
             }
 

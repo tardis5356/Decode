@@ -328,9 +328,9 @@ public class DecodeTeleOp extends CommandOpMode {
                             new InstantCommand(() -> turret.turretLocalized = false)
                     ));
 
-            new Trigger(() -> gamepad1.ps)
+            new Trigger(() -> gamepad1.ps && camera.goalDetected())
                     .whenActive(new SequentialCommandGroup(
-                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(0))))
+                            new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry)))))
                     ));
             new Trigger(()-> driver2.getButton(GamepadKeys.Button.DPAD_RIGHT))
                     .toggleWhenActive(storage::closeGate, storage::openGate);
@@ -432,7 +432,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
         telemetry.addData("Pinpoint Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.addData("Control Hub Heading (deg)", Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw()));
+      //  telemetry.addData("Control Hub Heading (deg)", Math.toDegrees(imu.getRobotYawPitchRollAngles().getYaw()));
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
 

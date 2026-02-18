@@ -111,10 +111,10 @@ public class AutoTrajectories {
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(0, 49, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
-        presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, 90));
-        gateIntakePos = allianceCoordinate(new Pose2d(7,57,120));
+        presetLZIntakePos = allianceCoordinate(new Pose2d(58, 57, Math.toRadians(90)));
+        gateIntakePos = allianceCoordinate(new Pose2d(12,60,Math.toRadians(120)));
 
-        parkPos = allianceCoordinate(new Pose2d(30, -30, 180));
+        parkPos = allianceCoordinate(new Pose2d(30, -30, Math.toRadians(180)));
     }
 
     /**
@@ -185,8 +185,12 @@ if (startPos == goalStartPos) {
     startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
             .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90))
             .build();
-
+if (intakeChoice == 4){
     intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
+            .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
+            .waitSeconds(1)
+            .build();
+}else intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
             .splineToLinearHeading(intakePose, intakeEndRad, BaseConstraint)
             .build();
 

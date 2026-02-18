@@ -19,9 +19,10 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
-                                new InstantCommand(intake::in),
                                 new InstantCommand(storage::openGate),
                                 new WaitCommand(1500),
+                                new InstantCommand(intake::in),
+                                new WaitCommand(2250),
                                 new InstantCommand(storage::closeGate),
                                 new InstantCommand(intake::stop)
                         )

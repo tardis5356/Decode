@@ -186,7 +186,7 @@ public class Turret extends SubsystemBase {
         }
 
 //+ motor power is CCW
-//        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12 / voltageSensor.getVoltage()));
+        mT.setPower((motorPower + signum(motorPower) * TURRET_S) * (12 / voltageSensor.getVoltage()));
 
 
     }
@@ -294,7 +294,7 @@ public class Turret extends SubsystemBase {
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()), ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-//
+telemetry.addData("TurretError", ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
 //        telemetry.addData("TurretPosX", turretFieldX);
 //        telemetry.addData("TurretPosY", turretFieldY);
 //        telemetry.addLine("Turret Ticks");

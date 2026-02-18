@@ -276,6 +276,15 @@ public class Camera extends SubsystemBase {
         return aprilTagProcessor.getDetections();
     }
 
+    public boolean goalDetected() {
+        for (AprilTagDetection d : getCurrentAprilTagDetections()) {
+            if (d.id == 20||d.id == 24) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setObeliskMotif() {
         List<AprilTagDetection> detections = aprilTagProcessor.getDetections();
         if (detections == null || detections.isEmpty()) {

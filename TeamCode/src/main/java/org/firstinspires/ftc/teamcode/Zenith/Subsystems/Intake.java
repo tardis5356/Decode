@@ -141,7 +141,7 @@ public class Intake extends SubsystemBase {
 //            stop();
 //        }
 
-        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8){
+        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5){
             stop();
         }
 

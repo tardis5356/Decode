@@ -99,6 +99,8 @@ public class DecodeAuto extends OpMode {
         startPos = null;
         turret.setTargetPosition(allianceValue(0));
 
+        shooter.hoodOffset = .8;
+
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
     }
@@ -112,7 +114,7 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-12500));
+            turret.setTargetPosition(allianceValue(-12100));
             //sometimes turn before setting configs
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
@@ -266,6 +268,7 @@ public class DecodeAuto extends OpMode {
         if (motif != null) {
             telemetry2.addData("Motif", motif);
         }
+        telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
 
         telemetry2.addLine("");
         telemetry2.addLine("=== EASI Selection ===");
@@ -337,7 +340,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void start() {
-
+shooter.hoodOffset = 0;
         shooter.spinning = true;
         shooter.targeting = true;
 
@@ -391,6 +394,7 @@ public class DecodeAuto extends OpMode {
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
+
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
