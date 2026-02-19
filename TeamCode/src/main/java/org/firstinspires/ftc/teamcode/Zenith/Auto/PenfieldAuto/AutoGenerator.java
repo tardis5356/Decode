@@ -50,14 +50,14 @@ public class AutoGenerator {
           //  seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-200))));
 
             seq.add(new WaitCommand(1000));
-            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+            seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
         }
 
         if (DecodeAuto.startPos == AutoTrajectories.goalStartPos){
         //    seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-700))));//-500 on blue
 
             seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
-            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+            seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
         }
 
 
@@ -85,7 +85,7 @@ public class AutoGenerator {
 
 
 
-                seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+                seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
 
         }
 

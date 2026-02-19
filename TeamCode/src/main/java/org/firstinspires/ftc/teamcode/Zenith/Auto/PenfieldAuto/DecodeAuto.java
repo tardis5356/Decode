@@ -145,14 +145,14 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-                cycleCount = 3;
+                cycleCount = 4;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
                         {0, 0}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 2}, //shoot: gate ready to push, intake: audience
-                        {1, 4}, //shoot: audience, intake: Gate
-                        {1, 3} //shoot: audience, intake: preset pose
+                        {0, 1}, //shoot: audience, intake: mid
+                        {0, 3} //shoot: audience, intake: preset pose
                 };
             } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;

@@ -35,12 +35,31 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 );
             break;
 
+            case "FlyAuto":
+                //launch all as is
+                addCommands(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> DecodeTeleOp.firing = true),
+                                new InstantCommand(storage::openGate),
+                                new InstantCommand(intake::stop),
+                                new WaitCommand(100),
+                                new InstantCommand(intake::in),
+                                new WaitCommand(600),
+                                new InstantCommand(storage::raiseKicker),
+                                new WaitCommand(200),
+                                new InstantCommand(storage::lowerKicker),
+                                new InstantCommand(storage::closeGate),
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(() -> DecodeTeleOp.firing = false)
+                        )
+                );
 
+                break;
 
             case "Launch":
                 addCommands(
                         new SequentialCommandGroup(
-                               launchOne(storage)
+                               launchOne(storage, intake)
                         )
                 );
             break;
@@ -48,15 +67,19 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
         }
 
     }
-    public static Command launchOne(Storage s){
+    public static Command launchOne(Storage s, Intake i){
         return
 
                 new SequentialCommandGroup(
                         new InstantCommand(() -> DecodeTeleOp.firing = true),
                         new InstantCommand(s::openGate),
+                        new InstantCommand(i::stop),
+                        new WaitCommand(200),
+                        new InstantCommand(i::in),
                         new InstantCommand(s::raiseKicker),
                         new WaitCommand(250),
                         new InstantCommand(s::lowerKicker),
+                        new InstantCommand(i::stop),
                         new InstantCommand(s::closeGate),
         new InstantCommand(() -> DecodeTeleOp.firing = false)
                 );
