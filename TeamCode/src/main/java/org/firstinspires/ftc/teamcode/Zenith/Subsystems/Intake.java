@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.distanceFromTarget;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
 
@@ -150,7 +151,10 @@ public class Intake extends SubsystemBase {
 
     public void in() {
         if (firing){
-            intakePower = .65;//interpolate this - closeToGoal=0.7 mid=0.8
+            if (distanceFromTarget < 130) {
+                intakePower = .65;//interpolate this - closeToGoal=0.7 mid=0.8
+            } else intakePower = .6;
+
         }else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);
