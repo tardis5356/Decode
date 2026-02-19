@@ -35,7 +35,7 @@ public class IndexServos extends CommandOpMode {
         bellyPan = new BellyPan(hardwareMap);
         intake = new Intake(hardwareMap);
 
-
+        shooter.hoodOffset = .8;
 
         //shooter.sH.setPosition(0);
 
@@ -48,8 +48,8 @@ public class IndexServos extends CommandOpMode {
         new Trigger(()-> driver.getButton(GamepadKeys.Button.A))
                 .toggleWhenActive(storage::closeGate, storage::openGate);
 
-//        new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
-//                .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
+        new Trigger(()-> driver.getButton(GamepadKeys.Button.B))
+                .toggleWhenActive(storage::lowerKicker, storage::raiseKicker);
 
         new Trigger(()->driver.getButton(GamepadKeys.Button.START))
                 .toggleWhenActive(brakePad::deploy, brakePad::retract);
@@ -69,7 +69,7 @@ public class IndexServos extends CommandOpMode {
         telemetry.addData("BreakPad_State", brakePad.breakPadEngaged);
 
         telemetry.addData("GatePos",storage.sG.getPosition());
-//        telemetry.addData("KickerPos",storage.sK.getPosition());
+        telemetry.addData("KickerPos",storage.sK.getPosition());
 
         telemetry.addData("IntakeBeamBreak", intake.bbF.getState());
         telemetry.addData("MiddleBeamBreak", intake.bbM.getState());

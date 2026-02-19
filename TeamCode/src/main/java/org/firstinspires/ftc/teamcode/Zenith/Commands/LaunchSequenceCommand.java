@@ -19,40 +19,49 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
+                                new InstantCommand(() -> DecodeTeleOp.firing = true),
                                 new InstantCommand(storage::openGate),
-                                new WaitCommand(300),
+                                new InstantCommand(intake::stop),
+                                new WaitCommand(200),
                                 new InstantCommand(intake::in),
-                                new WaitCommand(2250),
+                                new WaitCommand(1300),
+                                new InstantCommand(storage::raiseKicker),
+                                new WaitCommand(300),
+                                new InstantCommand(storage::lowerKicker),
                                 new InstantCommand(storage::closeGate),
-                                new InstantCommand(intake::stop)
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(() -> DecodeTeleOp.firing = false)
                         )
                 );
             break;
 
 
 
-//            case "Launch":
-//                addCommands(
-//                        new SequentialCommandGroup(
-//                               launchOne(storage)
-//                        )
-//                );
-//            break;
+            case "Launch":
+                addCommands(
+                        new SequentialCommandGroup(
+                               launchOne(storage)
+                        )
+                );
+            break;
 
         }
 
     }
-//    public static Command launchOne(Storage s){
-//        return
-//
-//                new SequentialCommandGroup(
-//                        new InstantCommand(s::raiseKicker),
-//                        openGate(s),
-//                        new InstantCommand(s::lowerKicker),
-//                        new InstantCommand(s::closeGate)
-//                );
-//
-//    }
+    public static Command launchOne(Storage s){
+        return
+
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> DecodeTeleOp.firing = true),
+                        new InstantCommand(s::openGate),
+                        new InstantCommand(s::raiseKicker),
+                        new WaitCommand(250),
+                        new InstantCommand(s::lowerKicker),
+                        new InstantCommand(s::closeGate),
+        new InstantCommand(() -> DecodeTeleOp.firing = false)
+                );
+
+    }
 
 
 

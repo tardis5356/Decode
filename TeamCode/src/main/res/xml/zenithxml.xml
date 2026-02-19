@@ -22,7 +22,7 @@
             <Servo name="sP" port="0"/>
             <Servo name="sG" port="1"/>
             <Servo name="sH" port="2"/>
-<!--            <Servo name="sK" port="3"/>-->
+            <Servo name="sK" port="3"/>
 <!--            <Servo name="sG" port="4"/>-->
             <Servo name="sB" port="5"/>
         </ServoHub>

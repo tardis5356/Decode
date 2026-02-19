@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Storage extends SubsystemBase {
     public Servo sG;
 //    public Servo sS;
-//    public Servo sK;
+    public Servo sK;
 //    public Servo sBG;
 
     public boolean gateManualMode;
@@ -24,7 +24,7 @@ public class Storage extends SubsystemBase {
     public Storage(HardwareMap hardwareMap){
         sG = hardwareMap.get(Servo.class,"sG");
 //        sS = hardwareMap.get(Servo.class,"sS");
-//        sK = hardwareMap.get(Servo.class,"sK");
+        sK = hardwareMap.get(Servo.class,"sK");
 //        sBG = hardwareMap.get(Servo.class, "sBG");
   closeGate();
 //raiseKicker();
@@ -70,15 +70,15 @@ public class Storage extends SubsystemBase {
 ////        backOpen = false;
 ////    }
 //
-//    public void raiseKicker(){
-//        sK.setPosition(BotPositions.KICKER_UP);
-//        kickerDown = false;
-//    }
-//
-//    public void lowerKicker(){
-//        sK.setPosition(BotPositions.KICKER_DOWN);
-//        kickerDown = true;
-//    }
+    public void raiseKicker(){
+        sK.setPosition(BotPositions.KICKER_UP);
+        kickerDown = false;
+    }
+
+    public void lowerKicker(){
+        sK.setPosition(BotPositions.KICKER_DOWN);
+        kickerDown = true;
+    }
 
 //    public void storeSlot(){
 //        sS.setPosition(BotPositions.SLOT_STORED);

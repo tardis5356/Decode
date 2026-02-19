@@ -266,11 +266,11 @@ public class DecodeTeleOp extends CommandOpMode {
                 new Trigger(() -> driver2.getButton(GamepadKeys.Button.B) || driver1.getButton(GamepadKeys.Button.B))
                         .whenActive(
                                 new SequentialCommandGroup(
-                                        new InstantCommand(() -> firing = true),
+
                                         new LaunchSequenceCommand(intake, storage, "Fly"),
                                         new InstantCommand(() -> driver2.gamepad.rumble(100)),
-                                        new InstantCommand(() -> driver1.gamepad.rumble(100)),
-                                        new InstantCommand(() -> firing = false)
+                                        new InstantCommand(() -> driver1.gamepad.rumble(100))
+
 
 
                                 )
