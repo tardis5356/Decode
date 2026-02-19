@@ -150,7 +150,7 @@ public class Intake extends SubsystemBase {
 
     public void in() {
         if (firing){
-            intakePower = .8;
+            intakePower = .65;//interpolate this - closeToGoal=0.7 mid=0.8
         }else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);

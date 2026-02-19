@@ -20,7 +20,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 addCommands(
                         new SequentialCommandGroup(
                                 new InstantCommand(storage::openGate),
-                                new WaitCommand(1500),
+                                new WaitCommand(300),
                                 new InstantCommand(intake::in),
                                 new WaitCommand(2250),
                                 new InstantCommand(storage::closeGate),
