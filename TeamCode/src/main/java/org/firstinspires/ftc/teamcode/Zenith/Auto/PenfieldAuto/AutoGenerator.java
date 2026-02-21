@@ -14,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.a
 
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.InstantCommand;
+import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.Subsystem;
 import com.arcrobotics.ftclib.command.WaitCommand;
@@ -43,18 +44,18 @@ public class AutoGenerator {
      */
     public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
         List<Command> seq = new ArrayList<>();
-        seq.add(new InstantCommand(()-> storage.gateOpen = true));
+        seq.add(new InstantCommand(() -> storage.gateOpen = true));
 //seq.add(new InstantCommand(storage::closeGate));
-        if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos){
+        if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos) {
 
-          //  seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-200))));
+            //  seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-200))));
 
             seq.add(new WaitCommand(1000));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
         }
 
-        if (DecodeAuto.startPos == AutoTrajectories.goalStartPos){
-        //    seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-700))));//-500 on blue
+        if (DecodeAuto.startPos == AutoTrajectories.goalStartPos) {
+            //    seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-700))));//-500 on blue
 
             seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
@@ -70,22 +71,21 @@ public class AutoGenerator {
 
             if (startToIntakeWaypoint[i] != null) {
                 seq.add(new InstantCommand(intake::in));
+                seq.add(new InstantCommand(() -> intake.autoStop = false));
                 seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
-                seq.add(new InstantCommand(()-> DecodeTeleOp.firing = true));
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
-                seq.add(new InstantCommand(()-> DecodeTeleOp.firing = false));
-                seq.add(new InstantCommand(intake::stop));
+
             }
 
 
             if (intakeToShoot[i] != null) {
                 seq.add(new ActionCommand(intakeToShoot[i], requirements));
-
+                seq.add(new InstantCommand(intake::stop));
+                seq.add(new InstantCommand(() -> intake.autoStop = true));
             }
 
 
-
-                seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
+            seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
 
         }
 

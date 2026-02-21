@@ -45,7 +45,7 @@ public class Intake extends SubsystemBase {
 
     public static String intakeState = new String();
 
-    public boolean currentArtifactsEstablished;
+    public boolean autoStop;
 
     public double intakePower = 0;
 
@@ -80,6 +80,7 @@ public class Intake extends SubsystemBase {
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
 
         currentDirection = Direction.OFF;
+        autoStop = true;
       //  timeIntakeFull.reset();
 
     }
@@ -142,7 +143,7 @@ public class Intake extends SubsystemBase {
 //            stop();
 //        }
 
-        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5){
+        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5 && autoStop){
             stop();
         }
 

@@ -27,7 +27,7 @@ public class Storage extends SubsystemBase {
         sK = hardwareMap.get(Servo.class,"sK");
 //        sBG = hardwareMap.get(Servo.class, "sBG");
   closeGate();
-//raiseKicker();
+lowerKicker();
 
     }
 
