@@ -98,16 +98,16 @@ public class Intake extends SubsystemBase {
                 .count();
 
         switch ((int) emptySlots){
-            case 3:
-                liT.setPosition(0);
-                break;
+//            case 3:
+//                liT.setPosition(0);
+//                break;
 
             case 2:
-                liT.setPosition(0.333);
+                liT.setPosition(0.277);
                 break;
 
             case 1:
-                liT.setPosition(0.388);
+                liT.setPosition(0.333);
                 break;
 
             case 0:
@@ -115,7 +115,7 @@ public class Intake extends SubsystemBase {
                 break;
 
             default:
-                liT.setPosition(0.277);
+                liT.setPosition(0);
                 break;
         }
 

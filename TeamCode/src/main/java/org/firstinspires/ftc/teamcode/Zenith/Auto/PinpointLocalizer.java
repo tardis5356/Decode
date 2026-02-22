@@ -50,7 +50,7 @@ public final class PinpointLocalizer implements Localizer {
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 
         driver.resetPosAndIMU();
-
+        // TODO: delay for .5 seconds
         txWorldPinpoint = initialPose;
     }
 
