@@ -52,12 +52,12 @@ public class Turret extends SubsystemBase {
     public static double startingvoltage;
     public static TouchSensor lT, lT2;
 
-    public boolean turretLocalized = true;
-    public int cwORccw = 1;
+
+
     public int desiredTagID;
 
     private PIDController pidController;
-    //    private PIDController pidfController;
+
     InterpolatingDoubleTreeMap CCWTurretAnglekS = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap CWTurretAnglekS = new InterpolatingDoubleTreeMap();
     private SimpleMotorFeedforward feedforwardController;
@@ -73,16 +73,13 @@ public class Turret extends SubsystemBase {
     private ElapsedTime timeSinceWrapped = new ElapsedTime();
     private ElapsedTime timeFromLastTurretError = new ElapsedTime();
     private double motorPower;
-    private double pidPower;
-    private double powerAdded = 0;
     private boolean PIDDisabled = false;
 
-    private MecanumDrive drive;
+
     public Servo liT;
     public GoBildaPinpointDriver driver;
 
-    // === TURRET CONSTANTS ===
-    private double lastTurretAngle = 0.0; // radians
+
 
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
@@ -155,24 +152,9 @@ public class Turret extends SubsystemBase {
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
         if (!PIDDisabled) {
-            if (turretLocalized) {
 
-                if (turretError > TURRET_TOLERANCE_DEG) {
-                  //  if (Math.abs(turretToFieldAngularVelocity_Deg) < 1)
-                    motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-                    //   + feedforwardController.calculate(turretToFieldAngularVelocity_Deg);
-                } else {
-                    motorPower = 0;
-                }
-
-            } else {
                 motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-                //TODO: actually debug this before next comp
-//            motorPower = -.5 * cwORccw;
-//            if(lT2.isPressed()){
-//                cwORccw = -2;
-//            }
-            }
+
         } else motorPower = pidController.calculate(getCurrentPosition(), 0);
 
 //set the kS according to the turret theta

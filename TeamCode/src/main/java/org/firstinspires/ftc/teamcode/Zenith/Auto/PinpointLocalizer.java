@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;

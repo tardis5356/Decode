@@ -29,7 +29,6 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
-import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
@@ -50,7 +49,7 @@ public class DecodeAuto extends OpMode {
     public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static Pose2d savedPos;
     public static Pose2d startPos;
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime autoRuntime = new ElapsedTime();
     private MecanumDrive drive;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
@@ -72,6 +71,11 @@ public class DecodeAuto extends OpMode {
     private String aColor = null;
     private Command auto;
 
+    private final ElapsedTime driveInitDelay = new ElapsedTime();
+
+    private boolean driveInit;
+
+
     @Override
     public void init() {
         GlobalVariables.inAuto = true;
@@ -83,14 +87,14 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-       // camera = new Camera(hardwareMap);
+        // camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
 
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
-      //  CommandScheduler.getInstance().registerSubsystem(turret); //TODO: comment out
+
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -154,6 +158,8 @@ public class DecodeAuto extends OpMode {
                         {0, 1}, //shoot: audience, intake: mid
                         {0, 3} //shoot: audience, intake: preset pose
                 };
+                driveInit = false;
+                driveInitDelay.reset();
             } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;
 
@@ -169,11 +175,16 @@ public class DecodeAuto extends OpMode {
                         {1, 1}, //shoot: audience, intake: Gate
                         {1, 3} //shoot: audience, intake: Gate
                 };
-
+                driveInit = false;
+                driveInitDelay.reset();
             }
 
         }
 
+        if (!driveInit && driveInitDelay.seconds() > 1){
+            drive = new MecanumDrive(hardwareMap, startPos);
+            driveInit = true;
+        }
         // --- Handle user input for cycles ---
         handleInput();
 
@@ -187,7 +198,7 @@ public class DecodeAuto extends OpMode {
         printEASITelemetry();
 
         //EASI - Easy Autonomous Selectable Interface
-         //
+        //
 
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -340,7 +351,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void start() {
-shooter.hoodOffset = 0;
+        shooter.hoodOffset = 0;
         shooter.spinning = true;
         shooter.targeting = true;
 
@@ -349,7 +360,7 @@ shooter.hoodOffset = 0;
 //        CommandScheduler.getInstance().cancelAll();
 //        CommandScheduler.getInstance().reset();
 
-        runtime.reset();
+        autoRuntime.reset();
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
@@ -377,7 +388,7 @@ shooter.hoodOffset = 0;
 //        }
 
         CommandScheduler.getInstance().run();
-        if (runtime.seconds() > 29.5 && auto != null) {
+        if (autoRuntime.seconds() > 29.5 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
 
             drive.leftBack.setPower(0);
@@ -400,7 +411,7 @@ shooter.hoodOffset = 0;
         telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry2.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
         telemetry2.addData("distanceFromGoal", GlobalVariables.distanceFromTarget);
-        telemetry2.addData("Target Turret (DEG)",Math.toDegrees(turret.getTargetPosition()* TURRET_RADIANS_PER_TICK));
+        telemetry2.addData("Target Turret (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.update();
     }

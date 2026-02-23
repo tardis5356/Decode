@@ -98,9 +98,6 @@ public class Intake extends SubsystemBase {
                 .count();
 
         switch ((int) emptySlots){
-//            case 3:
-//                liT.setPosition(0);
-//                break;
 
             case 2:
                 liT.setPosition(0.277);
@@ -119,33 +116,14 @@ public class Intake extends SubsystemBase {
                 break;
         }
 
-//        if(Objects.equals(currentArtifacts, "____")){
-//            liT.setPosition(0);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P___")){
-//            liT.setPosition(.227);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P_P_")){
-//            liT.setPosition(.388);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P_PP")){
-//            liT.setPosition(.5);
-//        }
-//        else{
-//            liT.setPosition(.72);
-//        }
-
-//        if (emptySlots != 0){
-//            timeIntakeFull.reset();
-//        }
 //
 //        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
 //            stop();
 //        }
 
-        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5 && autoStop){
-            stop();
-        }
+//        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5 && autoStop){
+//            stop();
+//        }
 
 
     }

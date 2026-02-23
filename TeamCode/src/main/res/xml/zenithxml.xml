@@ -35,7 +35,7 @@
             <Servo name="sBG" port="1"/>
             <Servo name="liH" port="2"/>
             <LynxEmbeddedIMU name="imu" port="0" bus="0"/>
-            <goBILDAPinpoint name="pinpoint" port="0" bus="2"/>
+            <goBILDAPinpoint name="pinpoint" port="0" bus="3"/>
             <DigitalDevice name="fG" port="2"/>
             <DigitalDevice name="fR" port="3"/>
             <DigitalDevice name="iG" port="6"/>

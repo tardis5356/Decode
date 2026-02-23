@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajec
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.goalStartToGoalShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeToShoot;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeWaypointToIntake;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntakeWaypoint;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
@@ -71,17 +72,20 @@ public class AutoGenerator {
 
             if (startToIntakeWaypoint[i] != null) {
                 seq.add(new InstantCommand(intake::in));
-                seq.add(new InstantCommand(() -> intake.autoStop = false));
+
                 seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
+                seq.add(new InstantCommand(intake::stop));
 
+            } else {
+                seq.add(new InstantCommand(intake::in));
+                seq.add(new ActionCommand(startToIntake[i], requirements));
+                seq.add(new InstantCommand(intake::stop));
             }
 
 
             if (intakeToShoot[i] != null) {
                 seq.add(new ActionCommand(intakeToShoot[i], requirements));
-                seq.add(new InstantCommand(intake::stop));
-                seq.add(new InstantCommand(() -> intake.autoStop = true));
             }
 
 

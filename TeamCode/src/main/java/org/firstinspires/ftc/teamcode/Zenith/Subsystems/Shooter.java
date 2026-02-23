@@ -164,7 +164,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public double calculatePIDFlyWheelPower(double tps) {
-        return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
+
+        double flywheelError = Math.abs(getFlyWheelSpeed() - tps);
+        if (flywheelError < 60) {
+            return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
+        } else{
+            return calculateBangBangFlyWheelPower(tps);
+        }
     }
 
     public double calculateBangBangFlyWheelPower(double tps) {
@@ -191,10 +197,5 @@ public class Shooter extends SubsystemBase {
         return (Math.sin(2 * Math.PI * time.time(TimeUnit.SECONDS) - 0.5 * Math.PI) + 1) / 5;
     }
 
-    public void setMidRangeAutoShooterPos() {
-        targeting = false;
-        sH.setPosition(BotPositions.MID_RANGE_AUTO_HOOD_POS);
-        setVel(BotPositions.MID_RANGE_AUTO_FLYWHEEL_TPS);
-    }
 
 }
