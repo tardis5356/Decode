@@ -130,9 +130,11 @@ public class Intake extends SubsystemBase {
 
     public void in() {
         if (firing){
-            if (distanceFromTarget < 130) {
-                intakePower = .65;//interpolate this - closeToGoal=0.7 mid=0.8
-            } else intakePower = .6;
+
+            intakePower = 8;
+//            if (distanceFromTarget < 130) {
+//                intakePower = .65;//interpolate this - closeToGoal=0.7 mid=0.8
+//            } else intakePower = .6;
 
         }else intakePower = 1;
         intakeState = "in";

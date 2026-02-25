@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.TankDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.TwoDeadWheelLocalizer;
-@Disabled
+
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;
 

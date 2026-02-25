@@ -62,8 +62,8 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
-    //Boo! Victor Jumpscare!!!
-    //😲
+
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -75,21 +75,21 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.00197; // This is the only thing that matter for position measurements coming from the odometer wheels
-        public double lateralInPerTick = 0.0013478867985877118; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
+        public double lateralInPerTick = 0.0012494986739862012; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
         public double trackWidthTicks = 7241.872308147249;
 
         // feedforward parameters (in tick units)
-        public double kS =   1.3096027602983749;
-        public double kV = 0.000315;
-        public double kA = 0.000065;
+        public double kS =   1.2484880321664713;
+        public double kV = 0.000320773308978478;
+        public double kA = 0.000065;//0.000065;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50; //50
-        public double minProfileAccel = -30; //-120
-        public double maxProfileAccel = 50; //100
+        public double maxWheelVel = 70; //50
+        public double minProfileAccel = -65; //-120
+        public double maxProfileAccel = 75; //100
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
+        public double maxAngVel = 4;//Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
@@ -316,7 +316,7 @@ public final class MecanumDrive {
             double headingToleranceDeg = 1;//1
             double positionToleranceIn = 0.5;//0.3
             double timeoutSec = 0; //0.1 in specimen, 0.5 in basket
-            if ((t >= timeTrajectory.duration &&
+            if ((t >= timeTrajectory.duration - 0.3 &&
                     Math.abs(Math.toDegrees(error.heading.toDouble())) < headingToleranceDeg &&
                     Math.abs(error.position.norm()) < positionToleranceIn)
                     || (t>= timeTrajectory.duration + timeoutSec)) {

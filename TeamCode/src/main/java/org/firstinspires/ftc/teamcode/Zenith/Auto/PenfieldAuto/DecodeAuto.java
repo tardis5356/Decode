@@ -365,7 +365,7 @@ public class DecodeAuto extends OpMode {
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage, turret);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage, turret, shooter);
         CommandScheduler.getInstance().schedule(
                 auto
         );
@@ -388,7 +388,7 @@ public class DecodeAuto extends OpMode {
 //        }
 
         CommandScheduler.getInstance().run();
-        if (autoRuntime.seconds() > 29.5 && auto != null) {
+        if (autoRuntime.seconds() > 29.8 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
 
             drive.leftBack.setPower(0);

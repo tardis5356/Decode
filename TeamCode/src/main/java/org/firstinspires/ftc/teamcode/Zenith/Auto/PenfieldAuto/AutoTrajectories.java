@@ -44,7 +44,7 @@ public class AutoTrajectories {
 
 
     // Intake tangents: [goal, mid, audience, LZ preset, LZ Gate]
-    public static double[] intakeEndTangentDeg = {90, 90, 90 /*120*/, 90 /*check*/, 90 /*45*/};
+    public static double[] intakeEndTangentDeg = {90, 90, 90 /*120*/, 90 /*check*/,90 /*45*/};
 
     // Shoot tangents: [goal, audience]
     public static double[] shootStartTangentDeg = {270, 270}; // start tangent when approaching shoot
@@ -102,17 +102,17 @@ public class AutoTrajectories {
     // Populate key poses (call when alliance color chosen)
     public static void updateAlliancePoses() {
         audienceStartPos = allianceCoordinate(new Pose2d(62.75, 24, Math.toRadians(90)));
-        goalStartPos = allianceCoordinate(new Pose2d(-47.5, 51.5, Math.toRadians(37.4)));
+        goalStartPos = allianceCoordinate(new Pose2d(-49, 51.5, Math.toRadians(37.4)));
         goalIntakePos = allianceCoordinate(new Pose2d(-12, 52, Math.toRadians(90)));
-        midIntakePos = allianceCoordinate(new Pose2d(13.5, 55, Math.toRadians(90)));
-        audienceIntakePos = allianceCoordinate(new Pose2d(37, 55, Math.toRadians(90)));
+        midIntakePos = allianceCoordinate(new Pose2d(15, 59, Math.toRadians(90)));
+        audienceIntakePos = allianceCoordinate(new Pose2d(37, 59, Math.toRadians(90)));
         goalShootPos = allianceCoordinate(new Pose2d(0, 12, Math.toRadians(90)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 10, Math.toRadians(90)));
-        gateReleasePos = allianceCoordinate(new Pose2d(10, 57, Math.toRadians(0)));
+        gateReleasePos = allianceCoordinate(new Pose2d(6, 57, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(62, 65, Math.toRadians(90)));
-        gateIntakePos = allianceCoordinate(new Pose2d(13, 60, Math.toRadians(120)));
+        gateIntakePos = allianceCoordinate(new Pose2d(13, 60, Math.toRadians(107.5)));
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, Math.toRadians(180)));
     }
@@ -144,7 +144,7 @@ public class AutoTrajectories {
             } else if (intakeChoice == 3) {
                 shootEndTangentDeg = new double[]{270, 270};
             } else {
-                shootEndTangentDeg = new double[]{180, 0};
+                shootEndTangentDeg = new double[]{180, 270};
             }
 
             Pose2d intakePose = intakePositions[intakeChoice];
@@ -183,7 +183,7 @@ public class AutoTrajectories {
 
             if (intakeChoice != 3 && intakeChoice != 4) {
                 startToIntakeWaypoint[i] = drive.actionBuilder(currentStart)
-                        .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90))
+                        .strafeToLinearHeading(new Vector2d(intakePose.position.x, allianceValue(29)), allianceTangent(90))
                         .build();
 
                     intakeWaypointToIntake[i] = drive.actionBuilder(new Pose2d(new Vector2d(intakePose.position.x, allianceValue(30.5)), allianceTangent(90)))
@@ -191,9 +191,11 @@ public class AutoTrajectories {
                             .build();
             } else {
             if (intakeChoice == 4) {
+                currentStart = goalShootPos;
                 startToIntake[i] = drive.actionBuilder(currentStart)
+                        .setTangent(allianceTangent(45))
                         .splineToLinearHeading(intakePose, intakeEndRad)
-                        .waitSeconds(.65)
+                        .waitSeconds(0.85)
                         .build();
             }else {
                 startToIntake[i] = drive.actionBuilder(currentStart)

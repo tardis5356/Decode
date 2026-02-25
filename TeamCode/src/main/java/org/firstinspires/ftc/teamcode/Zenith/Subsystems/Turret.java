@@ -152,8 +152,10 @@ public class Turret extends SubsystemBase {
         pidController.setPID(BotPositions.TURRET_P, BotPositions.TURRET_I, BotPositions.TURRET_D);
         //pidController.setIntegrationBounds();
         if (!PIDDisabled) {
+if (Math.abs(getCurrentPosition() - getTargetPosition()) > TURRET_TOLERANCE_DEG){
+    motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
 
-                motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+}
 
         } else motorPower = pidController.calculate(getCurrentPosition(), 0);
 

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -43,6 +44,16 @@ public class Shooter extends SubsystemBase {
 
     public boolean bangBangActive;
 
+    public boolean shooterLock;
+
+    public enum ShooterPreset{
+        CLOSE,
+        MID,
+        FAR
+    }
+
+    ShooterPreset shooterPreset;
+
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
     InterpolatingDoubleTreeMap HoodRegression = new InterpolatingDoubleTreeMap();
@@ -85,7 +96,7 @@ public class Shooter extends SubsystemBase {
 
 
 //Old shooter interpolator
-        HoodRegression.put(36., 0.93);
+//        HoodRegression.put(36., 0.93);
         HoodRegression.put(53., 0.89);
         HoodRegression.put(65., 0.82);
         HoodRegression.put(80.3, 0.8);
@@ -98,7 +109,7 @@ public class Shooter extends SubsystemBase {
         HoodRegression.put(145., 0.74);
         HoodRegression.put(153., 0.74);
 
-        WheelRegression.put(36., 620. + hardWheelOffset);
+//        WheelRegression.put(36., 620. + hardWheelOffset);
         WheelRegression.put(53., 670. + hardWheelOffset);
         WheelRegression.put(65., 845. + hardWheelOffset);
         WheelRegression.put(80.3, 970. + hardWheelOffset);
@@ -111,9 +122,9 @@ public class Shooter extends SubsystemBase {
         WheelRegression.put(145., 1595. + hardWheelOffset);
         WheelRegression.put(153., 1620. + hardWheelOffset);
 
-        HoodRegression.put(158., 0.73);
+//        HoodRegression.put(158., 0.73);
 
-        WheelRegression.put(158.0, 1320 - hardWheelOffset);
+//        WheelRegression.put(158.0, 1320 - hardWheelOffset);
 
 
         targeting = true;
@@ -130,12 +141,26 @@ public class Shooter extends SubsystemBase {
 
         if (targeting) {
             sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
+        } else if (shooterLock) {
+            switch (shooterPreset) {
+                case CLOSE:
+                    sH.setPosition(.89 + hoodOffset);
+                    break;
+
+                case MID:
+                    sH.setPosition(.77 + hoodOffset);
+                    break;
+
+                case FAR:
+                    sH.setPosition(.74 + hoodOffset);
+                    break;
+            }
         } else {
             sH.setPosition(hoodOffset);
         }
 
         if (spinning) {
-            if(bangBangActive){
+            if(bangBangActive || !inAuto){
                 mSL.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
                 mSR.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             }else{
@@ -143,6 +168,23 @@ public class Shooter extends SubsystemBase {
                 mSR.setPower(calculatePIDFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             }
 
+        } else if (shooterLock) {
+            switch (shooterPreset){
+                case CLOSE:
+                    mSL.setPower(calculateBangBangFlyWheelPower(670.+ speedOffset));
+                    mSR.setPower(calculateBangBangFlyWheelPower(670.+ speedOffset));
+                    break;
+
+                case MID:
+                    mSL.setPower(calculateBangBangFlyWheelPower(1095.+ speedOffset));
+                    mSR.setPower(calculateBangBangFlyWheelPower(1095.+ speedOffset));
+                    break;
+
+                case FAR:
+                    mSL.setPower(calculateBangBangFlyWheelPower(1460.+ speedOffset));
+                    mSR.setPower(calculateBangBangFlyWheelPower(1460.+ speedOffset));
+                    break;
+            }
         } else {
             mSL.setPower(0);
             mSR.setPower(0);
@@ -166,7 +208,7 @@ public class Shooter extends SubsystemBase {
     public double calculatePIDFlyWheelPower(double tps) {
 
         double flywheelError = Math.abs(getFlyWheelSpeed() - tps);
-        if (flywheelError < 60) {
+        if (flywheelError < 30) {
             return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
         } else{
             return calculateBangBangFlyWheelPower(tps);

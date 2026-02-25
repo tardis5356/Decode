@@ -43,23 +43,24 @@ public class AutoGenerator {
      * - runs intakeToShootActions[i]
      * after all cycles: runs gateAction
      */
-    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret) {
+    public static SequentialCommandGroup buildAuto(Set<Subsystem> requirements, int cycleCount, Intake intake, Storage storage, Turret turret, Shooter shooter) {
         List<Command> seq = new ArrayList<>();
         seq.add(new InstantCommand(() -> storage.gateOpen = true));
 //seq.add(new InstantCommand(storage::closeGate));
         if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos) {
 
-            //  seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-200))));
 
             seq.add(new WaitCommand(1000));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
         }
 
         if (DecodeAuto.startPos == AutoTrajectories.goalStartPos) {
-            //    seq.add(new InstantCommand(()-> turret.manualOffset = (int) Math.round(allianceValue(-700))));//-500 on blue
 
             seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
+            seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-200))));//-500 on blue
+            // seq.add(new InstantCommand(()-> shooter.hoodOffset += 0.01));
+
         }
 
 
@@ -75,17 +76,24 @@ public class AutoGenerator {
 
                 seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
-                seq.add(new InstantCommand(intake::stop));
+//                seq.add(new InstantCommand(intake::stop));
 
             } else {
                 seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToIntake[i], requirements));
-                seq.add(new InstantCommand(intake::stop));
             }
 
 
             if (intakeToShoot[i] != null) {
-                seq.add(new ActionCommand(intakeToShoot[i], requirements));
+                seq.add(
+                        new ParallelCommandGroup(
+                                new ActionCommand(intakeToShoot[i], requirements),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new InstantCommand(intake::stop)
+                                )
+                        )
+                );
             }
 
 
