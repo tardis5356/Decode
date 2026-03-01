@@ -27,9 +27,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.wifi.DriverStationAccessPointAssistant;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
@@ -104,6 +106,8 @@ public class DecodeTeleOp extends CommandOpMode {
     //Roadrunner
 
     private MecanumDrive drive;
+
+    public PinpointLocalizer pinpointLocalizer;
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
 
@@ -208,13 +212,37 @@ public class DecodeTeleOp extends CommandOpMode {
         new Trigger(() -> driver2.getRightY() < -.1)
                 .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
 
-//        new Trigger(() -> driver2.getLeftY() > .1)
-//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset -= 25));
-//
-//        new Trigger(() -> driver2.getLeftY() < -.1)
-//                .whileActiveOnce(new InstantCommand(() -> shooter.speedOffset += 25));
+        new Trigger(() -> driver2.getLeftY() > .1)
+                .whileActiveOnce(new SequentialCommandGroup(
+                        new InstantCommand(()->shooter.shooterLock = true),
+                        new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.CLOSE)
+                        )
+                );
+
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
+                .whileActiveOnce(new SequentialCommandGroup(
+                                new InstantCommand(()->shooter.shooterLock = true),
+                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+                        )
+                );
+
+        new Trigger(() -> driver2.getLeftY() < -.1)
+                .whileActiveOnce(
+                        new SequentialCommandGroup(
+                                new InstantCommand(()->shooter.shooterLock = true),
+                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.FAR)
+                        )
+                );
 
 
+
+        new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
+                .whileActiveOnce(
+                        new SequentialCommandGroup(
+                                new InstantCommand(()->shooter.shooterLock = false),
+                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+                        )
+                );
 
 
         //Intake
@@ -262,8 +290,8 @@ public class DecodeTeleOp extends CommandOpMode {
                                 new SequentialCommandGroup(
 
                                         new LaunchSequenceCommand(intake, storage, "Fly"),
-                                        new InstantCommand(() -> driver2.gamepad.rumble(100)),
-                                        new InstantCommand(() -> driver1.gamepad.rumble(100))
+                                        new InstantCommand(() -> driver2.gamepad.rumble(500)),
+                                        new InstantCommand(() -> driver1.gamepad.rumble(500))
 
 
                                 )
@@ -296,7 +324,6 @@ public class DecodeTeleOp extends CommandOpMode {
                                     new InstantCommand(() -> shooter.hoodOffset = 0.0),
                                     new InstantCommand(() -> turret.manualOffset = 0),
                                     new InstantCommand(() -> shooter.targeting = true)
-
                             )
                     );
 
@@ -420,7 +447,13 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("Control Hub Heading (deg)", imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
+        telemetry.addLine();
 
+        if (pinpointLocalizer.getDriver().getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+            telemetry.log().add("PinpointState", pinpointLocalizer.getDriver().getDeviceStatus());
+        }
+
+        telemetry.addData("PinpointState", pinpointLocalizer.getDriver().getDeviceStatus());
         telemetry.addLine();
         telemetry.addData("hoodPos", shooter.sH.getPosition());
         telemetry.addData("IntakeMotorAmps", intake.mI.getCurrent(CurrentUnit.AMPS));
