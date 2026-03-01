@@ -7,6 +7,8 @@ import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -159,6 +161,7 @@ public class DecodeTeleOp extends CommandOpMode {
             telemetry.addLine("NOT READY");
             telemetry.update();
             sleep(500);
+            driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
             drive = new MecanumDrive(hardwareMap, savedPos);
 
@@ -449,11 +452,10 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("Y", pose.position.y);
         telemetry.addLine();
 
-        if (pinpointLocalizer.getDriver().getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
-            telemetry.log().add("PinpointState", pinpointLocalizer.getDriver().getDeviceStatus());
+        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
-
-        telemetry.addData("PinpointState", pinpointLocalizer.getDriver().getDeviceStatus());
+        telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
         telemetry.addData("hoodPos", shooter.sH.getPosition());
         telemetry.addData("IntakeMotorAmps", intake.mI.getCurrent(CurrentUnit.AMPS));

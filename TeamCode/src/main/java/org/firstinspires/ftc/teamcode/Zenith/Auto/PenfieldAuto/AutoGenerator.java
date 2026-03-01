@@ -51,7 +51,7 @@ public class AutoGenerator {
 
 
             seq.add(new WaitCommand(1000));
-            seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
+            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
         }
 
         if (DecodeAuto.startPos == AutoTrajectories.goalStartPos) {

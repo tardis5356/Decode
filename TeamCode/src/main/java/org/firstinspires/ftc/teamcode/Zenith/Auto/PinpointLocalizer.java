@@ -56,9 +56,7 @@ public final class PinpointLocalizer implements Localizer {
         txWorldPinpoint = initialPose;
     }
 
-    public GoBildaPinpointDriver getDriver() {
-        return driver;
-    }
+
 
 
     @Override

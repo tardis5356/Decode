@@ -7,6 +7,9 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.motif;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
+
+import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -16,6 +19,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -70,7 +74,7 @@ public class DecodeAuto extends OpMode {
     private Shooter shooter;
     private String aColor = null;
     private Command auto;
-
+    public GoBildaPinpointDriver driver;
     private final ElapsedTime driveInitDelay = new ElapsedTime();
 
     private boolean driveInit;
@@ -91,7 +95,7 @@ public class DecodeAuto extends OpMode {
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
-
+        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
 
@@ -394,7 +398,11 @@ public class DecodeAuto extends OpMode {
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
-
+        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+            Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
+        }
+        telemetry.addData("PinpointState", driver.getDeviceStatus());
+        telemetry2.addData("firing", firing);
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
