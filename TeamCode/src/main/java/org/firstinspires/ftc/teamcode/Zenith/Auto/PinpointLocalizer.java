@@ -57,6 +57,9 @@ public final class PinpointLocalizer implements Localizer {
     }
 
 
+//    public GoBildaPinpointDriver getDriver() {
+//      return driver;
+//    }
 
 
     @Override

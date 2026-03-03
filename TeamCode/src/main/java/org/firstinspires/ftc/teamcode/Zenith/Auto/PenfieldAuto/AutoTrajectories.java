@@ -112,7 +112,7 @@ public class AutoTrajectories {
         gateReleasePos = allianceCoordinate(new Pose2d(6, 57, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(62, 65, Math.toRadians(90)));
-        gateIntakePos = allianceCoordinate(new Pose2d(13, 60, Math.toRadians(107.5)));
+        gateIntakePos = allianceCoordinate(new Pose2d(13., 60, Math.toRadians(107.5)));
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, Math.toRadians(180)));
     }

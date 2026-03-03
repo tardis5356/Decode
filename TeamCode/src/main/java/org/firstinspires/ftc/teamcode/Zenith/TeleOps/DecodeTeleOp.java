@@ -372,7 +372,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //            storage.openGate();
 //            sleep(200);
 //            intake.in();
-//        } else if (gamepad1.bWasReleased() || gamepad1.bWasReleased()) {
+//        } else if (gamepad1.bWasReleased() || gamepad2.bWasReleased()) {
 //            storage.closeGate();
 //            intake.stop();
 //            firing = false;
@@ -444,14 +444,14 @@ public class DecodeTeleOp extends CommandOpMode {
         mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
 
         Pose2d pose = drive.localizer.getPose();
-
-
+        telemetry.addData("turretOffset",turret.manualOffset);
+        telemetry.addData("hoodOffset", shooter.hoodOffset);
+        telemetry.addData("WheelOffset", shooter.speedOffset);
+        telemetry.addLine();
         telemetry.addData("Pinpoint Heading (deg)", Math.toDegrees(pose.heading.toDouble()));
-        telemetry.addData("Control Hub Heading (deg)", imu.getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
         telemetry.addLine();
-
         if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
              Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
@@ -463,20 +463,12 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
         telemetry.addData("Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("firing", firing);
-//        telemetry.addData("cwORccw relocRotation", turret.cwORccw);
+
         telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
-//        telemetry.addData("motorPower", shooter.mST.getPower());
-//        telemetry.addLine();
-//        telemetry.addData("turretOffset",turret.manualOffset);
-//        telemetry.addData("WheelOffset", shooter.speedOffset);
-//        telemetry.addLine();
-//        telemetry.addData("aColor", aColor);
 
 
-        //telemetry.addData("pinpointYawScalar", driver.getYawScalar());
 
 
-        // telemetry.addData("position",drive.localizer.getPose());
 
 
         telemetry.update();
