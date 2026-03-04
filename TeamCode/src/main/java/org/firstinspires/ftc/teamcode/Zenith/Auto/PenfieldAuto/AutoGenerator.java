@@ -78,6 +78,10 @@ public class AutoGenerator {
                 seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
 //                seq.add(new InstantCommand(intake::stop));
 
+//            }else if (DecodeAuto.choices[i][1] == 3){
+//                seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-300))));//-500 on blue
+//                seq.add(new InstantCommand(intake::in));
+//                seq.add(new ActionCommand(startToIntake[i], requirements));
             } else {
                 seq.add(new InstantCommand(intake::in));
                 seq.add(new ActionCommand(startToIntake[i], requirements));

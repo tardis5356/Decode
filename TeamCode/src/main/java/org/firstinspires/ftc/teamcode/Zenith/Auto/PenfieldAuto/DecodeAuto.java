@@ -64,7 +64,7 @@ public class DecodeAuto extends OpMode {
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
     // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-    private int[][] choices = new int[MAX_CYCLES][2];
+    public static int[][] choices = new int[MAX_CYCLES][2];
     private boolean gateCyclePressed;
     // private Camera camera;
 //    private MecanumDrive localizer;
@@ -153,14 +153,14 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-                cycleCount = 4;
+                cycleCount = 5;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
-                        {0, 0}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
-                        {0, 2}, //shoot: gate ready to push, intake: audience
-                        {0, 1}, //shoot: audience, intake: mid
-                        {0, 3} //shoot: audience, intake: preset pose
+                        {0, 4}, //shoot: goal, intake: gate
+                        {0, 0}, //shoot: gate ready to push, intake: goal
+                        {0, 2}, //shoot: audience, intake: audience
+                        {0, 3} //shoot: audience, intake: LZ preset
                 };
                 driveInit = false;
                 driveInitDelay.reset();
