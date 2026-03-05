@@ -412,9 +412,9 @@ public final class MecanumDrive {
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
             Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
-            double headingToleranceDeg = 1;//1
-            double positionToleranceIn = 0.5;//0.3
-            double timeoutSec = 0; //0.1 in specimen, 0.5 in basket
+            double headingToleranceDeg = 5;//1
+            double positionToleranceIn = 2;//0.3
+            double timeoutSec = 1; //0.1 in specimen, 0.5 in basket
             if ((t >= turn.duration &&
                     Math.abs(Math.toDegrees(error.heading.toDouble())) < headingToleranceDeg &&
                     Math.abs(error.position.norm()) < positionToleranceIn)

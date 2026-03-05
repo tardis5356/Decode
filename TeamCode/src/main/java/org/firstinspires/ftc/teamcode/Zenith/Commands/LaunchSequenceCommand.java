@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class LaunchSequenceCommand extends SequentialCommandGroup {
 
-    public LaunchSequenceCommand(Intake intake, Storage storage, String desiredSequence){
-        switch(desiredSequence){
+    public LaunchSequenceCommand(Intake intake, Storage storage, String desiredSequence) {
+        switch (desiredSequence) {
             case "Fly":
                 //launch all as is
                 addCommands(
@@ -33,7 +33,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(() -> DecodeTeleOp.firing = false)
                         )
                 );
-            break;
+                break;
 
             case "FlyAuto":
                 //launch all as is
@@ -44,13 +44,11 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(intake::stop),
                                 new WaitCommand(50),
                                 new InstantCommand(intake::in),
-                                new WaitCommand(450),
+                                new WaitCommand(600),
                                 new InstantCommand(storage::raiseKicker),
-                                new WaitCommand(100),
-                                new InstantCommand(storage::lowerKicker),
-                                new InstantCommand(storage::closeGate),
-                                new InstantCommand(intake::stop),
-                                new InstantCommand(() -> DecodeTeleOp.firing = false)
+                                new WaitCommand(200)
+
+
                         )
                 );
 
@@ -59,15 +57,26 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
             case "Launch":
                 addCommands(
                         new SequentialCommandGroup(
-                               launchOne(storage, intake)
+                                launchOne(storage, intake)
                         )
                 );
-            break;
+                break;
+
+            case "closeAuto":
+                addCommands(
+                        new SequentialCommandGroup(
+                                new InstantCommand(storage::closeGate),
+                                new InstantCommand(storage::lowerKicker),
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(() -> DecodeTeleOp.firing = false)
+                        )
+                );
 
         }
 
     }
-    public static Command launchOne(Storage s, Intake i){
+
+    public static Command launchOne(Storage s, Intake i) {
         return
 
                 new SequentialCommandGroup(
@@ -81,11 +90,10 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                         new InstantCommand(s::lowerKicker),
                         new InstantCommand(i::stop),
                         new InstantCommand(s::closeGate),
-        new InstantCommand(() -> DecodeTeleOp.firing = false)
+                        new InstantCommand(() -> DecodeTeleOp.firing = false)
                 );
 
     }
-
 
 
 //    public static Command openGate(Storage s){
@@ -97,7 +105,6 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 //        return new SequentialCommandGroup(new InstantCommand(s::closeGate),
 //                new WaitCommand(BotPositions.GATE_WAIT));
 //    }
-
 
 
 }

@@ -165,7 +165,7 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case FAR:
-                        sH.setPosition(.74 + hoodOffset);
+                        sH.setPosition(.71 + hoodOffset);
                         break;
                 }
             } else {

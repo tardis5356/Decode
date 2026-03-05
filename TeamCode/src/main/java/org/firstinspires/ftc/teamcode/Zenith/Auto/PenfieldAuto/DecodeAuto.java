@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
@@ -66,6 +67,9 @@ public class DecodeAuto extends OpMode {
     // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
     public static int[][] choices = new int[MAX_CYCLES][2];
     private boolean gateCyclePressed;
+
+    public static boolean midIntakeGateOpen;
+
     // private Camera camera;
 //    private MecanumDrive localizer;
     private Intake intake;
@@ -145,6 +149,14 @@ public class DecodeAuto extends OpMode {
             AutoTrajectories.updateAlliancePoses();
         }
 
+        if (gamepad2.dpad_right){
+            midIntakeGateOpen = false;
+        }
+
+        if (gamepad2.dpad_left){
+            midIntakeGateOpen = true;
+        }
+
         // --- Start position selection ---
         if (aColor != null) {
             if (gamepad2.dpad_up) {
@@ -160,7 +172,7 @@ public class DecodeAuto extends OpMode {
                         {0, 4}, //shoot: goal, intake: gate
                         {0, 0}, //shoot: gate ready to push, intake: goal
                         {0, 2}, //shoot: audience, intake: audience
-                        {0, 3} //shoot: audience, intake: LZ preset
+                        {0, 1} //shoot: audience, intake: mid
                 };
                 driveInit = false;
                 driveInitDelay.reset();
@@ -171,13 +183,13 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-                cycleCount = 4;
+                cycleCount = 5;
                 choices = new int[][]{
                         {1, 2}, //shoot: audience, intake: audience
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 0}, //shoot: goal ready to push, intake: Goal
                         {1, 1}, //shoot: audience, intake: Gate
-                        {1, 3} //shoot: audience, intake: Gate
+                        {1, 1} //shoot: audience, intake: Gate
                 };
                 driveInit = false;
                 driveInitDelay.reset();
@@ -294,6 +306,8 @@ public class DecodeAuto extends OpMode {
                 : "After cycle " + (gateCycleIndex + 1);
         telemetry2.addLine("Gamepad 2⬇️");
         telemetry2.addData("Gate Action", gateTxt);
+
+        telemetry2.addData("midIntakeGateOpen", midIntakeGateOpen);
 //
 
         // --- Alliance + Start position ---
@@ -383,6 +397,7 @@ public class DecodeAuto extends OpMode {
         CommandScheduler.getInstance().run();
         if (autoRuntime.seconds() > 29.8 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
+            CommandScheduler.getInstance().schedule(new LaunchSequenceCommand(intake, storage, "closeAuto"));
 
             drive.leftBack.setPower(0);
             drive.leftFront.setPower(0);

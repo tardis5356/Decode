@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajec
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.intakeWaypointToIntake;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntake;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.AutoTrajectories.startToIntakeWaypoint;
+import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.MAX_CYCLES;
 import static org.firstinspires.ftc.teamcode.Zenith.Auto.PenfieldAuto.DecodeAuto.gateCycleIndex;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.aColor;
 //import static org.firstinspires.ftc.teamcode.DecodeBot.Commands.AutoLaunchCommands.MotifLaunchSequenceCommand;
@@ -49,13 +50,21 @@ public class AutoGenerator {
 //seq.add(new InstantCommand(storage::closeGate));
         if (DecodeAuto.startPos == AutoTrajectories.audienceStartPos) {
 
-
+            seq.add(
+                    new SequentialCommandGroup(
+                            new InstantCommand(()->shooter.shooterLock = true),
+                            new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.FAR)
+                    ));
             seq.add(new WaitCommand(1000));
-            seq.add(new LaunchSequenceCommand(intake, storage, "Fly"));
+            seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
         }
 
         if (DecodeAuto.startPos == AutoTrajectories.goalStartPos) {
-
+//            seq.add(
+//                    new SequentialCommandGroup(
+//                            new InstantCommand(()->shooter.shooterLock = true),
+//                            new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+//                    ));
             seq.add(new ActionCommand(goalStartToGoalShoot, requirements));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
             seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-200))));//-500 on blue
@@ -65,37 +74,70 @@ public class AutoGenerator {
 
 
         for (int i = 0; i < cycleCount; i++) {
+            //if shoot Goal, goal preset
+            if (DecodeAuto.choices[i][0] == 0){
+                seq.add(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-200))),
+                        new InstantCommand(()->shooter.shooterLock = true),
+                        new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+                ));
+            }
+            if (DecodeAuto.choices[i][0] == 1){
+                seq.add(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(0))),
+
+                                new InstantCommand(()->shooter.shooterLock = true),
+                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.FAR)
+                        ));
+            }
 //            if (startToIntake[i] != null) {
 //                seq.add(new InstantCommand(intake::in));
 //                seq.add(new ActionCommand(startToIntake[i], requirements));
 //
 //            }
+if (i != MAX_CYCLES - 1){
+    if (startToIntakeWaypoint[i] != null) {
 
-            if (startToIntakeWaypoint[i] != null) {
-                seq.add(new InstantCommand(intake::in));
+        seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
+        seq.add(new LaunchSequenceCommand(intake, storage, "closeAuto"));
+        seq.add(new InstantCommand(intake::in));
+        seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
+    } else {
+        seq.add(new ParallelCommandGroup(
+                new ActionCommand(startToIntake[i], requirements),
+                new SequentialCommandGroup(
+                        new WaitCommand(500),
+                        new LaunchSequenceCommand(intake, storage, "closeAuto"),
+                        new InstantCommand(intake::in)
+                )
+        ));
+    }
+} else {
+    if (startToIntakeWaypoint[i] != null) {
 
-                seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
-                seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
-//                seq.add(new InstantCommand(intake::stop));
+        seq.add(new ActionCommand(startToIntakeWaypoint[i], requirements));
+        seq.add(new InstantCommand(intake::in));
+        seq.add(new ActionCommand(intakeWaypointToIntake[i], requirements));
+    } else {
+        seq.add(new ParallelCommandGroup(
+                new ActionCommand(startToIntake[i], requirements),
+                new SequentialCommandGroup(
+                        new WaitCommand(500),
+                        new InstantCommand(intake::in)
+                )
+        ));
+    }
+}
 
-//            }else if (DecodeAuto.choices[i][1] == 3){
-//                seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-300))));//-500 on blue
-//                seq.add(new InstantCommand(intake::in));
-//                seq.add(new ActionCommand(startToIntake[i], requirements));
-            } else {
-                seq.add(new InstantCommand(intake::in));
-                seq.add(new ActionCommand(startToIntake[i], requirements));
-            }
 
 
             if (intakeToShoot[i] != null) {
                 seq.add(
-                        new ParallelCommandGroup(
+                        new SequentialCommandGroup(
                                 new ActionCommand(intakeToShoot[i], requirements),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new InstantCommand(intake::stop)
-                                )
+                                new InstantCommand(intake::stop)
                         )
                 );
             }
