@@ -44,7 +44,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(intake::stop),
                                 new WaitCommand(50),
                                 new InstantCommand(intake::in),
-                                new WaitCommand(600),
+                                new WaitCommand(750),
                                 new InstantCommand(storage::raiseKicker),
                                 new WaitCommand(200)
 
