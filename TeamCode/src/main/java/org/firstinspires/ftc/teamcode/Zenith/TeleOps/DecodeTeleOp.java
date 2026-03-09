@@ -53,8 +53,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 public class DecodeTeleOp extends CommandOpMode {
 
     static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.2;
-
+    static double SLOW_SPEED_MULTIPLIER = 0.3;
 
 
     public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
@@ -132,7 +131,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             //sets the digital position of the robot to intake for the deposit to state command
 
-
+            firing = false;
             //init controllers
             driver1 = new GamepadEx(gamepad1);
             driver2 = new GamepadEx(gamepad2);
@@ -217,33 +216,32 @@ public class DecodeTeleOp extends CommandOpMode {
 
         new Trigger(() -> driver2.getLeftY() > .1)
                 .whileActiveOnce(new SequentialCommandGroup(
-                        new InstantCommand(()->shooter.shooterLock = true),
-                        new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.CLOSE)
+                                new InstantCommand(() -> shooter.shooterLock = true),
+                                new InstantCommand(() -> shooter.shooterPreset = Shooter.ShooterPreset.CLOSE)
                         )
                 );
 
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
                 .whileActiveOnce(new SequentialCommandGroup(
-                                new InstantCommand(()->shooter.shooterLock = true),
-                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+                                new InstantCommand(() -> shooter.shooterLock = true),
+                                new InstantCommand(() -> shooter.shooterPreset = Shooter.ShooterPreset.MID)
                         )
                 );
 
         new Trigger(() -> driver2.getLeftY() < -.1)
                 .whileActiveOnce(
                         new SequentialCommandGroup(
-                                new InstantCommand(()->shooter.shooterLock = true),
-                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.FAR)
+                                new InstantCommand(() -> shooter.shooterLock = true),
+                                new InstantCommand(() -> shooter.shooterPreset = Shooter.ShooterPreset.FAR)
                         )
                 );
-
 
 
         new Trigger(() -> driver2.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .whileActiveOnce(
                         new SequentialCommandGroup(
-                                new InstantCommand(()->shooter.shooterLock = false),
-                                new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.MID)
+                                new InstantCommand(() -> shooter.shooterLock = false),
+                                new InstantCommand(() -> shooter.shooterPreset = Shooter.ShooterPreset.MID)
                         )
                 );
 
@@ -333,8 +331,6 @@ public class DecodeTeleOp extends CommandOpMode {
 
             new Trigger(() -> gamepad2.ps)
                     .toggleWhenActive(new InstantCommand(() -> aColor = "red"), new InstantCommand(() -> aColor = "blue"));
-
-
 
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
@@ -444,7 +440,7 @@ public class DecodeTeleOp extends CommandOpMode {
         mBR.setPower(mBRPower * CURRENT_SPEED_MULTIPLIER);
 
         Pose2d pose = drive.localizer.getPose();
-        telemetry.addData("turretOffset",turret.manualOffset);
+        telemetry.addData("turretOffset", turret.manualOffset);
         telemetry.addData("hoodOffset", shooter.hoodOffset);
         telemetry.addData("WheelOffset", shooter.speedOffset);
         telemetry.addLine();
@@ -452,8 +448,8 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("X", pose.position.x);
         telemetry.addData("Y", pose.position.y);
         telemetry.addLine();
-        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
-             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
+        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY) {
+            Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
@@ -465,10 +461,6 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("firing", firing);
 
         telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
-
-
-
-
 
 
         telemetry.update();

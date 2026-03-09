@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
@@ -46,7 +47,7 @@ import java.util.Set;
 
 public class DecodeAuto extends OpMode {
 
-    public static final int MAX_CYCLES = 5;
+    public static final int MAX_CYCLES = 6;
     private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
     private static final String ROW_FORMAT = "%-5d | %-12s | %-12s";
     public static RRSubsystem rrSubsystem;
@@ -74,7 +75,7 @@ public class DecodeAuto extends OpMode {
 //    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
-    //private Camera camera;
+   // private Camera camera;
     private Shooter shooter;
     private String aColor = null;
     private Command auto;
@@ -95,7 +96,7 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-        // camera = new Camera(hardwareMap);
+       //  camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
@@ -172,7 +173,8 @@ public class DecodeAuto extends OpMode {
                         {0, 4}, //shoot: goal, intake: gate
                         {0, 0}, //shoot: gate ready to push, intake: goal
                         {0, 2}, //shoot: audience, intake: audience
-                        {0, 1} //shoot: audience, intake: mid
+                        {0, 1}, //shoot: audience, intake: mid
+                        {0, 1}
                 };
                 driveInit = false;
                 driveInitDelay.reset();
@@ -189,7 +191,8 @@ public class DecodeAuto extends OpMode {
                         {0, 1}, //shoot: goal, intake: mid
                         {0, 0}, //shoot: goal ready to push, intake: Goal
                         {1, 1}, //shoot: audience, intake: Gate
-                        {1, 1} //shoot: audience, intake: Gate
+                        {1, 1}, //shoot: audience, intake: Gate
+                        {0, 1}
                 };
                 driveInit = false;
                 driveInitDelay.reset();
@@ -395,7 +398,7 @@ public class DecodeAuto extends OpMode {
 
 
         CommandScheduler.getInstance().run();
-        if (autoRuntime.seconds() > 29.8 && auto != null) {
+        if (autoRuntime.seconds() > 31 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
             CommandScheduler.getInstance().schedule(new LaunchSequenceCommand(intake, storage, "closeAuto"));
 
