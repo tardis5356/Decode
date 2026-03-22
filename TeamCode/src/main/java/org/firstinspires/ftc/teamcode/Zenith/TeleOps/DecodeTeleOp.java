@@ -509,7 +509,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
             shotNumber++;
-            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
+            Log.d("Set: " + shotSet + "/n" + "shot: " + shotNumber ,
                     "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
                             "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
                             "X: " + drive.localizer.getPose().position.x + "/n" +
