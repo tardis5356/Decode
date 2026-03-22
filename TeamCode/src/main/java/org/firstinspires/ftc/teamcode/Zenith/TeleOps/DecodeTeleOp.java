@@ -19,7 +19,6 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.button.Trigger;
-import com.arcrobotics.ftclib.controller.PDController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
@@ -29,23 +28,19 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.wifi.DriverStationAccessPointAssistant;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
-import org.firstinspires.ftc.teamcode.Zenith.Commands.IntakeToggleCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BrakePad;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
-import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
 @TeleOp(name = "Decode Teleop", group = "AGen1")
@@ -62,6 +57,8 @@ public class DecodeTeleOp extends CommandOpMode {
             RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
     public static boolean firing;
+    public static boolean previousFiring;
+    boolean shotLogged;
 
     double mFLPower;
     double mFRPower;
@@ -108,6 +105,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
     private MecanumDrive drive;
 
+    public static int shotNumber = 0;
+    public static int shotSet = 0;
+
+    public static boolean readyForNextShot;
+
     public PinpointLocalizer pinpointLocalizer;
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
@@ -129,8 +131,10 @@ public class DecodeTeleOp extends CommandOpMode {
             //Make sure it is not called in a loop since it will clear all the triggers every frame. Be very careful. It is a kill switch.
             CommandScheduler.getInstance().reset();
 
-            //sets the digital position of the robot to intake for the deposit to state command
 
+            shotSet = 0;
+            shotNumber = 0;
+            previousFiring = false;
             firing = false;
             //init controllers
             driver1 = new GamepadEx(gamepad1);
@@ -157,6 +161,7 @@ public class DecodeTeleOp extends CommandOpMode {
             brakePad = new BrakePad(hardwareMap);
 
             camera = new Camera(hardwareMap);
+
             telemetry.addLine("NOT READY");
             telemetry.update();
             sleep(500);
@@ -451,6 +456,30 @@ public class DecodeTeleOp extends CommandOpMode {
         if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY) {
             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
+
+if (!firing){
+    shotNumber = 0;
+}
+
+if(!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
+    readyForNextShot = true;
+}
+
+        if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
+            shotNumber++;
+            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
+                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
+                            "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
+                            "HoodPosition: " + shooter.sH.getPosition() + "/n" +
+                            "Distance: " + GlobalVariables.distanceFromTarget + "/n" +
+                            "Turret Error: " + turret.getTurretErrorDEG()+ "/n" +
+                            "Turret Angle: " + turret.getTurretThetaDEG() + "/n"
+            );
+            readyForNextShot = false;
+        }
+
+        previousFiring = firing;
+
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
         telemetry.addData("hoodPos", shooter.sH.getPosition());

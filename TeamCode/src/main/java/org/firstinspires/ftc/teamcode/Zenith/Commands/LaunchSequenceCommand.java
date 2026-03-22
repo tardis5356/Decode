@@ -19,6 +19,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
+                                new InstantCommand(() -> DecodeTeleOp.shotSet++),
                                 new InstantCommand(() -> DecodeTeleOp.firing = true),
                                 new InstantCommand(storage::openGate),
                                 new InstantCommand(intake::stop),
@@ -39,6 +40,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
+                                new InstantCommand(() -> DecodeTeleOp.shotSet++),
                                 new InstantCommand(() -> DecodeTeleOp.firing = true),
                                 new InstantCommand(storage::openGate),
                                 new InstantCommand(intake::stop),

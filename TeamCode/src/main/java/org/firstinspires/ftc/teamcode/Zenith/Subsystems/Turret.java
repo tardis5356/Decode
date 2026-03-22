@@ -187,6 +187,10 @@ if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGRE
         return (getCurrentPosition() / TURRET_TICKS_PER_DEGREE);
     }
 
+    public double getTurretErrorDEG() {
+        return (desiredTicks - getCurrentPosition()) / TURRET_TICKS_PER_DEGREE;
+    }
+
     public void disablePID() {
         PIDDisabled = true;
     }
@@ -278,7 +282,7 @@ if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGRE
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()), ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-telemetry.addData("TurretError", ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
+telemetry.addData("TurretError", ((desiredTicks - getCurrentPosition()) / TURRET_TICKS_PER_DEGREE));
 //        telemetry.addData("TurretPosX", turretFieldX);
 //        telemetry.addData("TurretPosY", turretFieldY);
 //        telemetry.addLine("Turret Ticks");

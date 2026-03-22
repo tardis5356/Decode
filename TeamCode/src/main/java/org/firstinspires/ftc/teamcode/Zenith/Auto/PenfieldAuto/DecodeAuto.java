@@ -8,6 +8,10 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.motif;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.previousFiring;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.readyForNextShot;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.shotNumber;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.shotSet;
 
 import android.util.Log;
 
@@ -25,6 +29,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
@@ -35,6 +40,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
+import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 import java.util.Set;
 
@@ -111,7 +117,10 @@ public class DecodeAuto extends OpMode {
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
         startPos = null;
         turret.setTargetPosition(allianceValue(0));
-
+        shotSet = 0;
+        shotNumber = 0;
+        previousFiring = false;
+        firing = false;
         shooter.hoodOffset = .8;
 
         telemetry2.addData("Status", "Initialized");
@@ -419,6 +428,33 @@ public class DecodeAuto extends OpMode {
         if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
+        if (!firing){
+            shotNumber = 0;
+        }
+
+        if(! readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
+            readyForNextShot = true;
+        }
+
+        if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
+            shotNumber++;
+            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
+                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
+                            "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
+                            "HoodPosition: " + shooter.sH.getPosition() + "/n" +
+                            "Distance: " + GlobalVariables.distanceFromTarget + "/n" +
+                            "Turret Error: " + turret.getTurretErrorDEG()+ "/n" +
+                            "Turret Angle: " + turret.getTurretThetaDEG() + "/n"
+            );
+            readyForNextShot = false;
+        }
+
+        if (!previousFiring && firing) {
+            shotSet++;
+        }
+
+        previousFiring = firing;
+
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry2.addData("firing", firing);
         telemetry2.addData("artifactLocation", currentArtifacts);
