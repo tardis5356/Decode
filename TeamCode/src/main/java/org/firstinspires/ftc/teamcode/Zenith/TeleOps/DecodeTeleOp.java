@@ -434,7 +434,7 @@ public class DecodeTeleOp extends CommandOpMode {
             shooter.hoodOffset = .95;
 
         }
-
+        logShots(shooter, drive, turret);
 
         //actually sets the motor powers
 
@@ -457,28 +457,7 @@ public class DecodeTeleOp extends CommandOpMode {
             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
 
-if (!firing){
-    shotNumber = 0;
-}
 
-if(!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
-    readyForNextShot = true;
-}
-
-        if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
-            shotNumber++;
-            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
-                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
-                            "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
-                            "HoodPosition: " + shooter.sH.getPosition() + "/n" +
-                            "Distance: " + GlobalVariables.distanceFromTarget + "/n" +
-                            "Turret Error: " + turret.getTurretErrorDEG()+ "/n" +
-                            "Turret Angle: " + turret.getTurretThetaDEG() + "/n"
-            );
-            readyForNextShot = false;
-        }
-
-        previousFiring = firing;
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
@@ -517,6 +496,34 @@ if(!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
         } else {
             return 0;
         }
+    }
+
+    public static void logShots(Shooter shooter, MecanumDrive drive, Turret turret){
+        if (!firing){
+            shotNumber = 0;
+        }
+
+        if(!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
+            readyForNextShot = true;
+        }
+
+        if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
+            shotNumber++;
+            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
+                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
+                            "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
+                            "X: " + drive.localizer.getPose().position.x + "/n" +
+                            "Y: " + drive.localizer.getPose().position.y + "/n" +
+                            "Heading: " + Math.toDegrees(drive.localizer.getPose().heading.toDouble()) + "/n" +
+                            "HoodPosition: " + shooter.sH.getPosition() + "/n" +
+                            "Distance: " + GlobalVariables.distanceFromTarget + "/n" +
+                            "Turret Error: " + turret.getTurretErrorDEG()+ "/n" +
+                            "Turret Angle: " + turret.getTurretThetaDEG() + "/n"
+            );
+            readyForNextShot = false;
+        }
+
+        previousFiring = firing;
     }
 
 

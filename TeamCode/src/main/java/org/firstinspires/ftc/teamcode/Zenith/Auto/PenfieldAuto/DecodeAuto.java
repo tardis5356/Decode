@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.motif;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.logShots;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.previousFiring;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.readyForNextShot;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.shotNumber;
@@ -428,28 +429,7 @@ public class DecodeAuto extends OpMode {
         if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
             Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
         }
-        if (!firing){
-            shotNumber = 0;
-        }
-
-        if(! readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
-            readyForNextShot = true;
-        }
-
-        if (firing && shooter.mSL.getCurrent(CurrentUnit.AMPS) > 9 && readyForNextShot) {
-            shotNumber++;
-            Log.d("shotSet: " + shotSet + "/n" + "shot: " + shotNumber ,
-                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "/n" +
-                            "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "/n" +
-                            "HoodPosition: " + shooter.sH.getPosition() + "/n" +
-                            "Distance: " + GlobalVariables.distanceFromTarget + "/n" +
-                            "Turret Error: " + turret.getTurretErrorDEG()+ "/n" +
-                            "Turret Angle: " + turret.getTurretThetaDEG() + "/n"
-            );
-            readyForNextShot = false;
-        }
-
-        previousFiring = firing;
+      logShots(shooter, drive, turret);
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry2.addData("firing", firing);
