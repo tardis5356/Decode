@@ -449,10 +449,6 @@ public class DecodeAuto extends OpMode {
             readyForNextShot = false;
         }
 
-        if (!previousFiring && firing) {
-            shotSet++;
-        }
-
         previousFiring = firing;
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
