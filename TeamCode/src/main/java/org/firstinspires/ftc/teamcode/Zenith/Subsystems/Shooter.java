@@ -92,22 +92,22 @@ public class Shooter extends SubsystemBase {
 
    
 
-        HoodRegression.put(36., .9);
-        WheelRegression.put(36., 600.);//for auto testing
+        HoodRegression.put(36., .88);
+        WheelRegression.put(36., 625.);//for auto testing
 
-        HoodRegression.put(50.,.83);
-        HoodRegression.put(64.,.82);
-        HoodRegression.put(86.6,.78);
-        HoodRegression.put(92.,.75);
-        HoodRegression.put(136.,.72);
-        HoodRegression.put(151.,.71);
+        HoodRegression.put(50.,.81);
+        HoodRegression.put(64.,.80);
+        HoodRegression.put(86.6,.76);
+        HoodRegression.put(92.,.73);
+        HoodRegression.put(136.,.70);
+        HoodRegression.put(151.,.69);
 
-        WheelRegression.put(50.,790.);
-        WheelRegression.put(64.,843.);
-        WheelRegression.put(86.6,1048.);
-        WheelRegression.put(92.,1113.);
-        WheelRegression.put(136.,1514.);
-        WheelRegression.put(151.,1637.);
+        WheelRegression.put(50.,815.);
+        WheelRegression.put(64.,868.);
+        WheelRegression.put(86.6,1073.);
+        WheelRegression.put(92.,1138.);
+        WheelRegression.put(136.,1539.);
+        WheelRegression.put(151.,1662.);
 
 
 
@@ -132,15 +132,15 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
-                        sH.setPosition(.89 + hoodOffset);
+                        sH.setPosition(.87 + hoodOffset);
                         break;
 
                     case MID:
-                        sH.setPosition(.77 + hoodOffset);
+                        sH.setPosition(.75 + hoodOffset);
                         break;
 
                     case FAR:
-                        sH.setPosition(.72 + hoodOffset);
+                        sH.setPosition(.70 + hoodOffset);
                         break;
                 }
             } else {
@@ -154,18 +154,18 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
-                        mSL.setPower(calculateBangBangFlyWheelPower(670. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(670. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(695. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(695. + speedOffset));
                         break;
 
                     case MID:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1095. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1095. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1120. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1120. + speedOffset));
                         break;
 
                     case FAR:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1485. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1485. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1510. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1510. + speedOffset));
                         break;
 
                 }
@@ -209,12 +209,12 @@ public class Shooter extends SubsystemBase {
 
     public double calculatePIDFlyWheelPower(double tps) {
 
-        double flywheelError = Math.abs(getFlyWheelSpeed() - tps);
-        if (flywheelError < 30) {
+//        double flywheelError = Math.abs(getFlyWheelSpeed() - tps);
+//        if (flywheelError < 70) {
             return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
-        } else {
-            return calculateBangBangFlyWheelPower(tps);
-        }
+//        } else {
+//            return calculateBangBangFlyWheelPower(tps);
+//        }
     }
 
     public double calculateBangBangFlyWheelPower(double tps) {

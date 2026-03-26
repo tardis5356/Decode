@@ -48,10 +48,10 @@ public class Camera extends SubsystemBase {
     public static double yawPower, forwardPower;
     public static boolean manualExposure;
     // === HARDWARE AND PROCESSORS ===
-    public static VisionPortal visionPortal;
+    public VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
     private final AprilTagDetection desiredTag = null;
-    private final WebcamName turretWebcam;
+    public final WebcamName turretWebcam;
     //532.034 * 42.5/52.5; // actual/roadrunner distance
     public double fx = 545.605 * 56.5 / 58 * 74/72;
     //532.034 * 42.5/52.5;
@@ -231,11 +231,7 @@ public class Camera extends SubsystemBase {
 //            yawPower = 0;
 //            forwardPower = 0;
 //        }
-        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
-            //TODO Check this setting
-            setManualExposure(2, 80);//2,80
-            manualExposure = true;
-        }
+
         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
     }
@@ -347,7 +343,7 @@ public class Camera extends SubsystemBase {
 
 
     //2, 94
-    private void setManualExposure(int exposureMS, int gain) {
+    public void setManualExposure(int exposureMS, int gain) {
 
 
         {
