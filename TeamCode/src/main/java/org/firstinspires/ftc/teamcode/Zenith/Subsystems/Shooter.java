@@ -136,7 +136,7 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case MID:
-                        sH.setPosition(.75 + hoodOffset);
+                        sH.setPosition(.73 + hoodOffset);
                         break;
 
                     case FAR:

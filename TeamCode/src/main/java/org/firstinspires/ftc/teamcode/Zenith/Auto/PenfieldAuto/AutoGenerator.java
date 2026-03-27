@@ -87,7 +87,7 @@ public class AutoGenerator {
 //                            new InstantCommand(() -> shooter.targeting = true)
 //                    )
 //            );
-            seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-200))));//-500 on blue
+            seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-500))));//-500 on blue， more negative = more away from center
 
             // seq.add(new InstantCommand(()-> shooter.hoodOffset += 0.01));
 
