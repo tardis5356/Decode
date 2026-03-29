@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.distanceFromTarget;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.CURRENT_SPEED_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.SLOW_SPEED_MULTIPLIER;
 import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
@@ -31,14 +33,14 @@ public class Intake extends SubsystemBase {
     public DigitalChannel bbSh;
 
     private boolean shLatched = false;
-    private boolean mLatched  = false;
+    private boolean mLatched = false;
     private boolean fLatched = false;
 
     private long shLastBroken = 0;
-    private long mLastBroken  = 0;
+    private long mLastBroken = 0;
     private long fLastBroken = 0;
 
-   // private ElapsedTime timeIntakeFull = new ElapsedTime();
+    // private ElapsedTime timeIntakeFull = new ElapsedTime();
 
     private static final long CLEAR_TIME_MS = 75; // tweak if needed
 
@@ -69,7 +71,7 @@ public class Intake extends SubsystemBase {
 
 
         redIntakeLED = hardwareMap.get(DigitalChannel.class, "iR");
-        greenIntakeLED = hardwareMap.get(DigitalChannel.class,"iG");
+        greenIntakeLED = hardwareMap.get(DigitalChannel.class, "iG");
 
         bbF.setMode(DigitalChannel.Mode.INPUT);
         bbM.setMode(DigitalChannel.Mode.INPUT);
@@ -81,7 +83,7 @@ public class Intake extends SubsystemBase {
 
         currentDirection = Direction.OFF;
         autoStop = true;
-      //  timeIntakeFull.reset();
+        //  timeIntakeFull.reset();
 
     }
 
@@ -96,27 +98,29 @@ public class Intake extends SubsystemBase {
         long emptySlots = GlobalVariables.currentArtifacts.chars()
                 .filter(c -> c == '_')
                 .count();
+        if (CURRENT_SPEED_MULTIPLIER == SLOW_SPEED_MULTIPLIER) {
+            liT.setPosition(.63);
+        } else {
+            switch ((int) emptySlots) {
+                case 3:
+                    liT.setPosition(0);
+                    break;
 
-        switch ((int) emptySlots){
-            case 3:
-                liT.setPosition(0);
-                break;
+                case 2:
+                    liT.setPosition(0.28);
+                    break;
 
-            case 2:
-                liT.setPosition(0.28);
-                break;
+                case 1:
+                    liT.setPosition(0.333);
+                    break;
 
-            case 1:
-                liT.setPosition(0.333);
-                break;
-
-            case 0:
-                liT.setPosition(0.5);
-                break;
+                case 0:
+                    liT.setPosition(0.5);
+                    break;
 
 
+            }
         }
-
 //
 //        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
 //            stop();
@@ -130,14 +134,14 @@ public class Intake extends SubsystemBase {
     }
 
     public void in() {
-        if (firing){
+        if (firing) {
 
-          //  intakePower = .8;
+            //  intakePower = .8;
             if (distanceFromTarget < 130) {
                 intakePower = .8;
             } else intakePower = .7;
 
-        }else intakePower = 1;
+        } else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);
         redIntakeLED.setState(false);
@@ -146,9 +150,9 @@ public class Intake extends SubsystemBase {
 
 
     public void out() {
-        if (gateOpen){
+        if (gateOpen) {
             intakePower = -.5;
-        }else intakePower = -1;
+        } else intakePower = -1;
         intakeState = "out";
         greenIntakeLED.setState(false);
         redIntakeLED.setState(true);

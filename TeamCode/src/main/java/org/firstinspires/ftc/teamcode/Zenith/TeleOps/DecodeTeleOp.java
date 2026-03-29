@@ -49,7 +49,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 public class DecodeTeleOp extends CommandOpMode {
 
     static double FAST_SPEED_MULTIPLIER = 1;
-    static double SLOW_SPEED_MULTIPLIER = 0.3;
+    public static double SLOW_SPEED_MULTIPLIER = 0.3;
 
 
     public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
@@ -69,7 +69,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //All are then added and subtracted in different ways for each drive motor
     double FB, LR, Rotation;
     //CURRENT_SPEED_MULTIPLIER is the actual multiplier applied to the drive train power. It is set to either the fast or slow multipliers
-    double CURRENT_SPEED_MULTIPLIER;
+    public static double CURRENT_SPEED_MULTIPLIER;
 
     double LeftTrigger;
     double RightTrigger;
@@ -214,7 +214,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
         //Granny Mode
-        new Trigger(() -> driver1.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON))
+        new Trigger(() -> driver1.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON))
                 .toggleWhenActive(() -> CURRENT_SPEED_MULTIPLIER = SLOW_SPEED_MULTIPLIER, () -> CURRENT_SPEED_MULTIPLIER = FAST_SPEED_MULTIPLIER);
 
         new Trigger(() -> driver2.getRightY() > .1)
