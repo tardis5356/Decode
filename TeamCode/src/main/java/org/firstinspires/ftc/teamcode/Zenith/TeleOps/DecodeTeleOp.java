@@ -101,7 +101,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //breakpad
     private BrakePad brakePad;
     //Cameras
-    private Camera camera;
+//    private Camera camera;
     //Roadrunner
 
     private MecanumDrive drive;
@@ -164,7 +164,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             brakePad = new BrakePad(hardwareMap);
 
-            camera = new Camera(hardwareMap);
+//            camera = new Camera(hardwareMap);
 
             telemetry.addLine("NOT READY");
             telemetry.update();
@@ -322,20 +322,20 @@ public class DecodeTeleOp extends CommandOpMode {
                             )
                     );
 
-
-            new Trigger(() -> gamepad2.touchpad)
-                    .whenActive(
-                            new SequentialCommandGroup(
-                                    new InstantCommand(() -> shooter.targeting = false),
-                                    new InstantCommand(() -> shooter.hoodOffset = .95),
-                                    new WaitCommand(400),
-                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
-                                    new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
-                                    new InstantCommand(() -> shooter.hoodOffset = 0.0),
-                                    new InstantCommand(() -> turret.manualOffset = 0),
-                                    new InstantCommand(() -> shooter.targeting = true)
-                            )
-                    );
+//
+//            new Trigger(() -> gamepad2.touchpad)
+//                    .whenActive(
+//                            new SequentialCommandGroup(
+//                                    new InstantCommand(() -> shooter.targeting = false),
+//                                    new InstantCommand(() -> shooter.hoodOffset = .95),
+//                                    new WaitCommand(400),
+//                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
+//                                    new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
+//                                    new InstantCommand(() -> shooter.hoodOffset = 0.0),
+//                                    new InstantCommand(() -> turret.manualOffset = 0),
+//                                    new InstantCommand(() -> shooter.targeting = true)
+//                            )
+//                    );
 
 
             new Trigger(() -> gamepad2.ps)
@@ -389,20 +389,20 @@ public class DecodeTeleOp extends CommandOpMode {
 //            storage.lowerKicker();
 //        }
 
-        if(!camera.turretWebcam.isAttached()){
-            camera.manualExposure = false;
-        }
-        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING){
-            cameraStreamTimer.reset();
-        }
-
-
-        if (cameraStreamTimer.seconds() > 0.3 && !camera.manualExposure) {
-            //TODO Check this setting
-
-           camera.setManualExposure(2, 80);//2,80
-            camera.manualExposure = true;
-        }
+//        if(!camera.turretWebcam.isAttached()){
+//            camera.manualExposure = false;
+//        }
+//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING){
+//            cameraStreamTimer.reset();
+//        }
+//
+//
+//        if (cameraStreamTimer.seconds() > 0.3 && !camera.manualExposure) {
+//            //TODO Check this setting
+//
+//           camera.setManualExposure(2, 80);//2,80
+//            camera.manualExposure = true;
+//        }
 
         if (!firing) {
             if (gamepad1.x || gamepad2.x) {
@@ -477,7 +477,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
         telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 
-telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
+//telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
@@ -490,7 +490,7 @@ telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
         telemetry.addData("Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("firing", firing);
 
-        telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
+//        telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
 
 
         telemetry.update();
