@@ -486,6 +486,9 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("ShooterMotorAmps", shooter.mSL.getCurrent(CurrentUnit.AMPS));
 
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
+        telemetry.addLine();
+        telemetry.addData("flyWheel_MotorPower",shooter.mSL.getCurrent(CurrentUnit.AMPS));
+        telemetry.addLine();
         telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
         telemetry.addData("Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("firing", firing);
