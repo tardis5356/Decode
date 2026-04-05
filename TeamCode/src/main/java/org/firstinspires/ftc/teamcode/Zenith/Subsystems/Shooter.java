@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0.007f, vI = 0.000f, vD = 0.000f, vV = 0.000435f, vS = 0.11f;
+    public static float vP = 0.0055f, vI = 0.000f, vD = 0.000f, vV = 0.0004f, vS = 0.14f;
 
     public static double hardWheelOffset = 0;
 
@@ -92,29 +92,22 @@ public class Shooter extends SubsystemBase {
 
    
 
-        HoodRegression.put(36., .05);
-        WheelRegression.put(36., 1000.);//for auto testing
-//
-//        HoodRegression.put(50.,.81);
-//        HoodRegression.put(64.,.80);
-//        HoodRegression.put(86.6,.76);
-//        HoodRegression.put(92.,.73);
-//        HoodRegression.put(136.,.70);
-//        HoodRegression.put(151.,.69);
+        HoodRegression.put(36., .99);
+        WheelRegression.put(36., 700.);//for auto testing
 
-//        WheelRegression.put(50.,815.);
-//        WheelRegression.put(64.,868.);
-//        WheelRegression.put(86.6,1073.);
-//        WheelRegression.put(92.,1138.);
-//        WheelRegression.put(136.,1539.);
-//        WheelRegression.put(151.,1662.);
+        HoodRegression.put(50.,.77);
+        HoodRegression.put(64.,.43);
+        HoodRegression.put(86.6,.15);
+        HoodRegression.put(92.,.04);
+        HoodRegression.put(136.,.04);
+        HoodRegression.put(151.,.03);
 
-
-
-//        HoodRegression.put(158., 0.73);
-
-//        WheelRegression.put(158.0, 1320 - hardWheelOffset);
-
+        WheelRegression.put(50.,775.);
+        WheelRegression.put(64.,925.);
+        WheelRegression.put(86.6,1075.);
+        WheelRegression.put(92.,1050.);
+        WheelRegression.put(136.,1275.);
+        WheelRegression.put(151.,1350.);
 
         targeting = true;
     }
