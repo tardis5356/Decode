@@ -92,22 +92,25 @@ public class Shooter extends SubsystemBase {
 
    
 
-        HoodRegression.put(36., .99);
-        WheelRegression.put(36., 700.);//for auto testing
+//        HoodRegression.put(36., .99);
+//        WheelRegression.put(36., 700.);//for auto testing
 
-        HoodRegression.put(50.,.77);
-        HoodRegression.put(64.,.43);
-        HoodRegression.put(86.6,.15);
-        HoodRegression.put(92.,.04);
-        HoodRegression.put(136.,.04);
-        HoodRegression.put(151.,.03);
+        //  4/6 + 0.05
+        HoodRegression.put(50.,.82);
+        HoodRegression.put(64.,.48);
+        HoodRegression.put(86.6,.19);
+        HoodRegression.put(92.,.09);
+        HoodRegression.put(136.,.09);
+        HoodRegression.put(151.,.08);
 
-        WheelRegression.put(50.,775.);
-        WheelRegression.put(64.,925.);
-        WheelRegression.put(86.6,1075.);
-        WheelRegression.put(92.,1050.);
-        WheelRegression.put(136.,1275.);
-        WheelRegression.put(151.,1350.);
+
+        //   4/6 +50
+        WheelRegression.put(50.,825.);
+        WheelRegression.put(64.,975.);
+        WheelRegression.put(86.6,1125.);
+        WheelRegression.put(92.,1100.);
+        WheelRegression.put(136.,1325.);
+        WheelRegression.put(151.,1400.);
 
         targeting = true;
     }
@@ -125,15 +128,15 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
-                        sH.setPosition(.87 + hoodOffset);
+                        sH.setPosition(.37 + hoodOffset);
                         break;
 
                     case MID:
-                        sH.setPosition(.74 + hoodOffset);
+                        sH.setPosition(.11 + hoodOffset);
                         break;
 
                     case FAR:
-                        sH.setPosition(.71 + hoodOffset);
+                        sH.setPosition(.04 + hoodOffset);
                         break;
                 }
             } else {
@@ -147,18 +150,18 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
-                        mSL.setPower(calculateBangBangFlyWheelPower(695. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(695. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
                         break;
 
                     case MID:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1120. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1120. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1075. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1075. + speedOffset));
                         break;
 
                     case FAR:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1510. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1510. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1275. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1275. + speedOffset));
                         break;
 
                 }
