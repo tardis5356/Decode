@@ -157,7 +157,9 @@ if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGRE
     motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
 }else motorPower = 0;
 
-        } else motorPower = pidController.calculate(getCurrentPosition(), 0);
+        } else if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGREE > TURRET_TOLERANCE_DEG){
+            motorPower = pidController.calculate(getCurrentPosition(), 0);
+        }else motorPower = 0;
 
 //set the kS according to the turret theta
 

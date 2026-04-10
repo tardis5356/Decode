@@ -92,25 +92,25 @@ public class Shooter extends SubsystemBase {
 
    
 
-//        HoodRegression.put(36., .99);
-//        WheelRegression.put(36., 700.);//for auto testing
+        HoodRegression.put(36., .99);
+        WheelRegression.put(36., 700.);//for auto testing
 
         //  4/6 + 0.05
-        HoodRegression.put(50.,.82);
-        HoodRegression.put(64.,.48);
-        HoodRegression.put(86.6,.19);
-        HoodRegression.put(92.,.09);
-        HoodRegression.put(136.,.09);
-        HoodRegression.put(151.,.08);
+//        HoodRegression.put(50.,.82);
+//        HoodRegression.put(64.,.48);
+//        HoodRegression.put(86.6,.19);
+//        HoodRegression.put(92.,.09);
+//        HoodRegression.put(136.,.09);
+//        HoodRegression.put(151.,.08);
 
 
         //   4/6 +50
-        WheelRegression.put(50.,825.);
-        WheelRegression.put(64.,975.);
-        WheelRegression.put(86.6,1125.);
-        WheelRegression.put(92.,1100.);
-        WheelRegression.put(136.,1325.);
-        WheelRegression.put(151.,1400.);
+//        WheelRegression.put(50.,825.);
+//        WheelRegression.put(64.,975.);
+//        WheelRegression.put(86.6,1125.);
+//        WheelRegression.put(92.,1100.);
+//        WheelRegression.put(136.,1325.);
+//        WheelRegression.put(151.,1400.);
 
         targeting = true;
     }
