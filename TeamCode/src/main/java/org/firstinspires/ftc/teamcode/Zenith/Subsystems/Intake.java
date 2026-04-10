@@ -136,10 +136,10 @@ public class Intake extends SubsystemBase {
     public void in() {
         if (firing) {
 
-            //  intakePower = .8;
-            if (distanceFromTarget < 130) {
-                intakePower = .8;
-            } else intakePower = .7;
+              intakePower = .8;
+//            if (distanceFromTarget < 130) {
+//                intakePower = .8;
+//            } else intakePower = .7;
 
         } else intakePower = 1;
         intakeState = "in";

@@ -96,21 +96,29 @@ public class Shooter extends SubsystemBase {
 //        WheelRegression.put(36., 700.);//for auto testing
 
         //  4/6 + 0.05
-        HoodRegression.put(50.,.82);
-        HoodRegression.put(64.,.48);
-        HoodRegression.put(86.6,.19);
-        HoodRegression.put(92.,.09);
-        HoodRegression.put(136.,.09);
-        HoodRegression.put(151.,.08);
+        HoodRegression.put(35.,1.);
+        HoodRegression.put(50.,1.);
+        HoodRegression.put(65.,.85);
+        HoodRegression.put(85.,.5);
+        HoodRegression.put(101.,.5);
+        HoodRegression.put(116.,.46);
+        HoodRegression.put(130.,.4);
+        HoodRegression.put(145.8,.3);
+        HoodRegression.put(160.6,.25);
+        HoodRegression.put(167.7,.2);
 
 
-        //   4/6 +50
-        WheelRegression.put(50.,825.);
-        WheelRegression.put(64.,975.);
-        WheelRegression.put(86.6,1125.);
-        WheelRegression.put(92.,1100.);
-        WheelRegression.put(136.,1325.);
-        WheelRegression.put(151.,1400.);
+//        //   4/6 +50
+        WheelRegression.put(35.,700.);
+        WheelRegression.put(50.,700.);
+        WheelRegression.put(65.,800.);
+        WheelRegression.put(85.,900.);
+        WheelRegression.put(101.,950.);
+        WheelRegression.put(116.,1050.);
+        WheelRegression.put(130.,1125.);
+        WheelRegression.put(145.8,1275.);
+        WheelRegression.put(160.6,1325.);
+        WheelRegression.put(167.7,1400.);
 
         targeting = true;
     }
@@ -165,7 +173,7 @@ public class Shooter extends SubsystemBase {
                         break;
 
                 }
-            } else if (bangBangActive || !inAuto) {
+            } else if (bangBangActive) {
                 mSL.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
                 mSR.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             } else {
