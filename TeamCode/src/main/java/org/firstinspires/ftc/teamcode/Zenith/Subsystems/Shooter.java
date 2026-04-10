@@ -106,6 +106,7 @@ public class Shooter extends SubsystemBase {
         HoodRegression.put(145.8,.3);
         HoodRegression.put(160.6,.25);
         HoodRegression.put(167.7,.2);
+        //adoifijd
 
 
 //        //   4/6 +50
