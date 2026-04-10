@@ -102,7 +102,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //breakpad
     private BrakePad brakePad;
     //Cameras
-//    private Camera camera;
+    private Camera camera;
     //Roadrunner
 
     private MecanumDrive drive;
@@ -164,7 +164,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             brakePad = new BrakePad(hardwareMap);
 
-//            camera = new Camera(hardwareMap);
+            camera = new Camera(hardwareMap);
 
             telemetry.addLine("NOT READY");
             telemetry.update();
@@ -322,19 +322,19 @@ public class DecodeTeleOp extends CommandOpMode {
                     );
 
 //
-//            new Trigger(() -> gamepad2.touchpad)
-//                    .whenActive(
-//                            new SequentialCommandGroup(
-//                                    new InstantCommand(() -> shooter.targeting = false),
-//                                    new InstantCommand(() -> shooter.hoodOffset = .95),
-//                                    new WaitCommand(400),
-//                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
-//                                    new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
-//                                    new InstantCommand(() -> shooter.hoodOffset = 0.0),
-//                                    new InstantCommand(() -> turret.manualOffset = 0),
-//                                    new InstantCommand(() -> shooter.targeting = true)
-//                            )
-//                    );
+            new Trigger(() -> gamepad2.touchpad)
+                    .whenActive(
+                            new SequentialCommandGroup(
+                                    new InstantCommand(() -> shooter.targeting = false),
+                                    new InstantCommand(() -> shooter.hoodOffset = .95),
+                                    new WaitCommand(400),
+                                    new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
+                                    new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
+                                    new InstantCommand(() -> shooter.hoodOffset = 0.0),
+                                    new InstantCommand(() -> turret.manualOffset = 0),
+                                    new InstantCommand(() -> shooter.targeting = true)
+                            )
+                    );
 
 
             new Trigger(() -> gamepad2.ps)
@@ -372,20 +372,13 @@ public class DecodeTeleOp extends CommandOpMode {
         intake.setCurrentArtifacts();
 
 
-//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STOPPING_STREAM) {
-//            camera.manualExposure = false;
-//        }
-//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STARTING_STREAM) {
-//            cameraStreamTimer.reset();
-//        }
-//
-//
-//        if (cameraStreamTimer.seconds() > 0.3 && !camera.manualExposure) {
-//            //TODO Check this setting
-//
-//            camera.setManualExposure(2, 80);//2,80
-//            camera.manualExposure = true;
-//        }
+        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STOPPING_STREAM) {
+            camera.manualExposure = false;
+        }
+        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !camera.manualExposure) {
+            camera.setManualExposure(3, 84);//2,80
+            camera.manualExposure = true;
+        }
 
         if (!firing) {
             if (gamepad1.x || gamepad2.x) {
@@ -399,11 +392,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 
-//        if (camera.goalDetected() && relocalizeTimer.seconds() > 5) {
-//            drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
-//            drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
-//            relocalizeTimer.reset();
-//        }
+        if (camera.goalDetected() && relocalizeTimer.seconds() > 5 && Math.abs(gamepad1.left_trigger - gamepad1.right_trigger) < .5 && Math.abs(gamepad1.left_stick_y) <.5  && Math.abs(gamepad1.left_stick_x)<.5) {
+            drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
+            drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
+            relocalizeTimer.reset();
+        }
 
 
         if (gamepad1.dpad_left || gamepad2.dpad_left) {

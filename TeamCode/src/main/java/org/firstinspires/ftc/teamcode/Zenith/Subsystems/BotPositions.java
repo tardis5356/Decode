@@ -39,7 +39,7 @@ public class BotPositions {
 
     public static double BREAKPAD_ACTIVE = 0.7, BREAKPAD_INACTIVE = .42;
 
-    public static double CAMERA_RADIUS = -3.89894311, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
+    public static double CAMERA_RADIUS = -3.58559, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
 
     //positions of servos in StorageSubsystem
     public static double GATE_OPEN = .53, GATE_CLOSED = .41, KICKER_UP = .65, KICKER_DOWN = .28, SLOT_STORED = .53, SLOT_FLY = .89, BACK_OPEN = .44, BACK_CLOSE = .5;

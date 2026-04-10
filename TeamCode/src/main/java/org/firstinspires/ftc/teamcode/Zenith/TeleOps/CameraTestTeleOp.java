@@ -31,6 +31,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Turret;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 @Config
@@ -210,7 +211,13 @@ Timer.reset();
         drive.localizer.update();
 
 
-camera.getRelocalizedPose(drive, telemetry);
+        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STOPPING_STREAM) {
+            camera.manualExposure = false;
+        }
+        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !camera.manualExposure) {
+            camera.setManualExposure(3, 84);//2,80
+            camera.manualExposure = true;
+        }
 
         turret.updateTurretTracking(drive, telemetry);
 
@@ -234,8 +241,13 @@ camera.getRelocalizedPose(drive, telemetry);
 
         Pose2d pose = drive.localizer.getPose();
         telemetry.addData("time", Timer.seconds());
+        if (camera.goalDetected()){
+            drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
+            camera.getRelocalizedPose(drive, telemetry);
+        }
 
- camera.getATagRobotHeading(turret, telemetry);
+
+
  telemetry.addData("Odometry        X(in)       Y(in)       Heading(deg)\n            ","%.3f\t\t%.3f\t\t%.3f", pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
         telemetry.addLine();
         telemetry.addData("FPS", camera.visionPortal.getFps());

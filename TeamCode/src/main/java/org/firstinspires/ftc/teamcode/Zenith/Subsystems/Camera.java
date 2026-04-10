@@ -43,20 +43,20 @@ import java.util.stream.Collectors;
 
 public class Camera extends SubsystemBase {
 
-    private static final int IMG_HEIGHT = 480; //600
-    private static final int IMG_WIDTH = 640;//800
+    private static final int IMG_HEIGHT = 720;//480; //600
+    private static final int IMG_WIDTH = 1280;//640;//800
     public static double yawPower, forwardPower;
-    public static boolean manualExposure;
+    public static boolean manualExposure = false;
     // === HARDWARE AND PROCESSORS ===
     public VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
     private final AprilTagDetection desiredTag = null;
     public final WebcamName turretWebcam;
     //532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fx = 545.605 * 56.5 / 58 * 74/72;
+    public double fx = 433.639 * 55/25 * 55/62;
     //532.034 * 42.5/52.5;
-    public double fy = 545.605 * 56.5 / 58 * 74/72; //actual / calculated
-    public double cx = 320, cy = 262.311;
+    public double fy = 433.639 * 55/25 * 55/62; //545.605 * 56.5 / 58 * 74/72; //actual / calculated
+    public double cx = 631.6, cy = 321;
     public int desiredTagID;
     PIDController yawController, forwardController;
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
@@ -121,8 +121,8 @@ public class Camera extends SubsystemBase {
             // Camera → Tag translation
             double xCameraToTag = detection.ftcPose.x;
             double yCameraToTag = detection.ftcPose.y;
-//            telemetry.addData("xCameraToTag", xCameraToTag);
-//            telemetry.addData("yCameraToTag", yCameraToTag);
+            telemetry.addData("xCameraToTag", xCameraToTag);
+            telemetry.addData("yCameraToTag", yCameraToTag);
             yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
 
             // Rotate relative to turret
@@ -131,15 +131,15 @@ public class Camera extends SubsystemBase {
             double yTagToTurret = xCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad)
                     + yCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad);
 
-//            telemetry.addData("xTagToTurret", xTagToTurret);
-//            telemetry.addData("yTagToTurret", yTagToTurret);
+            telemetry.addData("xTagToTurret", xTagToTurret);
+            telemetry.addData("yTagToTurret", yTagToTurret);
 
 
             // Offset from turret to bot center
             double xTagToBot = xTagToTurret + TURRET_OFFSET_X;
             double yTagToBot = yTagToTurret + TURRET_OFFSET_Y;
-//            telemetry.addData("xTagToBot", xTagToBot);
-//            telemetry.addData("yTagToBot", yTagToBot);
+            telemetry.addData("xTagToBot", xTagToBot);
+            telemetry.addData("yTagToBot", yTagToBot);
 
 
             // Tag orientation
@@ -174,23 +174,6 @@ public class Camera extends SubsystemBase {
     }
 
     public void periodic() {
-//        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
-//
-//            if(visionPortal.getProcessorEnabled(greenLocator)){
-//                blobs = greenLocator.getBlobs();
-//            }
-//            else if (visionPortal.getProcessorEnabled(purpleLocator)){
-//                blobs = purpleLocator.getBlobs();
-//            }
-//
-//
-//            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
-//            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
-//        }
-//        else{
-//            yawPower = 0;
-//            forwardPower = 0;
-//        }
 
         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
