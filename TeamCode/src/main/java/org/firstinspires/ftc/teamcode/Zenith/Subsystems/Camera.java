@@ -60,44 +60,7 @@ public class Camera extends SubsystemBase {
     public int desiredTagID;
     PIDController yawController, forwardController;
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(ColorRange.ARTIFACT_GREEN
-//                    new ColorRange(
-//                            ColorSpace.YCrCb,
-//                            new Scalar( 16,   0, 0),
-//                            new Scalar(200, 110, 110))
-            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
-            .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBoxFitColor(0)       // Disable the drawing of rectangles
-            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
-            .setBlurSize(5)          // Smooth the transitions between different colors in image
 
-            // the following options have been added to fill in perimeter holes.
-            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
-            .setErodeSize(50)        // Shrink blobs so blobs become separated and you can see individual balls
-            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
-            .build();
-    ColorBlobLocatorProcessor purpleLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(ColorRange.ARTIFACT_PURPLE
-//                    new ColorRange(
-//                            ColorSpace.YCrCb,
-//                            new Scalar( 16,   0, 0),
-//                            new Scalar(200, 110, 110)
-//                    )
-            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
-            .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBoxFitColor(0)       // Disable the drawing of rectangles
-            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
-            .setBlurSize(5)          // Smooth the transitions between different colors in image
-
-            // the following options have been added to fill in perimeter holes.
-            .setErodeSize(50)        // Shrink blobs so blobs become separated
-            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
-            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
-            .build();
-    private WebcamName intakeWebcam;
     private CameraName switchableCamera;
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
 
@@ -122,8 +85,6 @@ public class Camera extends SubsystemBase {
                 //.setCamera(switchableCamera)
                 .setCamera(turretWebcam)
                 .addProcessor(aprilTagProcessor)
-                .addProcessor(purpleLocator)
-                .addProcessor(greenLocator)
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
                 .build();
@@ -132,8 +93,7 @@ public class Camera extends SubsystemBase {
 
 
         // Disable intake camera processors initially
-        visionPortal.setProcessorEnabled(purpleLocator, false);
-        visionPortal.setProcessorEnabled(greenLocator, false);
+
     }
 
     // === CONSTANTS (adjust for your bot) ===
@@ -237,36 +197,9 @@ public class Camera extends SubsystemBase {
     }
 
     // === CAMERA SWITCHING ===
-    public void switchCamera(ActiveCamera camera) {
-        currentCamera = camera;
 
-        switch (camera) {
-            case INTAKE_GREEN:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, true);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
 
-            case INTAKE_PURPLE:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, true);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
 
-            case TURRET:
-                visionPortal.setActiveCamera(turretWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, true);
-                break;
-        }
-    }
-
-    public ActiveCamera getCurrentCamera() {
-        return currentCamera;
-    }
 
     public List<AprilTagDetection> getCurrentAprilTagDetections() {
         return aprilTagProcessor.getDetections();

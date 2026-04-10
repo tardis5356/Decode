@@ -30,6 +30,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.PinpointLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
@@ -79,7 +80,7 @@ public class DecodeTeleOp extends CommandOpMode {
     //below we create a new object instance of all the subsystem classes
     int visionOutputPosition = 1;
     ElapsedTime cameraStreamTimer = new ElapsedTime();
-
+    ElapsedTime relocalizeTimer = new ElapsedTime();
     FtcDashboard dashboard = FtcDashboard.getInstance();
     //gamepads
     //GamepadEx is an extended object version of gamepads that has more organized input checks that we use in triggers.
@@ -111,7 +112,6 @@ public class DecodeTeleOp extends CommandOpMode {
     public static int previousShotSet;
 
     public static boolean readyForNextShot;
-
 
 
     public PinpointLocalizer pinpointLocalizer;
@@ -209,8 +209,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
             telemetry.setMsTransmissionInterval(20);   // Speed up telemetry updates, Just use for debugging.
-
-
+            relocalizeTimer.reset();
         }
 
         //Granny Mode
@@ -372,27 +371,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
         intake.setCurrentArtifacts();
 
-//        if (gamepad1.bWasPressed() || gamepad2.bWasPressed()) {
-//            firing = true;
-//            storage.openGate();
-//            sleep(200);
-//            intake.in();
-//        } else if (gamepad1.bWasReleased() || gamepad2.bWasReleased()) {
-//            storage.closeGate();
-//            intake.stop();
-//            firing = false;
-//        }
-//
-//        if (firing && gamepad1.aWasPressed()) {
-//            storage.raiseKicker();
-//            sleep(300);
-//            storage.lowerKicker();
-//        }
 
-//        if(!camera.turretWebcam.isAttached()){
+//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STOPPING_STREAM) {
 //            camera.manualExposure = false;
 //        }
-//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING){
+//        if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STARTING_STREAM) {
 //            cameraStreamTimer.reset();
 //        }
 //
@@ -400,7 +383,7 @@ public class DecodeTeleOp extends CommandOpMode {
 //        if (cameraStreamTimer.seconds() > 0.3 && !camera.manualExposure) {
 //            //TODO Check this setting
 //
-//           camera.setManualExposure(2, 80);//2,80
+//            camera.setManualExposure(2, 80);//2,80
 //            camera.manualExposure = true;
 //        }
 
@@ -413,6 +396,14 @@ public class DecodeTeleOp extends CommandOpMode {
                 intake.stop();
             }
         }
+
+
+
+//        if (camera.goalDetected() && relocalizeTimer.seconds() > 5) {
+//            drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
+//            drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
+//            relocalizeTimer.reset();
+//        }
 
 
         if (gamepad1.dpad_left || gamepad2.dpad_left) {
@@ -477,7 +468,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
         telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 
-//telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
+//        telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
@@ -487,7 +478,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
         telemetry.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry.addLine();
-        telemetry.addData("flyWheel_MotorPower",shooter.mSL.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("flyWheel_MotorPower", shooter.mSL.getCurrent(CurrentUnit.AMPS));
         telemetry.addLine();
         telemetry.addData("targetSpeed", shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + shooter.speedOffset);
         telemetry.addData("Distance", GlobalVariables.distanceFromTarget);
@@ -523,12 +514,12 @@ public class DecodeTeleOp extends CommandOpMode {
         }
     }
 
-    public static void logShots(Shooter shooter, MecanumDrive drive, Turret turret){
-        if (!firing){
+    public static void logShots(Shooter shooter, MecanumDrive drive, Turret turret) {
+        if (!firing) {
             shotNumber = 0;
         }
 
-        if(!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9){
+        if (!readyForNextShot && shooter.mSL.getCurrent(CurrentUnit.AMPS) < 9) {
             readyForNextShot = true;
         }
 
@@ -536,14 +527,14 @@ public class DecodeTeleOp extends CommandOpMode {
             shotNumber++;
             Log.d("ShooterData", //"/n" + "shot: " + shotNumber ,
                     "Set: " + shotSet + "\n" +
-                    "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "\n" +
+                            "FlywheelSpeed: " + shooter.getFlyWheelSpeed() + "\n" +
                             "TargetSpeed: " + shooter.WheelRegression.get(GlobalVariables.distanceFromTarget) + "\n" +
                             "X: " + drive.localizer.getPose().position.x + "\n" +
                             "Y: " + drive.localizer.getPose().position.y + "\n" +
                             "Heading: " + Math.toDegrees(drive.localizer.getPose().heading.toDouble()) + "\n" +
                             "HoodPosition: " + shooter.sH.getPosition() + "\n" +
                             "Distance: " + GlobalVariables.distanceFromTarget + "\n" +
-                            "Turret Error: " + turret.getTurretErrorDEG()+ "\n" +
+                            "Turret Error: " + turret.getTurretErrorDEG() + "\n" +
                             "Turret Angle: " + turret.getTurretThetaDEG() + "\n"
             );
             previousShotSet = shotSet;

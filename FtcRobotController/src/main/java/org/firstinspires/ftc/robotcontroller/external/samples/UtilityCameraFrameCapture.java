@@ -66,8 +66,8 @@ public class UtilityCameraFrameCapture extends LinearOpMode
      */
     final boolean USING_WEBCAM = false;
     final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
-    final int RESOLUTION_WIDTH = 640;
-    final int RESOLUTION_HEIGHT = 480;
+    final int RESOLUTION_WIDTH = 800;
+    final int RESOLUTION_HEIGHT = 600;
 
     // Internal state
     boolean lastX;

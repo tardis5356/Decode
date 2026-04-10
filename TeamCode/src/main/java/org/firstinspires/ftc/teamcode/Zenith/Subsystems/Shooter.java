@@ -92,7 +92,7 @@ public class Shooter extends SubsystemBase {
 
    
 
-//        HoodRegression.put(36., .99);
+ //       HoodRegression.put(36., .99);
 //        WheelRegression.put(36., 700.);//for auto testing
 
         //  4/6 + 0.05
