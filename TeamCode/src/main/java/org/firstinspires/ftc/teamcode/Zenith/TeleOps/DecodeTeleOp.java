@@ -392,7 +392,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
 
 
-        if (camera.goalDetected() && relocalizeTimer.seconds() > 5 && Math.abs(gamepad1.left_trigger - gamepad1.right_trigger) < .5 && Math.abs(gamepad1.left_stick_y) <.5  && Math.abs(gamepad1.left_stick_x)<.5) {
+        if (camera.goalDetected() && relocalizeTimer.seconds() > 2.5 && Math.abs(gamepad1.left_trigger - gamepad1.right_trigger) < .5 && Math.abs(gamepad1.left_stick_y) <.5  && Math.abs(gamepad1.left_stick_x)<.5) {
             drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
             drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
             relocalizeTimer.reset();
