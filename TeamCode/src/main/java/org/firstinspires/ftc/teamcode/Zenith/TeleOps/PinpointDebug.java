@@ -140,7 +140,7 @@ public class PinpointDebug extends CommandOpMode {
             driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
             driver.setOffsets(mmPerTick * parYTicks, mmPerTick * perpXTicks, DistanceUnit.MM);
 
-            driver.setYawScalar(0.99933711*(1/0.99986111));
+            driver.setYawScalar(0.99933711*(1/0.99986111)*(3605.6/3600));
 
             // TODO: reverse encoder directions if needed
             initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;

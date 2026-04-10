@@ -62,7 +62,7 @@ public class Shooter extends SubsystemBase {
     public double targetFlyWheelSpeed;
     public double hoodOffset;
 
-    public int speedOffset;
+    public int speedOffset = 0;
 
     public boolean targeting;
 
