@@ -137,15 +137,15 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
-                        sH.setPosition(.37 + hoodOffset);
+                        sH.setPosition(.7 + hoodOffset);
                         break;
 
                     case MID:
-                        sH.setPosition(.11 + hoodOffset);
+                        sH.setPosition(.45 + hoodOffset);
                         break;
 
                     case FAR:
-                        sH.setPosition(.04 + hoodOffset);
+                        sH.setPosition(.35 + hoodOffset);
                         break;
                 }
             } else {
@@ -159,18 +159,18 @@ public class Shooter extends SubsystemBase {
             if (shooterLock) {
                 switch (shooterPreset) {
                     case CLOSE:
+                        mSL.setPower(calculateBangBangFlyWheelPower(850. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(850. + speedOffset));
+                        break;
+
+                    case MID:
                         mSL.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
                         mSR.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
                         break;
 
-                    case MID:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1075. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1075. + speedOffset));
-                        break;
-
                     case FAR:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1275. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1275. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1080. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1080. + speedOffset));
                         break;
 
                 }

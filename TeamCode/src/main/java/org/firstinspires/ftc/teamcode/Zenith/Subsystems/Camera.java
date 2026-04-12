@@ -87,6 +87,7 @@ public class Camera extends SubsystemBase {
                 .addProcessor(aprilTagProcessor)
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
+               // .setAutoStartStreamOnBuild(true)
                 .build();
 
         visionPortal.setProcessorEnabled(aprilTagProcessor, true);

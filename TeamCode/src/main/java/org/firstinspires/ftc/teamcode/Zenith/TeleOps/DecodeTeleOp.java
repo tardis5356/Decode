@@ -166,6 +166,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             camera = new Camera(hardwareMap);
 
+
             telemetry.addLine("NOT READY");
             telemetry.update();
             sleep(500);
@@ -187,6 +188,7 @@ public class DecodeTeleOp extends CommandOpMode {
 
             imu.resetYaw();
             sleep(500);
+
             //map motors
             mFL = hardwareMap.get(DcMotorEx.class, "mFL");
             mFR = hardwareMap.get(DcMotorEx.class, "mFR");
@@ -327,9 +329,10 @@ public class DecodeTeleOp extends CommandOpMode {
                             new SequentialCommandGroup(
                                     new InstantCommand(() -> shooter.targeting = false),
                                     new InstantCommand(() -> shooter.hoodOffset = .95),
-                                    new WaitCommand(400),
+                                    new WaitCommand(600),
                                     new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
                                     new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
+                                    new WaitCommand(600),
                                     new InstantCommand(() -> shooter.hoodOffset = 0.0),
                                     new InstantCommand(() -> turret.manualOffset = 0),
                                     new InstantCommand(() -> shooter.targeting = true)
@@ -376,7 +379,7 @@ public class DecodeTeleOp extends CommandOpMode {
             camera.manualExposure = false;
         }
         if (camera.visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !camera.manualExposure) {
-            camera.setManualExposure(3, 84);//2,80
+            camera.setManualExposure(2, 20);//3,84
             camera.manualExposure = true;
         }
 
@@ -391,13 +394,13 @@ public class DecodeTeleOp extends CommandOpMode {
         }
 
 
-        if(relocalizeTimer.seconds()>2.5 && Math.abs(gamepad1.left_trigger - gamepad1.right_trigger) < .25 && Math.abs(gamepad1.left_stick_y) <.25  && Math.abs(gamepad1.left_stick_x)<.25){
-            if (camera.goalDetected()) {
-                drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
-                drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
-                relocalizeTimer.reset();
-            }
-        }
+//        if(relocalizeTimer.seconds()>2.5 && Math.abs(gamepad1.left_trigger - gamepad1.right_trigger) < .25 && Math.abs(gamepad1.left_stick_y) <.25  && Math.abs(gamepad1.left_stick_x)<.25){
+//            if (camera.goalDetected()) {
+//                drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))));
+//                drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry));
+//                relocalizeTimer.reset();
+//            }
+//        }
 
 
         if (gamepad1.dpad_left || gamepad2.dpad_left) {
@@ -462,7 +465,7 @@ public class DecodeTeleOp extends CommandOpMode {
         }
         telemetry.addData("currentArtifacts", GlobalVariables.currentArtifacts);
 
-//        telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
+        telemetry.addData("cameraAttatched", camera.turretWebcam.isAttached());
 
         telemetry.addData("PinpointState", driver.getDeviceStatus());
         telemetry.addLine();
@@ -478,7 +481,7 @@ public class DecodeTeleOp extends CommandOpMode {
         telemetry.addData("Distance", GlobalVariables.distanceFromTarget);
         telemetry.addData("firing", firing);
 
-//        telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
+        telemetry.addData("ApriltagsSeen", camera.getCurrentAprilTagDetections().size());
 
 
         telemetry.update();
