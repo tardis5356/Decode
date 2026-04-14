@@ -145,7 +145,7 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case FAR:
-                        sH.setPosition(.35 + hoodOffset);
+                        sH.setPosition(.38 + hoodOffset);
                         break;
                 }
             } else {
@@ -169,8 +169,8 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case FAR:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1080. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1080. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1100. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1100. + speedOffset));
                         break;
 
                 }

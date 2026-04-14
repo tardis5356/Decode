@@ -53,7 +53,6 @@ public class Turret extends SubsystemBase {
     public static TouchSensor lT, lT2;
 
 
-
     public int desiredTagID;
 
     private PIDController pidController;
@@ -80,7 +79,6 @@ public class Turret extends SubsystemBase {
     public GoBildaPinpointDriver driver;
 
 
-
     public Turret(HardwareMap hardwareMap) {
         mT = hardwareMap.get(DcMotorEx.class, "mT");
         //lT = hardwareMap.get(TouchSensor.class, "lT");
@@ -91,7 +89,7 @@ public class Turret extends SubsystemBase {
         driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         PIDDisabled = false;
-        driver.setEncoderResolution(1/0.00197, DistanceUnit.INCH);
+        driver.setEncoderResolution(1 / 0.00197, DistanceUnit.INCH);
 
         mT.setDirection(DcMotorSimple.Direction.REVERSE);
         mT.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
@@ -143,8 +141,6 @@ public class Turret extends SubsystemBase {
         //These values are to compensate for angular velocity of the robot when applying power to turret
 
 
-
-
         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
         turretError = (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE);
 
@@ -153,11 +149,11 @@ public class Turret extends SubsystemBase {
 
         if (!PIDDisabled) {
 
-if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGREE > TURRET_TOLERANCE_DEG){
-    motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
-}else motorPower = 0;
+            if (Math.abs(getCurrentPosition() - getTargetPosition()) / TURRET_TICKS_PER_DEGREE > TURRET_TOLERANCE_DEG) {
+                motorPower = pidController.calculate(getCurrentPosition(), targetPositionTicks);
+            } else motorPower = 0;
 
-        } else motorPower =0;
+        } else motorPower = 0;
 //            if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGREE > TURRET_TOLERANCE_DEG){
 //            motorPower = pidController.calculate(getCurrentPosition(), 0);
 //        }else motorPower = 0;
@@ -229,7 +225,7 @@ if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGRE
 //                Math.atan2(goalY - turretFieldY, goalX - turretFieldX)
 //                - Math.atan2(goalY - (turretFieldY - robotYVelocity), goalX - (turretFieldY- robotXVelocity)) ;
 
-       // GlobalVariables.distanceFromTarget = Math.hypot(goalY -turretFieldY - robotYVelocity, goalX - turretFieldY - robotXVelocity) + 6 - CAMERA_RADIUS;
+        // GlobalVariables.distanceFromTarget = Math.hypot(goalY -turretFieldY - robotYVelocity, goalX - turretFieldY - robotXVelocity) + 6 - CAMERA_RADIUS;
 
         turretToFieldAngularVelocity_Deg = turretVelocityDegreesPerSec - robotVelocityDegreesPerSec; // + Math.toDegrees(turretXYAngularVelocity_Rad);
 
@@ -285,7 +281,7 @@ if (Math.abs(getCurrentPosition() - getTargetPosition())/ TURRET_TICKS_PER_DEGRE
 //        telemetry.addData("Target Field Turret Angle (deg)", Math.toDegrees(desiredFieldTurretAngleRAD));
 //        telemetry.addData("Target Turret On Bot Angle (deg)", Math.toDegrees(desiredTurretOnBotAngleRAD));
         telemetry.addData("Turret Theta (deg)       Current         Error\n                                           ", "%.2f\t\t%.2f", Math.toDegrees(getTurretThetaRAD()), ((getCurrentPosition() - desiredTicks) / TURRET_TICKS_PER_DEGREE));
-telemetry.addData("TurretError", ((desiredTicks - getCurrentPosition()) / TURRET_TICKS_PER_DEGREE));
+        telemetry.addData("TurretError", ((desiredTicks - getCurrentPosition()) / TURRET_TICKS_PER_DEGREE));
 //        telemetry.addData("TurretPosX", turretFieldX);
 //        telemetry.addData("TurretPosY", turretFieldY);
 //        telemetry.addLine("Turret Ticks");
