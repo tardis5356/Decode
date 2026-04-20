@@ -30,9 +30,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.Zenith;
+package org.firstinspires.ftc.teamcode.Zenith.StarterBot;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -55,7 +54,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * we will also need to adjust the "PIDF" coefficients with some that are a better fit for our application.
  */
 
-@TeleOp(name = "StarterBotTeleop", group = "StarterBot")
+@TeleOp(name = "StarterBotTeleop v1.22", group = "StarterBot")
 //@Disabled
 public class StarterBotTeleop extends OpMode {
     final double FEED_TIME_SECONDS = 0.3; //The feeder servos run this long when a shot is requested.
@@ -220,10 +219,10 @@ public class StarterBotTeleop extends OpMode {
         double leftStickX = gamepad1.left_stick_x;
         double rightStickX = gamepad1.right_trigger - gamepad1.left_trigger + gamepad1.right_stick_x;
 
-        mFL.setPower((leftStickY + rightStickX + leftStickX) * .5);
-        mFR.setPower((leftStickY - rightStickX - leftStickX) * .5);
-        mBL.setPower((leftStickY + rightStickX - leftStickX) * .5);
-        mBR.setPower((leftStickY - rightStickX + leftStickX) * .5);
+        mFL.setPower((leftStickY + rightStickX + leftStickX) * .625);
+        mFR.setPower((leftStickY - rightStickX - leftStickX) * .625);
+        mBL.setPower((leftStickY + rightStickX - leftStickX) * .625);
+        mBR.setPower((leftStickY - rightStickX + leftStickX) * .625);
 
 
         // mBR.setPower(0.5);
@@ -235,13 +234,13 @@ public class StarterBotTeleop extends OpMode {
 
         if (gamepad1.a) {
             // launcher.setVelocity(LAUNCHER_TARGET_VELOCITY);
-            LAUNCH_SPEED = 0.9;
+            LAUNCH_SPEED = 0.5;
             isLauncherActive = true;
         } else if (gamepad1.x){
-            LAUNCH_SPEED = 0.95;
+            LAUNCH_SPEED = 0.5625;
             isLauncherActive = true;
         } else if (gamepad1.y){
-            LAUNCH_SPEED = 1.0;
+            LAUNCH_SPEED = 0.625;
             isLauncherActive = true;
         } else if (gamepad1.b) {
             // launcher.setVelocity(STOP_SPEED);
