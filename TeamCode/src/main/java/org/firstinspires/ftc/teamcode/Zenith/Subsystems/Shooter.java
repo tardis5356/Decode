@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.inAuto;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -25,7 +26,7 @@ public class Shooter extends SubsystemBase {
     //Start by tuning vV so that your tps vs time graph approaches the set point (expect a horizontal asymptote),
     //then tune vP to speed it up and then maybe vD and vI.
     //idk if vS is necessary but that's just there so the motor is at a power always at the brink of surpassing the force of static friction.
-    public static float vP = 0.003f, vI = 0, vD = 0.000f, vV = 0.00039f, vS = 0.16f;
+    public static float vP = 0.0055f, vI = 0.000f, vD = 0.000f, vV = 0.0004f, vS = 0.14f;
 
     public static double hardWheelOffset = 0;
 
@@ -41,7 +42,17 @@ public class Shooter extends SubsystemBase {
     public Servo sH;
     public Servo liH;
 
-    public boolean bangBangActive;
+    public static boolean bangBangActive;
+
+    public boolean shooterLock = false;
+
+    public enum ShooterPreset {
+        CLOSE,
+        MID,
+        FAR
+    }
+
+    public ShooterPreset shooterPreset = ShooterPreset.MID;
 
     //InterpolatingDoubleTreeMap is a class that draws straight lines between points that you feed it.
     //Then if you ask for a point in between two other ones, it will return the value of your input along the line it drew.
@@ -51,7 +62,7 @@ public class Shooter extends SubsystemBase {
     public double targetFlyWheelSpeed;
     public double hoodOffset;
 
-    public int speedOffset;
+    public int speedOffset = 0;
 
     public boolean targeting;
 
@@ -79,46 +90,36 @@ public class Shooter extends SubsystemBase {
 
         mSL.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        sH.setPosition(0.05);
+   
+
+ //       HoodRegression.put(36., .99);
+//        WheelRegression.put(36., 700.);//for auto testing
+
+        //  4/6 + 0.05
+        HoodRegression.put(35.,1.);
+        HoodRegression.put(50.,1.);
+        HoodRegression.put(65.,.85);
+        HoodRegression.put(85.,.5);
+        HoodRegression.put(101.,.5);
+        HoodRegression.put(116.,.46);
+        HoodRegression.put(130.,.4);
+        HoodRegression.put(145.8,.3);
+        HoodRegression.put(160.6,.25);
+        HoodRegression.put(167.7,.2);
+        //adoifijd
 
 
-
-
-//Old shooter interpolator
-//        HoodRegression.put(158., 0.05);
-//        HoodRegression.put(146., 0.05);
-//        HoodRegression.put(135.5, 0.1);
-//        HoodRegression.put(126., 0.1);
-//        HoodRegression.put(115., 0.1);
-//        HoodRegression.put(109., 0.15);
-//        HoodRegression.put(100., 0.2);
-//        HoodRegression.put(86., 0.2);
-//        HoodRegression.put(76., 0.275);
-//        HoodRegression.put(63., 0.15);
-//        HoodRegression.put(51., 0.25);
-//        HoodRegression.put(34., 0.45);
-//
-//
-//        WheelRegression.put(158.0, 1450. - hardWheelOffset);
-//        WheelRegression.put(146.0, 1375. - hardWheelOffset);
-//        WheelRegression.put(135.5, 1350. - hardWheelOffset);
-//        WheelRegression.put(126.0, 1300. - hardWheelOffset);
-//        WheelRegression.put(115.0, 1237.5 - hardWheelOffset);
-//        WheelRegression.put(109.0, 1200. - hardWheelOffset);
-//        WheelRegression.put(100.0, 1075. - hardWheelOffset);
-//        WheelRegression.put(86.0, 1050. - hardWheelOffset);
-//        WheelRegression.put(76.0, 975. - hardWheelOffset);
-//        WheelRegression.put(63.0, 925. - hardWheelOffset);
-//        WheelRegression.put(51.0, 800. - hardWheelOffset);
-//        WheelRegression.put(34.0, 750. - hardWheelOffset);
-
-        HoodRegression.put(158., 0.85);
-
-
-
-        WheelRegression.put(158.0, 1220 - hardWheelOffset);
-
-
+//        //   4/6 +50
+        WheelRegression.put(35.,725.);
+        WheelRegression.put(50.,725.);
+        WheelRegression.put(65.,825.);
+        WheelRegression.put(85.,925.);
+        WheelRegression.put(101.,975.);
+        WheelRegression.put(116.,1075.);
+        WheelRegression.put(130.,1150.);
+        WheelRegression.put(145.8,1300.);
+        WheelRegression.put(160.6,1350.);
+        WheelRegression.put(167.7,1425.);
 
         targeting = true;
     }
@@ -126,38 +127,81 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (gateOpen){
-            bangBangActive = true;
-        }else bangBangActive = false;
+
+
 
         setVel(WheelRegression.get(distanceFromTarget));
 
         if (targeting) {
-            sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
+            if (shooterLock) {
+                switch (shooterPreset) {
+                    case CLOSE:
+                        sH.setPosition(.7 + hoodOffset);
+                        break;
+
+                    case MID:
+                        sH.setPosition(.45 + hoodOffset);
+                        break;
+
+                    case FAR:
+                        sH.setPosition(.4 + hoodOffset);
+                        break;
+                }
+            } else {
+                sH.setPosition(HoodRegression.get(distanceFromTarget) + hoodOffset);
+            }
         } else {
             sH.setPosition(hoodOffset);
         }
 
         if (spinning) {
-            if(bangBangActive){
+            if (shooterLock) {
+                switch (shooterPreset) {
+                    case CLOSE:
+                        mSL.setPower(calculateBangBangFlyWheelPower(850. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(850. + speedOffset));
+                        break;
+
+                    case MID:
+                        mSL.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(925. + speedOffset));
+                        break;
+
+                    case FAR:
+                        mSL.setPower(calculateBangBangFlyWheelPower(1150. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1150. + speedOffset));
+                        break;
+
+                }
+            } else if (bangBangActive) {
                 mSL.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
                 mSR.setPower(calculateBangBangFlyWheelPower(targetFlyWheelSpeed + speedOffset));
-            }else{
+            } else {
                 mSL.setPower(calculatePIDFlyWheelPower(targetFlyWheelSpeed + speedOffset));
                 mSR.setPower(calculatePIDFlyWheelPower(targetFlyWheelSpeed + speedOffset));
             }
-
         } else {
             mSL.setPower(0);
             mSR.setPower(0);
         }
 
-        if (Math.abs(getTargetFlyWheelSpeed() - getFlyWheelSpeed()) < 35) {
-            liH.setPosition(0.8);
-        } else if (getFlyWheelSpeed() - getTargetFlyWheelSpeed() < -35) {
-            liH.setPosition(0);
+
+        if (!shooterLock) {
+            if (Math.abs(getTargetFlyWheelSpeed() - getFlyWheelSpeed()) < 35) {
+                liH.setPosition(0.8);
+            } else if (getFlyWheelSpeed() - getTargetFlyWheelSpeed() < -35) {
+                liH.setPosition(0);
+            } else {
+                liH.setPosition(getFastPulse());
+            }
         } else {
-            liH.setPosition(getFastPulse());
+            if (shooterPreset == ShooterPreset.MID) {
+                liH.setPosition(0.8);
+            } else if (shooterPreset == ShooterPreset.CLOSE) {
+                liH.setPosition(0);
+            } else {
+                liH.setPosition(getFastPulse());
+            }
         }
 
     }
@@ -168,11 +212,17 @@ public class Shooter extends SubsystemBase {
     }
 
     public double calculatePIDFlyWheelPower(double tps) {
-        return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
+
+//        double flywheelError = Math.abs(getFlyWheelSpeed() - tps);
+//        if (flywheelError < 70) {
+            return (velPIDController.calculate(getFlyWheelSpeed(), tps) + velFFController.calculate(tps)) * 12.5 / voltageSensor.getVoltage();
+//        } else {
+//            return calculateBangBangFlyWheelPower(tps);
+//        }
     }
 
     public double calculateBangBangFlyWheelPower(double tps) {
-        if (getFlyWheelSpeed() > tps) {
+        if (getFlyWheelSpeed() >= tps) {
             return 0;
         } else return 1;
     }
@@ -195,10 +245,5 @@ public class Shooter extends SubsystemBase {
         return (Math.sin(2 * Math.PI * time.time(TimeUnit.SECONDS) - 0.5 * Math.PI) + 1) / 5;
     }
 
-    public void setMidRangeAutoShooterPos() {
-        targeting = false;
-        sH.setPosition(BotPositions.MID_RANGE_AUTO_HOOD_POS);
-        setVel(BotPositions.MID_RANGE_AUTO_FLYWHEEL_TPS);
-    }
 
 }

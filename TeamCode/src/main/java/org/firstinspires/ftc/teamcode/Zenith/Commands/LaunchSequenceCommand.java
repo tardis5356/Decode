@@ -8,51 +8,99 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class LaunchSequenceCommand extends SequentialCommandGroup {
 
-    public LaunchSequenceCommand(Intake intake, Storage storage, String desiredSequence){
-        switch(desiredSequence){
+    public LaunchSequenceCommand(Intake intake, Storage storage, String desiredSequence) {
+        switch (desiredSequence) {
             case "Fly":
                 //launch all as is
                 addCommands(
                         new SequentialCommandGroup(
-                                new InstantCommand(intake::in),
+                                new InstantCommand(() -> DecodeTeleOp.shotSet++),
+                                new InstantCommand(() -> DecodeTeleOp.firing = true),
                                 new InstantCommand(storage::openGate),
-                                new IntakeWaitCommand(intake),
+                                new InstantCommand(intake::stop),
+                                new WaitCommand(200),
+                                new InstantCommand(() -> Shooter.bangBangActive = true),
+                                new InstantCommand(intake::in),
+                                new WaitCommand(450),//600
+                                new InstantCommand(storage::raiseKicker),
+                                new WaitCommand(300),
+                                new InstantCommand(storage::lowerKicker),
                                 new InstantCommand(storage::closeGate),
-                                new InstantCommand(intake::stop)
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(() -> Shooter.bangBangActive = false),
+                                new InstantCommand(() -> DecodeTeleOp.firing = false)
                         )
                 );
-            break;
+                break;
+
+            case "FlyAuto":
+                //launch all as is
+                addCommands(
+                        new SequentialCommandGroup(
+                                new InstantCommand(() -> DecodeTeleOp.shotSet++),
+                                new InstantCommand(() -> DecodeTeleOp.firing = true),
+                                new InstantCommand(storage::openGate),
+                                new InstantCommand(intake::stop),
+                                new WaitCommand(50),
+                                new InstantCommand(() -> Shooter.bangBangActive = true),
+                                new InstantCommand(intake::in),
+                                new WaitCommand(450),
+                                new InstantCommand(storage::raiseKicker),
+                                new WaitCommand(100)
 
 
+                        )
+                );
 
-//            case "Launch":
-//                addCommands(
-//                        new SequentialCommandGroup(
-//                               launchOne(storage)
-//                        )
-//                );
-//            break;
+                break;
+
+            case "Launch":
+                addCommands(
+                        new SequentialCommandGroup(
+                                launchOne(storage, intake)
+                        )
+                );
+                break;
+
+            case "closeAuto":
+                addCommands(
+                        new SequentialCommandGroup(
+                                new InstantCommand(storage::closeGate),
+                                new InstantCommand(storage::lowerKicker),
+                                new InstantCommand(intake::stop),
+                                new InstantCommand(() -> Shooter.bangBangActive = false),
+                                new InstantCommand(() -> DecodeTeleOp.firing = false)
+                        )
+                );
 
         }
 
     }
-//    public static Command launchOne(Storage s){
-//        return
-//
-//                new SequentialCommandGroup(
-//                        new InstantCommand(s::raiseKicker),
-//                        openGate(s),
-//                        new InstantCommand(s::lowerKicker),
-//                        new InstantCommand(s::closeGate)
-//                );
-//
-//    }
 
+    public static Command launchOne(Storage s, Intake i) {
+        return
+
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> DecodeTeleOp.firing = true),
+                        new InstantCommand(s::openGate),
+                        new InstantCommand(i::stop),
+                        new WaitCommand(200),
+                        new InstantCommand(i::in),
+                        new InstantCommand(s::raiseKicker),
+                        new WaitCommand(250),
+                        new InstantCommand(s::lowerKicker),
+                        new InstantCommand(i::stop),
+                        new InstantCommand(s::closeGate),
+                        new InstantCommand(() -> DecodeTeleOp.firing = false)
+                );
+
+    }
 
 
 //    public static Command openGate(Storage s){
@@ -64,7 +112,6 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
 //        return new SequentialCommandGroup(new InstantCommand(s::closeGate),
 //                new WaitCommand(BotPositions.GATE_WAIT));
 //    }
-
 
 
 }

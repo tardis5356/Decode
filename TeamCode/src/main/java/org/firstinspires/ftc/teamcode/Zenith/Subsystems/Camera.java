@@ -43,61 +43,24 @@ import java.util.stream.Collectors;
 
 public class Camera extends SubsystemBase {
 
-    private static final int IMG_HEIGHT = 480; //600
-    private static final int IMG_WIDTH = 640;//800
+    private static final int IMG_HEIGHT = 720;//480; //600
+    private static final int IMG_WIDTH = 1280;//640;//800
     public static double yawPower, forwardPower;
-    public static boolean manualExposure;
+    public static boolean manualExposure = false;
     // === HARDWARE AND PROCESSORS ===
-    public static VisionPortal visionPortal;
+    public VisionPortal visionPortal;
     private static AprilTagProcessor aprilTagProcessor;
     private final AprilTagDetection desiredTag = null;
-    private final WebcamName turretWebcam;
+    public final WebcamName turretWebcam;
     //532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fx = 545.605 * 56.5 / 58 * 74/72;
+    public double fx = 433.639 * 55/25 * 55/62* 126/118;
     //532.034 * 42.5/52.5;
-    public double fy = 545.605 * 56.5 / 58 * 74/72; //actual / calculated
-    public double cx = 320, cy = 262.311;
+    public double fy = 433.639 * 55/25 * 55/62 * 126/118; //545.605 * 56.5 / 58 * 74/72; //actual / calculated
+    public double cx = 631.6, cy = 321;
     public int desiredTagID;
     PIDController yawController, forwardController;
     List<ColorBlobLocatorProcessor.Blob> blobs = new ArrayList<>();
-    ColorBlobLocatorProcessor greenLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(ColorRange.ARTIFACT_GREEN
-//                    new ColorRange(
-//                            ColorSpace.YCrCb,
-//                            new Scalar( 16,   0, 0),
-//                            new Scalar(200, 110, 110))
-            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
-            .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBoxFitColor(0)       // Disable the drawing of rectangles
-            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
-            .setBlurSize(5)          // Smooth the transitions between different colors in image
 
-            // the following options have been added to fill in perimeter holes.
-            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
-            .setErodeSize(50)        // Shrink blobs so blobs become separated and you can see individual balls
-            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
-            .build();
-    ColorBlobLocatorProcessor purpleLocator = new ColorBlobLocatorProcessor.Builder()
-            .setTargetColorRange(ColorRange.ARTIFACT_PURPLE
-//                    new ColorRange(
-//                            ColorSpace.YCrCb,
-//                            new Scalar( 16,   0, 0),
-//                            new Scalar(200, 110, 110)
-//                    )
-            ).setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)    // exclude blobs inside blobs
-            .setRoi(ImageRegion.asUnityCenterCoordinates(-.75, .5, .75, -1))
-            .setDrawContours(true)                        // Show contours on the Stream Preview
-            .setBoxFitColor(0)       // Disable the drawing of rectangles
-            .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
-            .setBlurSize(5)          // Smooth the transitions between different colors in image
-
-            // the following options have been added to fill in perimeter holes.
-            .setErodeSize(50)        // Shrink blobs so blobs become separated
-            .setDilateSize(15)       // Expand blobs to fill any divots on the edges
-            .setMorphOperationType(ColorBlobLocatorProcessor.MorphOperationType.OPENING)
-            .build();
-    private WebcamName intakeWebcam;
     private CameraName switchableCamera;
     private ActiveCamera currentCamera = ActiveCamera.TURRET;
 
@@ -122,18 +85,16 @@ public class Camera extends SubsystemBase {
                 //.setCamera(switchableCamera)
                 .setCamera(turretWebcam)
                 .addProcessor(aprilTagProcessor)
-                .addProcessor(purpleLocator)
-                .addProcessor(greenLocator)
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .setCameraResolution(new Size(IMG_WIDTH, IMG_HEIGHT))
+               // .setAutoStartStreamOnBuild(true)
                 .build();
 
         visionPortal.setProcessorEnabled(aprilTagProcessor, true);
 
 
         // Disable intake camera processors initially
-        visionPortal.setProcessorEnabled(purpleLocator, false);
-        visionPortal.setProcessorEnabled(greenLocator, false);
+
     }
 
     // === CONSTANTS (adjust for your bot) ===
@@ -161,8 +122,8 @@ public class Camera extends SubsystemBase {
             // Camera → Tag translation
             double xCameraToTag = detection.ftcPose.x;
             double yCameraToTag = detection.ftcPose.y;
-//            telemetry.addData("xCameraToTag", xCameraToTag);
-//            telemetry.addData("yCameraToTag", yCameraToTag);
+            telemetry.addData("xCameraToTag", xCameraToTag);
+            telemetry.addData("yCameraToTag", yCameraToTag);
             yCameraToTag = detection.ftcPose.y + CAMERA_RADIUS;
 
             // Rotate relative to turret
@@ -171,15 +132,15 @@ public class Camera extends SubsystemBase {
             double yTagToTurret = xCameraToTag * Math.sin(-Math.PI / 2 + thetaTurretRad)
                     + yCameraToTag * Math.cos(-Math.PI / 2 + thetaTurretRad);
 
-//            telemetry.addData("xTagToTurret", xTagToTurret);
-//            telemetry.addData("yTagToTurret", yTagToTurret);
+            telemetry.addData("xTagToTurret", xTagToTurret);
+            telemetry.addData("yTagToTurret", yTagToTurret);
 
 
             // Offset from turret to bot center
             double xTagToBot = xTagToTurret + TURRET_OFFSET_X;
             double yTagToBot = yTagToTurret + TURRET_OFFSET_Y;
-//            telemetry.addData("xTagToBot", xTagToBot);
-//            telemetry.addData("yTagToBot", yTagToBot);
+            telemetry.addData("xTagToBot", xTagToBot);
+            telemetry.addData("yTagToBot", yTagToBot);
 
 
             // Tag orientation
@@ -214,66 +175,27 @@ public class Camera extends SubsystemBase {
     }
 
     public void periodic() {
-//        if (visionPortal.getProcessorEnabled(greenLocator) || visionPortal.getProcessorEnabled(purpleLocator)){
-//
-//            if(visionPortal.getProcessorEnabled(greenLocator)){
-//                blobs = greenLocator.getBlobs();
-//            }
-//            else if (visionPortal.getProcessorEnabled(purpleLocator)){
-//                blobs = purpleLocator.getBlobs();
-//            }
-//
-//
-//            yawPower = yawController.calculate(getBlobCenterX(),IMG_WIDTH/2);
-//            forwardPower = yawController.calculate(getBlobCenterY(),IMG_HEIGHT/4);
-//        }
-//        else{
-//            yawPower = 0;
-//            forwardPower = 0;
-//        }
-        if (visionPortal.getCameraState() == VisionPortal.CameraState.STREAMING && !manualExposure) {
-            //TODO Check this setting
-            setManualExposure(2, 80);//2,80
-            manualExposure = true;
-        }
+
         desiredTagID = (GlobalVariables.aColor.equals("red")) ? 24 : 20;
 
     }
 
     // === CAMERA SWITCHING ===
-    public void switchCamera(ActiveCamera camera) {
-        currentCamera = camera;
 
-        switch (camera) {
-            case INTAKE_GREEN:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, true);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
 
-            case INTAKE_PURPLE:
-                visionPortal.setActiveCamera(intakeWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, true);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, false);
-                break;
 
-            case TURRET:
-                visionPortal.setActiveCamera(turretWebcam);
-                visionPortal.setProcessorEnabled(greenLocator, false);
-                visionPortal.setProcessorEnabled(purpleLocator, false);
-                visionPortal.setProcessorEnabled(aprilTagProcessor, true);
-                break;
-        }
-    }
-
-    public ActiveCamera getCurrentCamera() {
-        return currentCamera;
-    }
 
     public List<AprilTagDetection> getCurrentAprilTagDetections() {
         return aprilTagProcessor.getDetections();
+    }
+
+    public boolean goalDetected() {
+        for (AprilTagDetection d : getCurrentAprilTagDetections()) {
+            if (d.id == 20||d.id == 24) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setObeliskMotif() {
@@ -338,7 +260,7 @@ public class Camera extends SubsystemBase {
 
 
     //2, 94
-    private void setManualExposure(int exposureMS, int gain) {
+    public void setManualExposure(int exposureMS, int gain) {
 
 
         {
@@ -445,6 +367,7 @@ public class Camera extends SubsystemBase {
                         + tagFieldHeading);
 
         telemetry.addData("Tag ID", tag.id);
+        telemetry.addData("Bearing", tag.ftcPose.bearing);
         telemetry.addData("Tag Yaw (deg)", "%.3f", Math.toDegrees(tagYaw));
         telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                      ", "%.2f\t\t%.2f\t\t%.2f", xBotOnField , yBotOnField ,  Math.toDegrees(robotHeading));
 

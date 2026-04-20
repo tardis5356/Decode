@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto;
 
+import static java.lang.Thread.sleep;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -41,7 +43,7 @@ public final class PinpointLocalizer implements Localizer {
         driver.setEncoderResolution(1 / mmPerTick, DistanceUnit.MM);
         driver.setOffsets(mmPerTick * PARAMS.parYTicks, mmPerTick * PARAMS.perpXTicks, DistanceUnit.MM);
 
-        driver.setYawScalar(0.99933711*(1/0.99986111));
+        driver.setYawScalar(0.9999479);
 
         // TODO: reverse encoder directions if needed
         initialParDirection = GoBildaPinpointDriver.EncoderDirection.FORWARD;
@@ -50,9 +52,15 @@ public final class PinpointLocalizer implements Localizer {
         driver.setEncoderDirections(initialParDirection, initialPerpDirection);
 
         driver.resetPosAndIMU();
-
+        // TODO: delay for .5 seconds
         txWorldPinpoint = initialPose;
     }
+
+
+//    public GoBildaPinpointDriver getDriver() {
+//      return driver;
+//    }
+
 
     @Override
     public void setPose(Pose2d pose) {

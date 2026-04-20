@@ -7,6 +7,14 @@ import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURR
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions.TURRET_TICKS_PER_DEGREE;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.motif;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.logShots;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.previousFiring;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.readyForNextShot;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.shotNumber;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.shotSet;
+
+import android.util.Log;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -16,13 +24,17 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.Subsystem;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Zenith.Commands.LaunchSequenceCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BellyPan;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Camera;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.RRSubsystem;
@@ -42,7 +54,7 @@ import java.util.Set;
 
 public class DecodeAuto extends OpMode {
 
-    public static final int MAX_CYCLES = 5;
+    public static final int MAX_CYCLES = 6;
     private static final String HEADER_FORMAT = "%-5s | %-12s | %-12s";
     private static final String ROW_FORMAT = "%-5d | %-12s | %-12s";
     public static RRSubsystem rrSubsystem;
@@ -50,7 +62,7 @@ public class DecodeAuto extends OpMode {
     public static int gateCycleIndex = 1; //default gate cycle after cycle 2
     public static Pose2d savedPos;
     public static Pose2d startPos;
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime autoRuntime = new ElapsedTime();
     private MecanumDrive drive;
     private FtcDashboard dashboard;
     private MultipleTelemetry telemetry2;
@@ -61,16 +73,24 @@ public class DecodeAuto extends OpMode {
     private int currentColumn = 0; // column selector: 0=shoot, 1=intake
     private boolean dpadUpPressed, dpadDownPressed, dpadLeftPressed, dpadRightPressed, bumperPressed;
     // choices[cycleIndex][0=shootChoice(0 goal,1 audience), 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-    private int[][] choices = new int[MAX_CYCLES][2];
+    public static int[][] choices = new int[MAX_CYCLES][2];
     private boolean gateCyclePressed;
+
+    public static boolean midIntakeGateOpen;
+
     // private Camera camera;
 //    private MecanumDrive localizer;
     private Intake intake;
     private BellyPan bellyPan;
-    //private Camera camera;
+   // private Camera camera;
     private Shooter shooter;
     private String aColor = null;
     private Command auto;
+    public GoBildaPinpointDriver driver;
+    private final ElapsedTime driveInitDelay = new ElapsedTime();
+
+    private boolean driveInit;
+
 
     @Override
     public void init() {
@@ -83,14 +103,14 @@ public class DecodeAuto extends OpMode {
         rrSubsystem = new RRSubsystem(hardwareMap);
         turret = new Turret(hardwareMap);
         bellyPan = new BellyPan(hardwareMap);
-       // camera = new Camera(hardwareMap);
+       //  camera = new Camera(hardwareMap);
         intake = new Intake(hardwareMap);
         storage = new Storage(hardwareMap);
         shooter = new Shooter(hardwareMap);
-
+        driver = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         CommandScheduler.getInstance().registerSubsystem(rrSubsystem);
-      //  CommandScheduler.getInstance().registerSubsystem(turret); //TODO: comment out
+
         turret.mT.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.mT.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -98,6 +118,11 @@ public class DecodeAuto extends OpMode {
         bellyPan.disEngagePTO(); // be SURE the bellyPan is latched at the start of the auto
         startPos = null;
         turret.setTargetPosition(allianceValue(0));
+        shotSet = 0;
+        shotNumber = 0;
+        previousFiring = false;
+        firing = false;
+        shooter.hoodOffset = .8;
 
         telemetry2.addData("Status", "Initialized");
         telemetry2.update();
@@ -112,7 +137,7 @@ public class DecodeAuto extends OpMode {
 
 
         if (startPos == AutoTrajectories.audienceStartPos) {
-            turret.setTargetPosition(allianceValue(-12500));
+            turret.setTargetPosition(allianceValue(-12100));
             //sometimes turn before setting configs
         } else if (startPos == AutoTrajectories.goalStartPos) {
             turret.setTargetPosition(allianceValue(-90 * TURRET_TICKS_PER_DEGREE));
@@ -135,6 +160,14 @@ public class DecodeAuto extends OpMode {
             AutoTrajectories.updateAlliancePoses();
         }
 
+        if (gamepad2.dpad_right){
+            midIntakeGateOpen = false;
+        }
+
+        if (gamepad2.dpad_left){
+            midIntakeGateOpen = true;
+        }
+
         // --- Start position selection ---
         if (aColor != null) {
             if (gamepad2.dpad_up) {
@@ -143,15 +176,18 @@ public class DecodeAuto extends OpMode {
                 //default config
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-                cycleCount = 3;
+                cycleCount = 5;
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 choices = new int[][]{
-                        {0, 0}, //shoot: goal, intake: Goal
                         {0, 1}, //shoot: goal, intake: mid
-                        {0, 2}, //shoot: gate ready to push, intake: audience
-                        {1, 4}, //shoot: audience, intake: Gate
-                        {1, 3} //shoot: audience, intake: preset pose
+                        {0, 4}, //shoot: goal, intake: gate
+                        {0, 0}, //shoot: gate ready to push, intake: goal
+                        {0, 2}, //shoot: audience, intake: audience
+                        {0, 1}, //shoot: audience, intake: mid
+                        {0, 1}
                 };
+                driveInit = false;
+                driveInitDelay.reset();
             } else if (gamepad2.dpad_down) {
                 startPos = AutoTrajectories.audienceStartPos;
 
@@ -159,19 +195,25 @@ public class DecodeAuto extends OpMode {
                 // choices[cycleIndex][0=shootChoice(0 goal,1 audience),
                 gateCycleIndex = 1; //default gate cycle after cycle 2
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
-                cycleCount = 3;
+                cycleCount = 5;
                 choices = new int[][]{
-                        {0, 2}, //shoot: audience, intake: audience
-                        {0, 1}, //shoot: goal, intake: mid
-                        {0, 0}, //shoot: goal ready to push, intake: Goal
-                        {1, 4}, //shoot: audience, intake: Gate
-                        {1, 3} //shoot: audience, intake: Gate
+                        {0, 1}, //shoot: audience, intake: nid
+                        {0, 4}, //shoot: goal, intake: gate
+                        {0, 0}, //shoot: goal, intake: Goal
+                        {1, 2}, //shoot: audience, intake: audience
+                        {1, 1}, //shoot: audience, intake: Gate
+                        {0, 1}
                 };
-
+                driveInit = false;
+                driveInitDelay.reset();
             }
 
         }
 
+        if (!driveInit && driveInitDelay.seconds() > 1){
+            drive = new MecanumDrive(hardwareMap, startPos);
+            driveInit = true;
+        }
         // --- Handle user input for cycles ---
         handleInput();
 
@@ -185,7 +227,7 @@ public class DecodeAuto extends OpMode {
         printEASITelemetry();
 
         //EASI - Easy Autonomous Selectable Interface
-         //
+        //
 
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -266,6 +308,7 @@ public class DecodeAuto extends OpMode {
         if (motif != null) {
             telemetry2.addData("Motif", motif);
         }
+        telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
 
         telemetry2.addLine("");
         telemetry2.addLine("=== EASI Selection ===");
@@ -276,6 +319,8 @@ public class DecodeAuto extends OpMode {
                 : "After cycle " + (gateCycleIndex + 1);
         telemetry2.addLine("Gamepad 2⬇️");
         telemetry2.addData("Gate Action", gateTxt);
+
+        telemetry2.addData("midIntakeGateOpen", midIntakeGateOpen);
 //
 
         // --- Alliance + Start position ---
@@ -337,7 +382,7 @@ public class DecodeAuto extends OpMode {
 
     @Override
     public void start() {
-
+        shooter.hoodOffset = 0;
         shooter.spinning = true;
         shooter.targeting = true;
 
@@ -346,12 +391,12 @@ public class DecodeAuto extends OpMode {
 //        CommandScheduler.getInstance().cancelAll();
 //        CommandScheduler.getInstance().reset();
 
-        runtime.reset();
+        autoRuntime.reset();
         if (drive == null) drive = new MecanumDrive(hardwareMap, startPos);
         AutoTrajectories.generateTrajectories(drive, choices, cycleCount, startPos);
 
         Set<Subsystem> requirements = Set.of(rrSubsystem);
-        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage, turret);
+        auto = AutoGenerator.buildAuto(requirements, cycleCount, intake, storage, turret, shooter);
         CommandScheduler.getInstance().schedule(
                 auto
         );
@@ -361,21 +406,11 @@ public class DecodeAuto extends OpMode {
     public void loop() {
         intake.setCurrentArtifacts();
 
-//        if (GlobalVariables.currentArtifacts.substring(1) == GlobalVariables.motif) {
-//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PPG" && GlobalVariables.motif == "PGP") || (GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "PPG")) {
-//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_MIDDLE;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "PGP" && GlobalVariables.motif == "GPP") || (GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PPG")) {
-//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_LAST;
-//        } else if ((GlobalVariables.currentArtifacts.substring(1) == "GPP" && GlobalVariables.motif == "PGP")) {
-//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.STORE_ONE_FOR_SECOND;
-//        } else {
-//            DecodeTeleOp.currentShootMode = DecodeTeleOp.shootModes.FLY;
-//        }
 
         CommandScheduler.getInstance().run();
-        if (runtime.seconds() > 29.5 && auto != null) {
+        if (autoRuntime.seconds() > 31 && auto != null) {
             CommandScheduler.getInstance().cancel(auto);
+            CommandScheduler.getInstance().schedule(new LaunchSequenceCommand(intake, storage, "closeAuto"));
 
             drive.leftBack.setPower(0);
             drive.leftFront.setPower(0);
@@ -391,12 +426,19 @@ public class DecodeAuto extends OpMode {
 
         if (drive != null) drive.updatePoseEstimate();
         savedPos = drive.localizer.getPose();
+        if (driver.getDeviceStatus() != GoBildaPinpointDriver.DeviceStatus.READY){
+            Log.w("PinpointState", String.valueOf(driver.getDeviceStatus()));
+        }
+      logShots(shooter, drive, turret);
+
+        telemetry.addData("PinpointState", driver.getDeviceStatus());
+        telemetry2.addData("firing", firing);
         telemetry2.addData("artifactLocation", currentArtifacts);
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.addData("flyWheelSpeed", shooter.getFlyWheelSpeed());
         telemetry2.addData("targetSpeed", shooter.targetFlyWheelSpeed + shooter.speedOffset);
         telemetry2.addData("distanceFromGoal", GlobalVariables.distanceFromTarget);
-        telemetry2.addData("Target Turret (DEG)",Math.toDegrees(turret.getTargetPosition()* TURRET_RADIANS_PER_TICK));
+        telemetry2.addData("Target Turret (DEG)", Math.toDegrees(turret.getTargetPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.addData("Turret Heading(DEG)", Math.toDegrees(turret.getCurrentPosition() * TURRET_RADIANS_PER_TICK));
         telemetry2.update();
     }

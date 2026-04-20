@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.Zenith.Subsystems;
 
 import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.currentArtifacts;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables.distanceFromTarget;
+import static org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage.gateOpen;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.CURRENT_SPEED_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.SLOW_SPEED_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp.firing;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,6 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
 public class Intake extends SubsystemBase {
@@ -27,21 +33,21 @@ public class Intake extends SubsystemBase {
     public DigitalChannel bbSh;
 
     private boolean shLatched = false;
-    private boolean mLatched  = false;
+    private boolean mLatched = false;
     private boolean fLatched = false;
 
     private long shLastBroken = 0;
-    private long mLastBroken  = 0;
+    private long mLastBroken = 0;
     private long fLastBroken = 0;
 
-    private ElapsedTime timeIntakeFull = new ElapsedTime();
+    // private ElapsedTime timeIntakeFull = new ElapsedTime();
 
     private static final long CLEAR_TIME_MS = 75; // tweak if needed
 
 
     public static String intakeState = new String();
 
-    public boolean currentArtifactsEstablished;
+    public boolean autoStop;
 
     public double intakePower = 0;
 
@@ -65,7 +71,7 @@ public class Intake extends SubsystemBase {
 
 
         redIntakeLED = hardwareMap.get(DigitalChannel.class, "iR");
-        greenIntakeLED = hardwareMap.get(DigitalChannel.class,"iG");
+        greenIntakeLED = hardwareMap.get(DigitalChannel.class, "iG");
 
         bbF.setMode(DigitalChannel.Mode.INPUT);
         bbM.setMode(DigitalChannel.Mode.INPUT);
@@ -76,7 +82,8 @@ public class Intake extends SubsystemBase {
         greenIntakeLED.setMode(DigitalChannel.Mode.OUTPUT);
 
         currentDirection = Direction.OFF;
-timeIntakeFull.reset();
+        autoStop = true;
+        //  timeIntakeFull.reset();
 
     }
 
@@ -91,58 +98,50 @@ timeIntakeFull.reset();
         long emptySlots = GlobalVariables.currentArtifacts.chars()
                 .filter(c -> c == '_')
                 .count();
+        if (CURRENT_SPEED_MULTIPLIER == SLOW_SPEED_MULTIPLIER) {
+            liT.setPosition(.63);
+        } else {
+            switch ((int) emptySlots) {
+                case 3:
+                    liT.setPosition(0);
+                    break;
 
-        switch ((int) emptySlots){
-            case 3:
-                liT.setPosition(0);
-                break;
+                case 2:
+                    liT.setPosition(0.28);
+                    break;
 
-            case 2:
-                liT.setPosition(0.333);
-                break;
+                case 1:
+                    liT.setPosition(0.333);
+                    break;
 
-            case 1:
-                liT.setPosition(0.388);
-                break;
+                case 0:
+                    liT.setPosition(0.5);
+                    break;
 
-            case 0:
-                liT.setPosition(0.5);
-                break;
 
-            default:
-                liT.setPosition(0.277);
-                break;
+            }
         }
-
-//        if(Objects.equals(currentArtifacts, "____")){
-//            liT.setPosition(0);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P___")){
-//            liT.setPosition(.227);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P_P_")){
-//            liT.setPosition(.388);
-//        }
-//        else if(Objects.equals(currentArtifacts, "P_PP")){
-//            liT.setPosition(.5);
-//        }
-//        else{
-//            liT.setPosition(.72);
+//
+//        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
+//            stop();
 //        }
 
-        if (emptySlots != 0){
-            timeIntakeFull.reset();
-        }
-
-        if (timeIntakeFull.seconds() >0.5 && currentDirection != Direction.OFF && !DecodeTeleOp.firing) {
-            stop();
-        }
+//        if (!gateOpen && mI.getCurrent(CurrentUnit.AMPS)>8.5 && autoStop){
+//            stop();
+//        }
 
 
     }
 
     public void in() {
-        intakePower = 1;
+        if (firing) {
+
+              intakePower = .8;
+//            if (distanceFromTarget < 130) {
+//                intakePower = .8;
+//            } else intakePower = .7;
+
+        } else intakePower = 1;
         intakeState = "in";
         greenIntakeLED.setState(true);
         redIntakeLED.setState(false);
@@ -151,7 +150,9 @@ timeIntakeFull.reset();
 
 
     public void out() {
-        intakePower = -1;
+        if (gateOpen) {
+            intakePower = -.5;
+        } else intakePower = -1;
         intakeState = "out";
         greenIntakeLED.setState(false);
         redIntakeLED.setState(true);

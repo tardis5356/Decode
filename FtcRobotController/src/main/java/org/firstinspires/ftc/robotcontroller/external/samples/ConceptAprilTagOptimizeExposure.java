@@ -72,8 +72,8 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
     private VisionPortal visionPortal = null;        // Used to manage the video source.
     private AprilTagProcessor aprilTag;// Used for managing the AprilTag detection process.
-    private static final int IMG_HEIGHT = 480;//720
-    private static final int IMG_WIDTH = 640;//1280
+    private static final int IMG_HEIGHT = 720;//720
+    private static final int IMG_WIDTH = 1280;//1280
 
     private int     myExposure  ;
     private int     minExposure ;
@@ -103,6 +103,7 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
         setManualExposure(myExposure, myGain);
 
         // Wait for the match to begin.
+        telemetry.addLine("hello");
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Touch START to start OpMode");
         telemetry.update();

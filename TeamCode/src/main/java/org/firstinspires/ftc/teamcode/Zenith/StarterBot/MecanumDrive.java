@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.Zenith.Auto;
+package org.firstinspires.ftc.teamcode.Zenith.StarterBot;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
 import com.acmerobotics.roadrunner.Action;
@@ -51,6 +50,9 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.Drawing;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.Localizer;
+import org.firstinspires.ftc.teamcode.Zenith.Auto.TwoDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.messages.MecanumLocalizerInputsMessage;
@@ -60,10 +62,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-@Config
-public final class MecanumDrive {
+public class MecanumDrive {
 
-
+    //Boo! Victor Jumpscare!!!
+    //😲
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
@@ -75,25 +77,25 @@ public final class MecanumDrive {
 
         // drive model parameters
         public double inPerTick = 0.00197; // This is the only thing that matter for position measurements coming from the odometer wheels
-        public double lateralInPerTick = 0.0012494986739862012; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
+        public double lateralInPerTick = 0.0013478867985877118; // helps self-correcting lateral errors, the power that is applied to the motor when pushing sideways
         public double trackWidthTicks = 7241.872308147249;
 
         // feedforward parameters (in tick units)
-        public double kS =   1.2484880321664713;
-        public double kV = 0.000320773308978478;
-        public double kA = 0.000065;//0.000065;
+        public double kS =   1.3096027602983749;
+        public double kV = 0.000315;
+        public double kA = 0.000065;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 70; //50
-        public double minProfileAccel = -65; //-120
-        public double maxProfileAccel = 75; //100
+        public double maxWheelVel = 50; //50
+        public double minProfileAccel = -30; //-120
+        public double maxProfileAccel = 50; //100
 
         // turn profile parameters (in radians)
-        public double maxAngVel = 4;//Math.PI; // shared with path
+        public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 27; // 5-10 works pretty much the same
+        public double axialGain = 12; // 5-10 works pretty much the same
         public double lateralGain = 15;
         public double headingGain = 10; // shared with turn
 
@@ -102,7 +104,7 @@ public final class MecanumDrive {
         public double headingVelGain = 0; // shared with turn
     }
 
-    public static Params PARAMS = new Params();
+    public static org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive.Params PARAMS = new org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive.Params();
 
     public final MecanumKinematics kinematics = new MecanumKinematics(
             PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
@@ -141,10 +143,14 @@ public final class MecanumDrive {
         private Pose2d pose;
 
         public DriveLocalizer(Pose2d pose) {
-            leftFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftFront));
-            leftBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
-            rightBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
-            rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
+            leftFront = new OverflowEncoder(new RawEncoder(
+                    org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.this.leftFront));
+            leftBack = new OverflowEncoder(new RawEncoder(
+                    org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.this.leftBack));
+            rightBack = new OverflowEncoder(new RawEncoder(
+                    org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.this.rightBack));
+            rightFront = new OverflowEncoder(new RawEncoder(
+                    org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.this.rightFront));
 
             imu = lazyImu.get();
 
@@ -258,7 +264,7 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose);
+        localizer = new TwoDeadWheelLocalizer(hardwareMap, lazyImu.get(), PARAMS.inPerTick, pose);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -316,7 +322,7 @@ public final class MecanumDrive {
             double headingToleranceDeg = 1;//1
             double positionToleranceIn = 0.5;//0.3
             double timeoutSec = 0; //0.1 in specimen, 0.5 in basket
-            if ((t >= timeTrajectory.duration - 0.3 &&
+            if ((t >= timeTrajectory.duration &&
                     Math.abs(Math.toDegrees(error.heading.toDouble())) < headingToleranceDeg &&
                     Math.abs(error.position.norm()) < positionToleranceIn)
                     || (t>= timeTrajectory.duration + timeoutSec)) {
@@ -412,9 +418,9 @@ public final class MecanumDrive {
 
             PoseVelocity2d robotVelRobot = updatePoseEstimate();
             Pose2d error = txWorldTarget.value().minusExp(localizer.getPose());
-            double headingToleranceDeg = 5;//1
-            double positionToleranceIn = 2;//0.3
-            double timeoutSec = 1; //0.1 in specimen, 0.5 in basket
+            double headingToleranceDeg = 1;//1
+            double positionToleranceIn = 0.5;//0.3
+            double timeoutSec = 0; //0.1 in specimen, 0.5 in basket
             if ((t >= turn.duration &&
                     Math.abs(Math.toDegrees(error.heading.toDouble())) < headingToleranceDeg &&
                     Math.abs(error.position.norm()) < positionToleranceIn)
@@ -511,8 +517,8 @@ public final class MecanumDrive {
 
     public TrajectoryActionBuilder actionBuilder(Pose2d beginPose) {
         return new TrajectoryActionBuilder(
-                TurnAction::new,
-                FollowTrajectoryAction::new,
+                org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.TurnAction::new,
+                org.firstinspires.ftc.teamcode.Zenith.StarterBot.MecanumDrive.FollowTrajectoryAction::new,
                 new TrajectoryBuilderParams(
                         1e-6,
                         new ProfileParams(
@@ -525,5 +531,3 @@ public final class MecanumDrive {
         );
     }
 }
-
-

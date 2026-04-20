@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Zenith.Auto.tuning;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,7 +10,7 @@ import org.firstinspires.ftc.teamcode.Zenith.Auto.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.TankDrive;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Zenith.Auto.TwoDeadWheelLocalizer;
-@Disabled
+
 public final class ManualFeedbackTuner extends LinearOpMode {
     public static double DISTANCE = 64;
 
@@ -32,8 +33,8 @@ public final class ManualFeedbackTuner extends LinearOpMode {
             while (opModeIsActive()) {
                 Actions.runBlocking(
                         drive.actionBuilder(new Pose2d(0, 0, 0))
-                                .lineToX(DISTANCE)
-                                .lineToX(0)
+                                .strafeToConstantHeading(new Vector2d(0, DISTANCE))
+                                .strafeToConstantHeading(new Vector2d(0, 0))
                                 .build());
             }
         } else if (TuningOpModes.DRIVE_CLASS.equals(TankDrive.class)) {
