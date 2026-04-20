@@ -53,9 +53,9 @@ public class Camera extends SubsystemBase {
     private final AprilTagDetection desiredTag = null;
     public final WebcamName turretWebcam;
     //532.034 * 42.5/52.5; // actual/roadrunner distance
-    public double fx = 433.639 * 55/25 * 55/62;
+    public double fx = 433.639 * 55/25 * 55/62* 126/118;
     //532.034 * 42.5/52.5;
-    public double fy = 433.639 * 55/25 * 55/62; //545.605 * 56.5 / 58 * 74/72; //actual / calculated
+    public double fy = 433.639 * 55/25 * 55/62 * 126/118; //545.605 * 56.5 / 58 * 74/72; //actual / calculated
     public double cx = 631.6, cy = 321;
     public int desiredTagID;
     PIDController yawController, forwardController;
@@ -367,6 +367,7 @@ public class Camera extends SubsystemBase {
                         + tagFieldHeading);
 
         telemetry.addData("Tag ID", tag.id);
+        telemetry.addData("Bearing", tag.ftcPose.bearing);
         telemetry.addData("Tag Yaw (deg)", "%.3f", Math.toDegrees(tagYaw));
         telemetry.addData("Camera        X(in)       Y(in)       Heading(deg)\n                      ", "%.2f\t\t%.2f\t\t%.2f", xBotOnField , yBotOnField ,  Math.toDegrees(robotHeading));
 

@@ -197,7 +197,7 @@ public class DecodeAuto extends OpMode {
                 // 1=intakeChoice(0 goal,1 mid,2 audience, 3 LZ preset, 4 Gate)]
                 cycleCount = 5;
                 choices = new int[][]{
-                        {1, 1}, //shoot: audience, intake: nid
+                        {0, 1}, //shoot: audience, intake: nid
                         {0, 4}, //shoot: goal, intake: gate
                         {0, 0}, //shoot: goal, intake: Goal
                         {1, 2}, //shoot: audience, intake: audience

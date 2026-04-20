@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
     public Servo sH;
     public Servo liH;
 
-    public boolean bangBangActive;
+    public static boolean bangBangActive;
 
     public boolean shooterLock = false;
 
@@ -110,16 +110,16 @@ public class Shooter extends SubsystemBase {
 
 
 //        //   4/6 +50
-        WheelRegression.put(35.,700.);
-        WheelRegression.put(50.,700.);
-        WheelRegression.put(65.,800.);
-        WheelRegression.put(85.,900.);
-        WheelRegression.put(101.,950.);
-        WheelRegression.put(116.,1050.);
-        WheelRegression.put(130.,1125.);
-        WheelRegression.put(145.8,1275.);
-        WheelRegression.put(160.6,1325.);
-        WheelRegression.put(167.7,1400.);
+        WheelRegression.put(35.,725.);
+        WheelRegression.put(50.,725.);
+        WheelRegression.put(65.,825.);
+        WheelRegression.put(85.,925.);
+        WheelRegression.put(101.,975.);
+        WheelRegression.put(116.,1075.);
+        WheelRegression.put(130.,1150.);
+        WheelRegression.put(145.8,1300.);
+        WheelRegression.put(160.6,1350.);
+        WheelRegression.put(167.7,1425.);
 
         targeting = true;
     }
@@ -127,9 +127,8 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
 
-        if (gateOpen) {
-            bangBangActive = true;
-        } else bangBangActive = false;
+
+
 
         setVel(WheelRegression.get(distanceFromTarget));
 
@@ -145,7 +144,7 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case FAR:
-                        sH.setPosition(.38 + hoodOffset);
+                        sH.setPosition(.4 + hoodOffset);
                         break;
                 }
             } else {
@@ -169,8 +168,8 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case FAR:
-                        mSL.setPower(calculateBangBangFlyWheelPower(1100. + speedOffset));
-                        mSR.setPower(calculateBangBangFlyWheelPower(1100. + speedOffset));
+                        mSL.setPower(calculateBangBangFlyWheelPower(1150. + speedOffset));
+                        mSR.setPower(calculateBangBangFlyWheelPower(1150. + speedOffset));
                         break;
 
                 }

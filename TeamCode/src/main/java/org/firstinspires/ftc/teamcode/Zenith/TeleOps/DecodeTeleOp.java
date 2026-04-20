@@ -332,9 +332,9 @@ public class DecodeTeleOp extends CommandOpMode {
                                     new WaitCommand(600),
                                     new InstantCommand(() -> drive.localizer.setPose(new Pose2d(drive.localizer.getPose().position.x, drive.localizer.getPose().position.y, Math.toRadians(camera.getATagRobotHeading(turret, telemetry))))),
                                     new InstantCommand(() -> drive.localizer.setPose(camera.getRelocalizedPose(drive, telemetry))),
-                                    new WaitCommand(600),
                                     new InstantCommand(() -> shooter.hoodOffset = 0.0),
                                     new InstantCommand(() -> turret.manualOffset = 0),
+                                    new InstantCommand(() -> shooter.speedOffset = 0),
                                     new InstantCommand(() -> shooter.targeting = true)
                             )
                     );

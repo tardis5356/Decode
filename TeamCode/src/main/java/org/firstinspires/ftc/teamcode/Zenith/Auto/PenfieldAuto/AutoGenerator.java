@@ -60,9 +60,9 @@ public class AutoGenerator {
                             new InstantCommand(()->shooter.shooterLock = true),
                             new InstantCommand(()->shooter.shooterPreset = Shooter.ShooterPreset.FAR)
                     ));
-            seq.add(new WaitCommand(1000));
+            seq.add(new WaitCommand(2000));
             seq.add(new LaunchSequenceCommand(intake, storage, "FlyAuto"));
-            seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-1000))));//-500 on blue
+            seq.add(new InstantCommand(() -> turret.manualOffset = (int) Math.round(allianceValue(-1400))));//-500 on blue
 
         }
 

@@ -108,13 +108,13 @@ public class AutoTrajectories {
         midGateIntakePos = allianceCoordinate(new Pose2d(9, 57, Math.toRadians(90)));
 
         audienceIntakePos = allianceCoordinate(new Pose2d(37, 59, Math.toRadians(90)));
-        goalShootPos = allianceCoordinate(new Pose2d(-3, 12, Math.toRadians(90)));
+        goalShootPos = allianceCoordinate(new Pose2d(-3, 16, Math.toRadians(75)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
         audienceShootPos = allianceCoordinate(new Pose2d(48, 16, Math.toRadians(90)));
-        gateReleasePos = allianceCoordinate(new Pose2d(6, 57, Math.toRadians(0)));
+        gateReleasePos = allianceCoordinate(new Pose2d(7, 57, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(62, 65, Math.toRadians(90)));
-        gateIntakePos = allianceCoordinate(new Pose2d(11, 59, Math.toRadians(110)));
+        gateIntakePos = allianceCoordinate(new Pose2d(12, 59, Math.toRadians(110)));
 
         parkPos = allianceCoordinate(new Pose2d(30, -30, Math.toRadians(180)));
     }
@@ -146,8 +146,10 @@ public class AutoTrajectories {
         for (int i = 0; i < cycles; i++) {
             shootChoice = choices[i][0];
             int intakeChoice = choices[i][1];
-            if (intakeChoice == 0 || intakeChoice == 4 || intakeChoice == 1) {
+            if (intakeChoice == 0) {
                 shootEndTangentDeg = new double[]{270, 0};
+            }else if (intakeChoice == 4|| intakeChoice == 1) {
+                shootEndTangentDeg = new double[]{225, 0};
             } else if (intakeChoice == 3) {
                 shootEndTangentDeg = new double[]{270, 270};
             } else {
@@ -205,7 +207,7 @@ public class AutoTrajectories {
                 startToIntake[i] = drive.actionBuilder(currentStart)
                         .setTangent(allianceTangent(45))
                         .splineToLinearHeading(intakePose, intakeEndRad)
-                        .waitSeconds(0.95) // gate intake, originally 0.85
+                        .waitSeconds(1.2) // gate intake, originally 0.85
                         .build();
             }else {
                 startToIntake[i] = drive.actionBuilder(currentStart)

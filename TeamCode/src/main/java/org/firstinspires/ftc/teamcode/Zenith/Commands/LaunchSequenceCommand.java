@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.BotPositions;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.GlobalVariables;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.Zenith.Subsystems.Storage;
 import org.firstinspires.ftc.teamcode.Zenith.TeleOps.DecodeTeleOp;
 
@@ -24,6 +25,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(storage::openGate),
                                 new InstantCommand(intake::stop),
                                 new WaitCommand(200),
+                                new InstantCommand(() -> Shooter.bangBangActive = true),
                                 new InstantCommand(intake::in),
                                 new WaitCommand(450),//600
                                 new InstantCommand(storage::raiseKicker),
@@ -31,6 +33,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(storage::lowerKicker),
                                 new InstantCommand(storage::closeGate),
                                 new InstantCommand(intake::stop),
+                                new InstantCommand(() -> Shooter.bangBangActive = false),
                                 new InstantCommand(() -> DecodeTeleOp.firing = false)
                         )
                 );
@@ -45,6 +48,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(storage::openGate),
                                 new InstantCommand(intake::stop),
                                 new WaitCommand(50),
+                                new InstantCommand(() -> Shooter.bangBangActive = true),
                                 new InstantCommand(intake::in),
                                 new WaitCommand(450),
                                 new InstantCommand(storage::raiseKicker),
@@ -70,6 +74,7 @@ public class LaunchSequenceCommand extends SequentialCommandGroup {
                                 new InstantCommand(storage::closeGate),
                                 new InstantCommand(storage::lowerKicker),
                                 new InstantCommand(intake::stop),
+                                new InstantCommand(() -> Shooter.bangBangActive = false),
                                 new InstantCommand(() -> DecodeTeleOp.firing = false)
                         )
                 );
