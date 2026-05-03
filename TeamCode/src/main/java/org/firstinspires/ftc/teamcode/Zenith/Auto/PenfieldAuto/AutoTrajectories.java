@@ -108,9 +108,9 @@ public class AutoTrajectories {
         midGateIntakePos = allianceCoordinate(new Pose2d(9, 57, Math.toRadians(90)));
 
         audienceIntakePos = allianceCoordinate(new Pose2d(37, 59, Math.toRadians(90)));
-        goalShootPos = allianceCoordinate(new Pose2d(-3, 16, Math.toRadians(75)));
+        goalShootPos = allianceCoordinate(new Pose2d(-6, 13, Math.toRadians(75)));
 //        goalShootPos = allianceCoordinate(new Pose2d(-29, 8, Math.toRadians(90)));
-        audienceShootPos = allianceCoordinate(new Pose2d(48, 16, Math.toRadians(90)));
+        audienceShootPos = allianceCoordinate(new Pose2d(48, 13, Math.toRadians(90)));
         gateReleasePos = allianceCoordinate(new Pose2d(7, 57, Math.toRadians(0)));
         gateReadyToReleasePos = allianceCoordinate(new Pose2d(0, 38, Math.toRadians(90)));
         presetLZIntakePos = allianceCoordinate(new Pose2d(62, 65, Math.toRadians(90)));

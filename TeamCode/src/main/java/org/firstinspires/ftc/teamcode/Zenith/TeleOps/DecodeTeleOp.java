@@ -346,11 +346,11 @@ public class DecodeTeleOp extends CommandOpMode {
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_UP))
                     .whenInactive(() ->
-                            shooter.hoodOffset += .01);
+                            shooter.hoodOffset += .02);
 
             new Trigger(() -> driver2.getButton(GamepadKeys.Button.DPAD_DOWN))
                     .whenInactive(() ->
-                            shooter.hoodOffset -= .01);
+                            shooter.hoodOffset -= .02);
 
 
         }

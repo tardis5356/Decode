@@ -17,7 +17,7 @@ public class BotPositions {
     //public static double TURRET_P = 0.000000, TURRET_I = 0.000, TURRET_D = 0.00000;
     public static double TURRET_TICKS_PER_DEGREE = 108.615834 , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
    // public static double TURRET_P = 0.00008 , TURRET_I = 0, TURRET_D = 0.000008, TURRET_S = 0.15,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
-   public static double TURRET_P = 0.000122 , TURRET_I = 0, TURRET_D = 0.0000063, TURRET_S = 0.08,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
+   public static double TURRET_P = 0.000122 , TURRET_I = 0, TURRET_D = 0.0000061, TURRET_S = 0.075,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
 
     //angle, CCW motor power, CW motor power
     public static double[][] TurretAngle_kSMatrix = {
@@ -37,7 +37,7 @@ public class BotPositions {
     //PTO Relevant stuff
     public static double PTO_ENGAGED = 0.45, PTO_DISENGAGED = 0, BELLYPAN_LEFT_LATCHED = 0.27, BELLYPAN_RIGHT_LATCHED = 0.6, BELLYPAN_LEFT_UNLATCHED = 0., BELLYPAN_RIGHT_UNLATCHED = 0.2;
 
-    public static double BREAKPAD_ACTIVE = 0.7, BREAKPAD_INACTIVE = .42;
+    public static double BREAKPAD_ACTIVE = 0.88, BREAKPAD_INACTIVE = .42;
 
     public static double CAMERA_RADIUS = -3.58559, TURRET_OFFSET_X = - 2.5590, TURRET_OFFSET_Y = 0;
 

@@ -98,24 +98,24 @@ public class Shooter extends SubsystemBase {
         //  4/6 + 0.05
         HoodRegression.put(35.,1.);
         HoodRegression.put(50.,1.);
-        HoodRegression.put(65.,.85);
+        HoodRegression.put(65.,.82);
         HoodRegression.put(85.,.5);
-        HoodRegression.put(101.,.5);
-        HoodRegression.put(116.,.46);
-        HoodRegression.put(130.,.4);
-        HoodRegression.put(145.8,.3);
-        HoodRegression.put(160.6,.25);
-        HoodRegression.put(167.7,.2);
+        HoodRegression.put(101.,.47);
+        HoodRegression.put(116.,.42);
+        HoodRegression.put(130.,.38);
+        HoodRegression.put(145.8,.28);
+        HoodRegression.put(160.6,.23);
+        HoodRegression.put(167.7,.18);
         //adoifijd
 
 
 //        //   4/6 +50
         WheelRegression.put(35.,725.);
         WheelRegression.put(50.,725.);
-        WheelRegression.put(65.,825.);
-        WheelRegression.put(85.,925.);
+        WheelRegression.put(65.,775.);
+        WheelRegression.put(85.,875.);
         WheelRegression.put(101.,975.);
-        WheelRegression.put(116.,1075.);
+        WheelRegression.put(116.,1100.);
         WheelRegression.put(130.,1150.);
         WheelRegression.put(145.8,1300.);
         WheelRegression.put(160.6,1350.);
@@ -140,11 +140,11 @@ public class Shooter extends SubsystemBase {
                         break;
 
                     case MID:
-                        sH.setPosition(.45 + hoodOffset);
+                        sH.setPosition(.44 + hoodOffset);
                         break;
 
                     case FAR:
-                        sH.setPosition(.4 + hoodOffset);
+                        sH.setPosition(.33 + hoodOffset);
                         break;
                 }
             } else {
