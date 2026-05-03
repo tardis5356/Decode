@@ -18,7 +18,6 @@ public class BotPositions {
     public static double TURRET_TICKS_PER_DEGREE = 108.615834 , TURRET_RADIANS_PER_TICK = 1/(TURRET_TICKS_PER_DEGREE) * (Math.PI/180);
    // public static double TURRET_P = 0.00008 , TURRET_I = 0, TURRET_D = 0.000008, TURRET_S = 0.15,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
    public static double TURRET_P = 0.000122 , TURRET_I = 0, TURRET_D = 0.0000061, TURRET_S = 0.075,  TURRET_V = 0, TURRET_TOLERANCE_DEG = 1;
-
     //angle, CCW motor power, CW motor power
     public static double[][] TurretAngle_kSMatrix = {
                     {-200, 0.15,0.15},
